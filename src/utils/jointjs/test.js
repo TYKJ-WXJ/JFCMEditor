@@ -406,6 +406,7 @@ const jointD = {
     });
     paper.on('cell:pointerup', function(cellView) {
       idUp = cellView.id;
+      console.log(cellView);
     });
   },
   arrEquals(arr1, arr2) {

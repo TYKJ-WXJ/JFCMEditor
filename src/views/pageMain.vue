@@ -161,7 +161,7 @@
   }
 </script>
 
-<style scoped>
+<style>
   @import "joint.css";
 
   .tool_wrap {

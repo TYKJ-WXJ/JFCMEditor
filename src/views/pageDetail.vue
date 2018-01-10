@@ -1,22 +1,22 @@
 <template>
   <div class="pageDetail">
-    <h1>{{msg}}</h1>
+    <lunbo></lunbo>
   </div>
 </template>
 
 <script>
+  import Lunbo from '@/components/lunbo.vue';
   export default{
-    data() {
-      return {
-        msg: 'pageDetail'
-      }
-    },
-    components: {}
+    components: {
+      Lunbo
+    }
   }
 </script>
 
-<style scoped>
+<style>
   .pageDetail {
     background-color: #fff;
+    height: 300px;
+    width: 500px;
   }
 </style>
