@@ -5,6 +5,7 @@ import App from './App';
 import router from './router';
 import store from './store';
 import 'vue2-animate/dist/vue2-animate.min.css';
+
 // 关闭生产模式下的提示
 Vue.config.productionTip = false;
 

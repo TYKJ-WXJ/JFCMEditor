@@ -904,6 +904,28 @@ const jointD = {
 
     return custom;
   },
+  getPolygon(sx, sy, pwidth, pheight, plabel) {
+    // 创建自定义矩形
+    joint.shapes.basic.Rect = joint.shapes.basic.Generic.extend({
+      markup: '<g class="rotatable"><g class="scalable"><rect/></g><text/></g>',
+      defaults: joint.util.deepSupplement({
+        type: 'basic.Rect',
+        attrs: {
+          'rect': {fill: 'white', stroke: 'black', 'stroke-width': 1, 'stroke-dasharray': 0, 'follow-scale': true, width: 80, height: 40, 'font-weight': 'normal'},
+          'text': {'font-size': 14, 'ref-x': 0.5, 'ref-y': 0.5, ref: 'rect', 'y-alignment': 'middle', 'x-alignment': 'middle', fill: 'black'}
+        }
+      }, joint.shapes.basic.Generic.prototype.defaults)
+    });
+    let custom = new joint.shapes.basic.Rect({  // 绘制元素
+      position: {x: sx, y: sy},
+      size: {width: pwidth, height: pheight},
+      attrs: {
+        text: {text: plabel}
+      }
+    });
+
+    return custom;
+  },
   // 清除
   clearPaper() {
     // console.log(3);
