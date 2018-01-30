@@ -2,8 +2,9 @@
  * Created by 吴旭健 on 2018/1/29.
  */
 import $ from 'jquery'
-import * as THREE from 'three'
+// import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
+var THREE = require('../../../node_modules/three/build/three');
 // import OrbitControls from '@utils/controls/OrbitControls'
 // 参数处理
 let option = {};
