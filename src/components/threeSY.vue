@@ -3,13 +3,17 @@
 </template>
 
 <script>
+  import threeMB from '@/utils/threeSYJS/threeMB';
+//  import OrbitControls from '@utils/controls/OrbitControls';
   export default{
     data() {
       return {
         msg: 'hello vue'
       }
     },
-    components: {}
+    created() {
+      threeMB.init();
+    }
   }
 </script>
 
