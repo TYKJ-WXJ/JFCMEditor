@@ -3,14 +3,14 @@
  */
 import $ from 'jquery'
 // import * as THREE from 'three'
-import * as TWEEN from '@tweenjs/tween.js'
-var THREE = require('../../../node_modules/three/build/three');
-// import OrbitControls from '@utils/controls/OrbitControls'
+// import * as TWEEN from '@tweenjs/tween.js'
+var THREE = require('../../../node_modules/three/build/three.module');
+var TWEEN = require('../../../node_modules/three/examples/js/libs/tween.min');
 // 参数处理
 let option = {};
 let id;
 this.option = {};
-this.option.antialias = option.antialias || true;
+// this.option.antialias = option.antialias || true;
 this.option.clearCoolr = option.clearCoolr || 0x1b7ace;
 this.option.showHelpGrid = option.showHelpGrid || false;
 // 对象
@@ -51,7 +51,7 @@ const threeMB = {
   },
   initThree() { // 初始化渲染器
     let that = this;
-    that.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: that.option.antialias });
+    that.renderer = new THREE.WebGLRenderer({ alpha: true });
     that.renderer.setSize(that.width, that.height);
     $('#' + that.id).append(that.renderer.domElement);
     that.renderer.setClearColor(that.option.clearCoolr, 1.0);

@@ -1,5 +1,5 @@
 <template>
-  <div class="pageDetail">
+  <div>
     <!--<play></play>-->
     <!--<lunbo></lunbo>-->
     <!--<ditu></ditu>-->
@@ -8,6 +8,8 @@
     <!--<p id="ms">{{ mbsj }}</p>-->
     <!--<input id="shuru" type="text">-->
     <!--<button @click="loaded"></button>-->
+    <!--<three-mb></three-mb>-->
+    <three-x></three-x>
   </div>
 </template>
 
@@ -18,7 +20,7 @@
 //  import Ditu from '@/components/ditu.vue';
 //  import Dthree from '@/components/vue-model-3D.vue'; // 无用的插件
 //  import IframeD from '@/components/iframe.vue';
-  import threeMb from '@/components/threeSY.vue';
+  import threeX from '@/components/threeX.vue';
   export default{
     data() {
       return {
@@ -29,7 +31,7 @@
 //      Ditu
 //      Lunbo
 //      Dthree
-      threeMb
+      threeX
     },
     methods: {
 //      loaded() { // iframe跨域请求还没有解决，同域使用一下内容没有问题
