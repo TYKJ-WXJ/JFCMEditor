@@ -9,7 +9,8 @@
     <!--<input id="shuru" type="text">-->
     <!--<button @click="loaded"></button>-->
     <!--<three-mb></three-mb>-->
-    <three-x></three-x>
+    <!--<three-x></three-x>-->
+    <web-s></web-s>
   </div>
 </template>
 
@@ -20,7 +21,8 @@
 //  import Ditu from '@/components/ditu.vue';
 //  import Dthree from '@/components/vue-model-3D.vue'; // 无用的插件
 //  import IframeD from '@/components/iframe.vue';
-  import threeX from '@/components/threeX.vue';
+//  import threeX from '@/components/threeX.vue';
+  import webS from '@/components/websock.vue';
   export default{
     data() {
       return {
@@ -31,7 +33,8 @@
 //      Ditu
 //      Lunbo
 //      Dthree
-      threeX
+//      threeX
+      webS
     },
     methods: {
 //      loaded() { // iframe跨域请求还没有解决，同域使用一下内容没有问题

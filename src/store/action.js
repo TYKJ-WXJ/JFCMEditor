@@ -8,6 +8,12 @@ const actions = {
       type: 'changeUserInfo',
       userInfo: payload
     })
+  },
+  changeWebs(store, payload) {
+    store.commit({
+      type: 'changeWebs',
+      webs: payload
+    })
   }
 };
 

@@ -6,7 +6,8 @@ const state = {
   userInfo: {
     name: 'admin',
     id: '0001'
-  }
+  },
+  webs: {}
 };
 
 export default state;

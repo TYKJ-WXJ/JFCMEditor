@@ -5,6 +5,9 @@
 const mutations = {
   changeUserInfo(state, payload) {
     state.userInfo = payload.userInfo;
+  },
+  changeWebs(state, payload) {
+    state.userInfo = payload.webs;
   }
 };
 

@@ -10,8 +10,10 @@ var Stats = require('../../../node_modules/three/examples/js/libs/stats.min');
 let scene;
 let camera;
 let renderer;
+let stats;
 const threeX = {
   init() {
+    stats = this.initStats();
     // 定义场景、摄像机、渲染器
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -66,17 +68,18 @@ const threeX = {
     this.renderScene();// 处理渲染，
   },
   renderScene() {
-    requestAnimationFrame(this.renderScene);// 浏览器提供的在特定时间间隔重新渲染场景的方法
+    stats.update();
+    requestAnimationFrame(this.renderScene());// 浏览器提供的在特定时间间隔重新渲染场景的方法
     renderer.render(scene, camera);
   },
   initStats() {
-    let stats = new Stats();
-    stats.setMode(0);
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
-    document.getElementById('Stats-output').appendChild(stats.domElement);
-    return stats;
+    let statsx = new Stats();
+    statsx.setMode(0);
+    statsx.domElement.style.position = 'absolute';
+    statsx.domElement.style.left = '0px';
+    statsx.domElement.style.top = '0px';
+    document.getElementById('Stats-output').appendChild(statsx.domElement);
+    return statsx;
   }
 }
 

@@ -5,6 +5,9 @@
 const getters = {
   getUserInfo(state) {
     return state.userInfo;
+  },
+  getWebs(state) {
+    return state.webs;
   }
 };
 

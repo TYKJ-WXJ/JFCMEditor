@@ -1,5 +1,8 @@
 <template>
+  <div>
     <div id="threeWorld" class="one"></div>
+    <div id="Stats-output"></div>
+  </div>
 </template>
 
 <script>

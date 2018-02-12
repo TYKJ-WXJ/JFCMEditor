@@ -17,6 +17,7 @@
     "jointjs": "^2.0.1",
     "jquery": "^3.2.1",
     "raphael": "^2.2.7",
+    "reconnectingwebsocket": "^1.0.0",
     "sockjs-client": "^1.1.4",
     "three": "^0.89.0",
     "videojs-contrib-hls": "^5.12.2",
