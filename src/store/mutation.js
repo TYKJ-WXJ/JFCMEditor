@@ -7,7 +7,7 @@ const mutations = {
     state.userInfo = payload.userInfo;
   },
   changeWebs(state, payload) {
-    state.userInfo = payload.webs;
+    state.webs = payload;// 这里不能.webs,否则无法显示
   }
 };
 

@@ -7,7 +7,10 @@ const state = {
     name: 'admin',
     id: '0001'
   },
-  webs: {}
+  webs: {
+    web: {}
+  }
+
 };
 
 export default state;

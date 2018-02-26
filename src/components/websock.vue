@@ -1,9 +1,10 @@
 <template>
   <div>
-    <p>{{ msg }}</p>
+    <p>{{ getWebs.web }}</p>
     <button @click="Shuju" class="big">发送SVG数据</button>
     <button @click="Close" class="big">关闭</button>
     <button @click="CS" class="big">测试</button>
+    <button @click="xiugai" class="big">修改</button>
   </div>
 </template>
 
@@ -13,7 +14,7 @@
   export default{
     data() {
       return {
-        msg: webSock.connectZDY()
+        msg: ''
       }
     },
     computed: {
@@ -26,12 +27,16 @@
         'changeWebs'
       ]),
       xiugai() {
-        let gaib = webSock.connectZDY();
-        this.changeWebs(gaib);
+//        console.log(1);
+        webSock.connectZDY({
+          'socks': this.$store
+        });
+//        console.log(gaib);
       },
       Shuju: function () {
         let sjobj = {'svg': [{'svgId': 1, 'linkStart': true, 'attrId': 1, 'value': 1}, {'svgId': 2, 'linkStart': true, 'attrId': 2, 'value': 2}]};
         webSock.Send(sjobj);
+        console.log(1);
       },
       Close: function () {
         webSock.Close();
