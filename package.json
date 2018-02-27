@@ -14,6 +14,7 @@
     "@stomp/stompjs": "^4.0.0",
     "@tweenjs/tween.js": "^17.2.0",
     "axios": "^0.17.1",
+    "draggabilly": "^2.1.1",
     "jointjs": "^2.0.1",
     "jquery": "^3.2.1",
     "raphael": "^2.2.7",

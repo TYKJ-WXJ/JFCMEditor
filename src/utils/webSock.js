@@ -22,11 +22,14 @@ const webSock = {
       stompClient.subscribe('/stock/price', function (greeting) {
         // console.log(greeting);
         sju = greeting.body;
-        console.log(sju);
+        // console.log(sju);
         // 修改vuex当中的参数
         st.socks.commit('changeWebs', {
           'web': sju
         });
+      });
+      stompClient.subscribe('/app/price', function (greeting) {
+        console.log(greeting);
       });
       // stompClient.send('/app/hello', {}, JSON.stringify({'svg': [['svgid1', 'true', '属性ID1', '1'], ['svgid2', 'true', '属性ID2', '2']]})); // svgid 连接状态true or flaes 属性ID
     });
