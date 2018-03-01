@@ -51,13 +51,13 @@
         let newOptions = {
           'width': 1100,
           'height': 660, // 整个模块高度
-          'basic_attributes': false, // 设备基本属性
+          'basic_attributes': true, // 设备基本属性
           'basic_figure': true, // 图库
-          'action_buttons': false, // 清除，组合等按钮
-          'add_attributes': false, // 增加设备属性
-          'style_operation': false, // 样式面板
-          'thumbnail': false, // 缩略图
-          'figure_buttons': false, // 图形操作按钮
+          'action_buttons': true, // 清除，组合等按钮
+          'add_attributes': true, // 增加设备属性
+          'style_operation': true, // 样式面板
+          'thumbnail': true, // 缩略图
+          'figure_buttons': true, // 图形操作按钮
           'single_click': false, // 单击图形
           'double_click': true, // 双击图形
           'label': true, // 图形名称和基本属性
