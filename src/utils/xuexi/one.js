@@ -73,7 +73,7 @@ const threeX = {
     renderer.render(scene, camera);
   },
   initStats() {
-    let statsx = new Stats();
+    let statsx = Stats;
     statsx.setMode(0);
     statsx.domElement.style.position = 'absolute';
     statsx.domElement.style.left = '0px';
