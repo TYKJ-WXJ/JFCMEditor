@@ -4,7 +4,7 @@
 
 var transformSVGPathExposed;
 
-function d3threeD(exports) {
+let d3threeD = function (exports) {
 
   const DEGS_TO_RADS = Math.PI / 180,
     UNIT_SIZE = 1;
@@ -334,22 +334,12 @@ function d3threeD(exports) {
   }
   function wrap_setAttributeNS(namespace, name, value) {
   }
-
-
-
-
-
   var extrudeDefaults = {
     amount: 20,
     bevelEnabled: true,
     material: 0,
     extrudeMaterial: 0,
   };
-
-
-
-
-
   function commonSetAttribute(name, value) {
     switch (name) {
       case 'x':
@@ -421,8 +411,6 @@ function d3threeD(exports) {
   Mesh.prototype.constructor = Mesh;
   Mesh.prototype.setAttribute = commonSetAttribute;
   Mesh.prototype.setAttributeNS = commonSetAttributeNS;
-
-
   const SPHERE_SEGS = 16, SPHERE_RINGS = 16,
     DEFAULT_COLOR = 0xcc0000;
 
@@ -498,9 +486,6 @@ function d3threeD(exports) {
         break;
     }
   };
-
-
-
   function fabVis() {
     var camera, scene, controls, renderer;
 
@@ -625,3 +610,5 @@ function d3threeD(exports) {
 
 var $d3g = {};
 d3threeD($d3g);
+console.log(transformSVGPathExposed);
+export {d3threeD, transformSVGPathExposed}

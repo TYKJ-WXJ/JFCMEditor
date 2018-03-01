@@ -60,7 +60,7 @@ const svgThree = {
   // 生成2d图形
   drawShape() {
     let svgString = document.querySelector('#v-40').getAttribute('d');
-    let shape1 = d3T.transformSVGPath(svgString);
+    let shape1 = d3T.transformSVGPathExposed(svgString);
     // 返回shape
     return shape1;
   },
