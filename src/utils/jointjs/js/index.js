@@ -574,7 +574,7 @@ const jointD = {
     this.addCenterPaperEvent(this.centerPaper);
     return this;
   },
-  getCenterGraphCells() {
+  getCenterGraphCells() { // 获取中央画布所有图形
     if (!this.options.add_attributes) {
       return false;
     }

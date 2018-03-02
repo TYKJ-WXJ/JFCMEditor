@@ -3,7 +3,7 @@
  */
 
 var THREE = require('../../node_modules/three/build/three.module');
-var stats = require('../../node_modules/three/examples/js/libs/stats.min');
+var Stats = require('../../node_modules/three/examples/js/libs/stats.min');
 var dat = require('../../node_modules/three/examples/js/libs/dat.gui.min');
 var d3T = require('../../src/utils/d3-threeD');
 let renderer;
@@ -12,6 +12,8 @@ let scene;
 let light;
 let controls;
 let gui, shape;
+var statsl;
+let that = this;
 const svgThree = {
   drawSvg() {
     console.log(1);
@@ -20,7 +22,7 @@ const svgThree = {
     this.initCamera();
     this.initLight();
     // initModel();
-    this.initControls();
+    // this.initControls();
     this.initStats();
     this.initGui();
     this.animate();
@@ -83,6 +85,12 @@ const svgThree = {
     mesh.rotation.z = Math.PI;
     return mesh;
   },
+  // 初始化性能插件
+  initStats() {
+    statsl = new Stats();
+    console.log(statsl);
+    document.body.appendChild(statsl.dom);
+  },
   // 用户交互插件 鼠标左键按住旋转，右键按住平移，滚轮缩放
   initControls() {
     controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -127,7 +135,8 @@ const svgThree = {
           curveSegments: gui.curveSegments,
           steps: gui.steps
         };
-        shape = this.createMesh(new THREE.ExtrudeGeometry(this.drawShape(), options));
+        console.log(that.drawShape());
+        shape = this.createMesh(new THREE.ExtrudeGeometry(that.drawShape(), options));
       // 将模型添加到场景当中
         scene.add(shape);
       }
@@ -159,7 +168,7 @@ const svgThree = {
     controls.update();
     this.render();
    // 更新性能插件
-    stats.update();
+    Stats.update();
     requestAnimationFrame(this.animate());
   }
 }

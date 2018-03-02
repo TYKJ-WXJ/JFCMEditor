@@ -1,8 +1,10 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-
+var THREE = require('../../node_modules/three/build/three.module');
+var stats = require('../../node_modules/three/examples/js/libs/stats.min');
 var transformSVGPathExposed;
+var applySVGTransformExposed;
 let d3threeD = function (exports) {
   const DEGS_TO_RADS = Math.PI / 180,
     UNIT_SIZE = 1;
