@@ -8,6 +8,7 @@
 <script>
   // 引入工具函数
   //  import websock from '@/utils/webSock';
+  import svgThree from '@/utils/svg-three';
   // 组件
   import Editor from '@/components/editor';
   export default{
@@ -24,6 +25,7 @@
 //      this.getTopicsFunc();
     },
     mounted() {
+      svgThree.drawSvg();
     },
     computed: {
     },

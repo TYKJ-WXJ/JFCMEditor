@@ -2,9 +2,9 @@
  * Created by 吴旭健 on 2018/2/28.
  */
 
-var THREE = require('../../../node_modules/three/build/three.module');
-var stats = require('../../../node_modules/three/examples/js/libs/stats.min');
-var dat = require('../../../node_modules/three/examples/js/libs/dat.gui.min');
+var THREE = require('../../node_modules/three/build/three.module');
+var stats = require('../../node_modules/three/examples/js/libs/stats.min');
+var dat = require('../../node_modules/three/examples/js/libs/dat.gui.min');
 var d3T = require('../../src/utils/d3-threeD');
 let renderer;
 let camera;

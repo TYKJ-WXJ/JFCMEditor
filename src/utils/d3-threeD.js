@@ -3,17 +3,11 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var transformSVGPathExposed;
-
 let d3threeD = function (exports) {
-
   const DEGS_TO_RADS = Math.PI / 180,
     UNIT_SIZE = 1;
-
   const DIGIT_0 = 48, DIGIT_9 = 57, COMMA = 44, SPACE = 32, PERIOD = 46,
     MINUS = 45;
-
-
-
   function transformSVGPath(pathStr) {
 
     var paths = [];
