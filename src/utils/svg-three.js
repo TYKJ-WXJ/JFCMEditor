@@ -15,19 +15,6 @@ let gui, shape;
 var statsl;
 let that = this;
 const svgThree = {
-  drawSvg() {
-    console.log(1);
-    this.initRender();
-    this.initScene();
-    this.initCamera();
-    this.initLight();
-    // initModel();
-    // this.initControls();
-    this.initStats();
-    this.initGui();
-    this.animate();
-    window.onresize = this.onWindowResize();
-  },
   initRender() {
     renderer = new THREE.WebGLRenderer({antialias: true});
     // renderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0)); //设置背景颜色
@@ -58,13 +45,6 @@ const svgThree = {
      var mesh = createMesh(shape);
      scene.add(mesh);
     * */
-  },
-  // 生成2d图形
-  drawShape() {
-    let svgString = document.querySelector('#v-40').getAttribute('d');
-    let shape1 = d3T.transformSVGPathExposed(svgString);
-    // 返回shape
-    return shape1;
   },
   // 生成模型
   createMesh(geom) {
@@ -135,7 +115,7 @@ const svgThree = {
           curveSegments: gui.curveSegments,
           steps: gui.steps
         };
-        console.log(that.drawShape());
+        console.log(that);
         shape = this.createMesh(new THREE.ExtrudeGeometry(that.drawShape(), options));
       // 将模型添加到场景当中
         scene.add(shape);
@@ -152,6 +132,14 @@ const svgThree = {
     datGui.add(gui, 'steps', 1, 5).step(1).onChange(gui.asGeom);
     // 调用生成一次图形
     gui.asGeom();
+  },
+  // 生成2d图形
+  drawShape() {
+    console.log(3);
+    let svgString = document.querySelector('#batman-path').getAttribute('d');
+    let shape1 = d3T.transformSVGPathExposed(svgString);
+    // 返回shape
+    return shape1;
   },
   render() {
     renderer.render(scene, camera);
@@ -170,6 +158,19 @@ const svgThree = {
    // 更新性能插件
     Stats.update();
     requestAnimationFrame(this.animate());
+  },
+  drawSvg() {
+    console.log(1);
+    this.initRender();
+    this.initScene();
+    this.initCamera();
+    this.initLight();
+    // initModel();
+    // this.initControls();
+    this.initStats();
+    this.initGui();
+    this.animate();
+    window.onresize = this.onWindowResize();
   }
 }
 export default svgThree;

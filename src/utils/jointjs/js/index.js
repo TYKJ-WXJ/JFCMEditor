@@ -616,6 +616,15 @@ const jointD = {
     // 给所有左侧元素添加点击事件
     let that = this;
     paper.on('cell:click', function (cellView, evt, x, y) {
+      // 获取页面当中的对应的SVG标签，需要耐心的寻找到对应的层级
+      let vel = joint.V(cellView.rotatableNode.node.childNodes[0].childNodes[0]);
+      console.log(cellView.rotatableNode.node.childNodes[0].childNodes[0]);
+      // console.log(vel.node);
+      console.log(vel);
+      // 将标签转为path
+      console.log(vel.convertToPath());
+      // 获取path数据
+      console.log(vel.convertToPathData());
       // 添加中间画图板内容通过clone()
       let role = that.judgeRole(cellView);
       if (JSON.stringify(role) === '{}') {
@@ -781,6 +790,8 @@ const jointD = {
       }
     });
     paper.on('cell:pointerdown', function(cellView, evt, x, y) {
+      // let vxl = joint.V('<g><polygon/></g>');
+      // console.log(vxl);
       clearTimeout(intervalTimer); // 取消上次延时未执行的方法
       intervalTimer = setTimeout(function () {
         if (that.options.single_click === true) {

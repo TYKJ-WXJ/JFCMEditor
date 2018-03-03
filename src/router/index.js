@@ -18,6 +18,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageDetail'], resolve);
       }
+    },
+    {
+      path: '/pageThree',
+      name: 'pageThree',
+      component (resolve) {
+        require(['@/views/pageThree'], resolve);
+      }
     }
   ]
 });
