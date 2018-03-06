@@ -25,7 +25,8 @@ const webSock = {
         // console.log(sju);
         // 修改vuex当中的参数
         st.socks.commit('changeWebs', {
-          'web': sju
+          'web': sju,
+          'sx': {}
         });
       });
       stompClient.subscribe('/app/price', function (greeting) {

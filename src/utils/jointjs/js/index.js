@@ -11,6 +11,7 @@ import Draggabilly from 'draggabilly';
 /**
  * Created by 吴旭健 on 2017/11/29.
  */
+let that = this;
 const jointD = {
   centerGraph: null,
   centerPaper: null,
@@ -618,11 +619,11 @@ const jointD = {
     paper.on('cell:click', function (cellView, evt, x, y) {
       // 获取页面当中的对应的SVG标签，需要耐心的寻找到对应的层级
       let vel = joint.V(cellView.rotatableNode.node.childNodes[0].childNodes[0]);
-      console.log(cellView.rotatableNode.node.childNodes[0].childNodes[0]);
+      // console.log(cellView.rotatableNode.node.childNodes[0].childNodes[0]);
       // console.log(vel.node);
-      console.log(vel);
+      // console.log(vel);
       // 将标签转为path
-      console.log(vel.convertToPath());
+      // console.log(vel.convertToPath());
       // 获取path数据
       console.log(vel.convertToPathData());
       // 添加中间画图板内容通过clone()
@@ -790,8 +791,8 @@ const jointD = {
       }
     });
     paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-      // let vxl = joint.V('<g><polygon/></g>');
-      // console.log(vxl);
+      console.log(cellView);
+      console.log(that.getAllV());
       clearTimeout(intervalTimer); // 取消上次延时未执行的方法
       intervalTimer = setTimeout(function () {
         if (that.options.single_click === true) {
@@ -1878,6 +1879,11 @@ const jointD = {
     const finalSn = snName + timestamp + sn;
 
     return finalSn;
+  },
+  // 获取图上所有元素
+  getAllV() {
+    let allV = this.centerGraph.getElements();
+    return allV;
   }
   /**
    *定义连线

@@ -8,7 +8,8 @@ const state = {
     id: '0001'
   },
   webs: {
-    web: {}
+    web: {},
+    sx: {}
   }
 
 };
