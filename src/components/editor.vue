@@ -53,7 +53,7 @@
           'height': 660, // 整个模块高度
           'basic_attributes': true, // 设备基本属性
           'basic_figure': true, // 图库
-          'action_buttons': true, // 清除，组合等按钮
+          'action_buttons': false, // 清除，组合等按钮
           'add_attributes': true, // 增加设备属性
           'style_operation': true, // 样式面板
           'thumbnail': true, // 缩略图

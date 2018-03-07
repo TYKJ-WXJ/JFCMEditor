@@ -27,7 +27,7 @@
         'changeWebs'
       ]),
       xiugai() {
-//        console.log(1);
+        console.log(this.$store);
         webSock.connectZDY({
           'socks': this.$store
         });

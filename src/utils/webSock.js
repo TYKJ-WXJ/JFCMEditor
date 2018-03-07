@@ -28,6 +28,7 @@ const webSock = {
           'web': sju,
           'sx': {}
         });
+        // 直接修改
       });
       stompClient.subscribe('/app/price', function (greeting) {
         console.log(greeting);

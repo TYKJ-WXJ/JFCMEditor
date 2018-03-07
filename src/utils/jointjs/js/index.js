@@ -11,7 +11,6 @@ import Draggabilly from 'draggabilly';
 /**
  * Created by 吴旭健 on 2017/11/29.
  */
-let that = this;
 const jointD = {
   centerGraph: null,
   centerPaper: null,
@@ -25,11 +24,15 @@ const jointD = {
   initialAngle: {},
   cells: [],
   options: {},
+  currentLayer: 0,
   // highlightedCellViews: [],
   groups: [],
   store: null,
+  svg: [],
+  svgView: [],
   // allCellsId: [],
   initPaper(param) {
+    let that = this;
     this.options = param.options;
     this.store = param.store;
     $('.tool_wrap').css({
@@ -41,23 +44,6 @@ const jointD = {
       $('.tool_panel').css({
         'height': this.options.height - $('.basic_attributes').outerHeight() - 10
       });
-      // $('#rather_container').change(function() {
-      //   if ($(this).prop('checked')) {
-      //     $(this).next().empty().append('<i class="iconfont">&#xe6c4;</i>是');
-      //   } else {
-      //     $(this).next().empty().append('<i class="iconfont">&#xe630;</i>否');
-      //   }
-      // });
-      // $('.first').on('click', function() {
-      //   $(this).find('ul').toggleClass('hidden');
-      // });
-      // $('.choose_template').on('click', function() {
-      //   $('.template_tree').toggleClass('hidden');
-      // });
-      // $('.secondary').on('click', function() {
-      //   $('.choose_template').html($(this).html());
-      //   $('.template_tree').toggleClass('hidden');
-      // });
     } else {
       $('.tool_panel').css({
         'height': this.options.height - 10
@@ -72,8 +58,7 @@ const jointD = {
             <div>
               <div id="component"></div>
               <div id="link"></div>
-              <!--<h5>线</h5>-->
-              <!--<div id="line"></div>-->
+              <div id="line"></div>
             </div>
           </div>
         </div>
@@ -97,11 +82,11 @@ const jointD = {
     // 清除组合等操作
     if (this.options.action_buttons) {
       $('.tool_canvas').append(`<div class="action_buttons">
-        <div class="clear_paper"></div>
-        <div class="group_figure"></div>
-        <div class="ungroup_figure"></div>
-        <div class="front_figure"></div>
-        <div class="back_figure"></div>
+        <div class="clear_disabled" title="清除画布"></div>
+        <div class="group_disabled" title="合并图形"></div>
+        <div class="ungroup_disabled" title="解除合并"></div>
+        <div class="front_disabled" title="置于顶层"></div>
+        <div class="back_disabled" title="置于底层"></div>
       </div>
       <div id="display_box"></div>`);
     } else {
@@ -110,26 +95,145 @@ const jointD = {
       `);
     }
     // 样式面板和缩略图
-    if (this.options.thumbnail || this.options.style_operation) {
-      $('.tool_wrap').append('<div class="tool_map_right"></div>');
+    if (this.options.thumbnail || this.options.style_operation || this.options.layer) {
+      $('.tool_wrap').append('<div class="tool_map_right"><i class="drag" title="点我拖动"></i></div>');
       if (this.options.style_operation) {
         $('.tool_map_right').append('<div class="style_operation"></div>');
       }
       if (this.options.thumbnail) {
         $('.tool_map_right').append('<div class="thumbnail"></div>');
       }
+      if (this.options.layer) {
+        $('.tool_map_right').append(`<div class="layer">
+          <h4>图层<i class="iconfont addLayer" style="cursor:pointer;">&#xe60d;</i></h4>
+            <ul class="layerTree">
+              <li>
+                <span class="highlight" data-layer = '0'>第0层</span>
+                <ul class="secondaryLayer"></ul>
+              </li>
+            </ul>
+        </div>`);
+        // 添加图层
+        $('.addLayer').on('click', function () {
+          if ($('.secondaryLayer').length >= 5) {
+            alert('最多只有5层');
+            return false;
+          } else {
+            $('.layerTree > li > span').removeClass('highlight');
+            $('.layerTree').append(`<li>
+            <span class="highlight" data-layer = ` + $('.secondaryLayer').length + `>第` + $('.secondaryLayer').length + `层<i class="iconfont deleteLayer" style="float: right;">&#xe61e;</i></span>
+            <ul class="secondaryLayer"></ul>
+          </li>`);
+            that.currentLayer = $('.secondaryLayer').length - 1;
+            that.setSvgView();
+          }
+        });
+        // 选中某个图层
+        $('.layer').on('click', '.layerTree > li > span', function () {
+          $('.layerTree > li > span').removeClass('highlight');
+          $(this).addClass('highlight');
+          that.currentLayer = parseInt($(this).attr('data-layer'));
+          that.setSvgView();
+          // if ($(this).next().hasClass('hidden')) {
+          //   $(this).next().removeClass('hidden');
+          //   that.setSvgView();
+          // } else {
+          //   $(this).next().addClass('hidden');
+          // }
+        });
+        // 删除图层
+        $('.layer').on('click', '.deleteLayer', function () {
+          let layer = parseInt($(this).parent().attr('data-layer'));
+          if (layer !== 0) {
+            $('.layerTree').children().eq(layer).remove();
+            for (let i = 0; i < that.svg.length; i++) {
+              if (parseInt(that.svg[i].layer) === layer) {
+                // console.log(that.centerGraph.getCell(that.svg[i].id));
+                that.centerGraph.getCell(that.svg[i].id).remove();
+                that.delSvg(that.svg[i].id);
+              }
+            }
+            that.currentLayer = layer - 1;
+          }
+        });
+      }
     }
     this.initLeftPaper().initCenterPaper().loadPropertyPane();
   },
+  setSvgView() {
+    let that = this;
+    console.log(this.svg);
+    this.svgView = [];
+    this.centerPaper.setInteractivity(true);
+    if ($('#functionBtn')[0]) {
+      this.hideBtn();
+    }
+    // 删除画布上不是第0层的图形
+    /* let deleteId = [];
+    for (let i = 0; i < this.centerGraph.getCells().length; i++) {
+      if (parseInt(this.centerGraph.getCells()[i].attributes.layer) !== 0) {
+        deleteId.push(this.centerGraph.getCells()[i].id);
+        console.log(this.centerGraph.getCells()[i]);
+        this.centerGraph.getCells()[i].remove();
+      }
+    }
+    for (let i = 0; i < this.groups.length; i++) {
+      if (deleteId.includes(this.groups[i].parent)) {
+        this.groups.splice(deleteId.indexOf(this.groups[i].parent), 1);
+      }
+    } */
+    // console.log(this.groups);
+    // 如果当前图层上已经有图形的名字就不再生成
+    for (let i = 0; i < this.svg.length; i++) {
+      if (parseInt(this.svg[i].layer) === 0) {
+        let flag = true;
+        $('.secondaryLayer').eq(this.currentLayer).find('.cell').each(function () {
+          if ($(this).attr('data-id') === that.svg[i].id) {
+            flag = false;
+          }
+        });
+        if (flag) {
+          $('.secondaryLayer').eq(this.currentLayer).append('<li><span class="cell" data-id="' + this.svg[i].id + '">' + this.svg[i].defaultName + '</span></li>');
+        }
+      }
+      // 将画布上不是第0层的图形添加到画布上
+      if (parseInt(this.svg[i].layer) === this.currentLayer && this.currentLayer !== 0) {
+        this.svgView.push(this.svg[i]);
+      }
+    }
+    this.centerGraph.addCells(this.svgView);
+    // 权限控制，其他层不能对第0层的图形进行操作
+    if (this.currentLayer !== 0) {
+      this.centerPaper.setInteractivity(function (cellView) {
+        if (parseInt(cellView.model.attributes.layer) !== 0) {
+          return cellView;
+        }
+      });
+    }
+  },
   getSvgData() { // 导出svg数据
-    return this.centerGraph.getCells().length && this.centerGraph.getCells();
+    /* let svg = {'link': [], 'figure': []};
+    for (let i = 0; i < this.svg.length; i++) {
+      if (this.svg[i].hasOwnProperty('link') && this.svg[i].link) {
+        svg['link'].push(this.svg[i]);
+      } else {
+        svg['figure'].push(this.svg[i]);
+      }
+    } */
+    if (this.options.layer) {
+      return this.svg;
+    } else {
+      return this.centerGraph.getCells().length !== 0 && this.centerGraph.getCells();
+    }
+  },
+  setPaperBackground(color) {
+    this.centerPaper.drawBackground({
+      color: color
+    });
   },
   setSvgData(svg, status) { // 导入svg数据
     if ($('#functionBtn')[0]) {
-      $('#functionBtn').hide();
-      $('#dragBtn').hide();
-      $('#labelBox').hide();
-      $('#toolTip').hide();
+      this.hideBtn();
     }
     if (status === 'TEMP' || status === 'RESET') {
       this.view = null;
@@ -138,9 +242,12 @@ const jointD = {
       this.idDown = '';
       this.angle = {};
       this.initialAngle = {};
+      this.currentLayer = 0;
       this.cells = [];
       this.groups = [];
       this.store = null;
+      this.svg = [];
+      this.svgView = [];
       for (let i = 0; i < svg.length; i++) {
         if (svg[i].hasOwnProperty('embeds') && svg[i].embeds.length !== 0) {
           this.groups.push({parent: svg[i].id, childs: []});
@@ -211,10 +318,16 @@ const jointD = {
         $('#toolTip p').addClass('hidden').next().removeClass('hidden').focus();
       });
       $('#display_box').on('blur', '#toolTip input', function () {
+        let _that = $(this);
         if ($(this).val().trim()) {
           that.hover.model.attributes.defaultName = $(this).val().trim();
           $(this).addClass('hidden').prev().text($(this).val().trim()).attr('title', $(this).val().trim()).removeClass('hidden');
           that.getCenterGraphCells();
+          $('.cell').each(function () {
+            if ($(this).attr('data-id') === that.hover.model.attributes.id) {
+              $(this).text(_that.val().trim());
+            }
+          });
         }
       });
       // 改变外加按钮的位置，使之跟随当前元素移动
@@ -332,10 +445,11 @@ const jointD = {
       that.frontAndBack(this);
     });
     if ($('.tool_wrap .tool_map_right').length !== 0) {
-      let drag = new Draggabilly('.tool_map_right', {
-        containment: 'body'
+      /* eslint-disable no-new */
+      new Draggabilly('.tool_map_right', {
+        containment: 'body',
+        handle: '.drag'
       });
-      console.log(drag);
     }
     return this;
   },
@@ -449,12 +563,12 @@ const jointD = {
       return this;
     }
     let ElementView = this.getLeftElementView();     // 初始化元素样式
-    // let LinkView = this.getLeftLinkView();           // 初始化线段样式
+    let LinkView = this.getLeftLinkView();           // 初始化线段样式
     this.leftGraph = new joint.dia.Graph();        // 生成画板
     this.leftPaper = new joint.dia.Paper({       // 生成画布
       el: $('#component'),
       width: 120,
-      height: $('.tool_panel').outerHeight() - 55,
+      height: $('.tool_panel').outerHeight() - 55 > 410 ? 410 : $('.tool_panel').outerHeight() - 55,
       model: this.leftGraph,
       gridSize: 1,
       elementView: ElementView
@@ -462,6 +576,7 @@ const jointD = {
     if (this.options.gallery.length === 0) { // 如果没有设备数据则用默认图形
       this.leftGraph.addCells([this.getShape(1), this.getShape(2), this.getShape(3), this.getShape(4), this.getShape(5)]);
     } else {
+      console.log(this.options.gallery);
       for (let i = 0; i < this.options.gallery.length; i++) {
         let svgs = JSON.parse(this.options.gallery[i].svg);
         // 单个图形的情况
@@ -499,17 +614,21 @@ const jointD = {
     }
     this.addLeftPaperEvent(paper);  // 添加paper事件
     // 线
-    // let graph1 = new joint.dia.Graph();        // 生成画板
-    // let paper1 = new joint.dia.Paper({       // 生成画布
-    //   el: $('#line'),
-    //   width: 120,
-    //   height: 200,
-    //   model: graph1,
-    //   gridSize: 1,
-    //   linkView: LinkView
-    // });
+    let graph1 = new joint.dia.Graph();        // 生成画板
+    let paper1 = new joint.dia.Paper({       // 生成画布
+      el: $('#line'),
+      width: 120,
+      height: 60,
+      model: graph1,
+      gridSize: 1,
+      linkView: LinkView
+    });
+    this.getLine(paper1);
+    console.log(paper1);
+    // console.log(this.getLine(paper1));
     // graph1.addCells([this.getShape(6)]);
-    // this.addLeftPaperEvent(paper1);  // 添加paper事件
+    console.log(graph1.getCells());
+    this.addLeftPaperEvent(paper1);  // 添加paper事件
     return this;
   },
   initCenterPaper() {
@@ -527,16 +646,46 @@ const jointD = {
     // let ElementView = this.getLeftElementView();     // 初始化元素样式
     this.centerGraph = new joint.dia.Graph();        // 生成画板
     this.centerGraph.on('change', function (cell) {
-      that.angle[cell.id] = cell.attributes.angle;
-      // localStorage.setItem(cell.id, JSON.stringify(cell))
+      let id = cell.id;
+      that.angle[id] = cell.attributes.angle;
+      // if (parseInt(cell.attributes.layer) === 0) {
+      //   for (let i = 0; i < that.svg.length; i++) {
+      //     if (that.svg[i].id === cell.id) {
+      //       that.svg.splice(i, 1, cell.attributes);
+      //     }
+      //   }
+      // }
     });
     this.centerGraph.on('add', function (cell) {
       that.angle[cell.id] = cell.attributes.angle;
       that.getCenterGraphCells();
-      // localStorage.setItem(cell.id, JSON.stringify(cell));
+      if (that.options.layer) {
+        cell.attributes.layer = that.currentLayer;
+        let svg = [];
+        for (let j = 0; j < that.svg.length; j++) {
+          svg.push(that.svg[j].id);
+        }
+        if (!svg.includes(cell.id)) {
+          that.svg.push(cell.attributes);
+        }
+        let flag = true;
+        for (let i = 0; i < $('.cell').length; i++) {
+          if ($('.cell').eq(i).attr('data-id') === cell.id && parseInt($('.cell').eq(i).parent().parent().prev().attr('data-layer')) === that.currentLayer) {
+            flag = false;
+          }
+        }
+        if (flag) {
+          $('.secondaryLayer').eq(that.currentLayer).append('<li><span class="cell" data-id="' + cell.id + '">' + cell.attributes.defaultName + '</span></li>');
+        }
+        // console.log(that.svg);
+      }
+      if (that.options.action_buttons) {
+        that.changeClassName([{new: 'clear_paper', old: 'clear_disabled'}]);
+      }
     });
     this.centerGraph.on('remove', function (cell) {
-      delete that.angle[cell.id];
+      let id = cell.id;
+      delete that.angle[id];
       that.getCenterGraphCells();
     });
     this.centerPaper = new joint.dia.Paper({       // 生成画布
@@ -573,9 +722,12 @@ const jointD = {
       paperSmall.$el.css('pointer-events', 'none');
     }
     this.addCenterPaperEvent(this.centerPaper);
+    // this.centerPaper.drawBackground({
+    //   color: 'red'
+    // });
     return this;
   },
-  getCenterGraphCells() { // 获取中央画布所有图形
+  getCenterGraphCells() {
     if (!this.options.add_attributes) {
       return false;
     }
@@ -617,21 +769,17 @@ const jointD = {
     // 给所有左侧元素添加点击事件
     let that = this;
     paper.on('cell:click', function (cellView, evt, x, y) {
-      // 获取页面当中的对应的SVG标签，需要耐心的寻找到对应的层级
-      let vel = joint.V(cellView.rotatableNode.node.childNodes[0].childNodes[0]);
-      // console.log(cellView.rotatableNode.node.childNodes[0].childNodes[0]);
-      // console.log(vel.node);
-      // console.log(vel);
-      // 将标签转为path
-      // console.log(vel.convertToPath());
-      // 获取path数据
-      console.log(vel.convertToPathData());
+      console.log(cellView);
       // 添加中间画图板内容通过clone()
       let role = that.judgeRole(cellView);
       if (JSON.stringify(role) === '{}') {
         let clone = cellView.model.clone();
         // 复制时z也是一样，要重新修复
-        clone.attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
+        if (clone.attributes.hasOwnProperty('link') && clone.attributes.link) {
+          clone.attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
+        } else {
+          clone.attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
+        }
         clone.set('z', that.centerGraph.getCells().length + 1);
         clone.position(10, 10);
         that.centerGraph.addCells(clone);
@@ -645,6 +793,9 @@ const jointD = {
             'add': true
           });
         }
+        // if (that.options.layer) {
+        //   that.addSvg(clone);
+        // }
       } else {
         let clone = role.parent.clone({deep: true});
         that.centerGraph.addCells(clone);
@@ -659,8 +810,13 @@ const jointD = {
         // clone[0].resize(size[0].width, size[0].height);
         for (let i = 0; i < clone.length; i++) {
           clone[i].set('z', that.centerGraph.getCells().length + i + 1);
-          clone[i].attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + i + 1);
+          if (clone[i].attributes.hasOwnProperty('link') && clone[i].attributes.link) {
+            clone[i].attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
+          } else {
+            clone[i].attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
+          }
           if (clone[i].attributes.hasOwnProperty('equipId')) {
+            console.log(11111111111111);
             // 判断是每个设备的终极父级图形
             let uuid = that.snUuid('device');
             clone[i].attributes.uuid = uuid;
@@ -689,10 +845,7 @@ const jointD = {
       // Unhighlight all cells.
       that.unHighLight();
       // 隐藏外加按钮
-      $('#functionBtn').hide();
-      $('#dragBtn').hide();
-      $('#labelBox').hide();
-      $('#toolTip').hide();
+      that.hideBtn();
       // $('#display_box').on('blur', '#toolTip input', function () {
       //   if ($(this).val().trim()) {
       //     that.hover.model.attributes.defaultName = $(this).val().trim();
@@ -779,6 +932,7 @@ const jointD = {
         for (let i = 0; i < that.cells.length; i++) {
           that.centerPaper.findViewByModel(that.cells[i]).highlight();
         }
+        that.changeClassName([{new: 'group_figure', old: 'group_disabled'}, {new: 'ungroup_figure', old: 'ungroup_disabled'}]);
       }
       [ex, ey, sy, sx] = [];
     });
@@ -791,8 +945,12 @@ const jointD = {
       }
     });
     paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-      console.log(cellView);
-      console.log(that.getAllV());
+      // 权限控制，其他层不能对第0层的图形进行操作
+      if (that.options.layer && that.currentLayer !== 0) {
+        if (cellView.model.attributes.layer === 0) {
+          return false;
+        }
+      }
       clearTimeout(intervalTimer); // 取消上次延时未执行的方法
       intervalTimer = setTimeout(function () {
         if (that.options.single_click === true) {
@@ -800,22 +958,26 @@ const jointD = {
         }
       }, 300);
       // 判断元素是否为同一个
-      that.idDown = cellView.id;
+      // that.idDown = cellView.id;
       $('#toolTip').hide();
-      if (that.idUp !== that.idDown) { // 判断点击的是否为当前view
-        if ($('#functionBtn').length === 0 && that.options.move_figure) {
-          that.loadBtn(cellView);
-        } else {
-          that.creatWrapper(cellView, that.centerPaper);
-        }
+      // if (that.idUp !== that.idDown) { // 判断点击的是否为当前view
+      //   if ($('#functionBtn').length === 0 && that.options.move_figure) {
+      //     that.loadBtn(cellView);
+      //   } else {
+      //     that.creatWrapper(cellView, that.centerPaper);
+      //   }
+      // }
+      if ($('#functionBtn').length === 0 && that.options.move_figure) {
+        that.loadBtn(cellView);
+      } else {
+        that.creatWrapper(cellView, that.centerPaper);
       }
+      that.changeClassName([{new: 'front_figure', old: 'front_disabled'}, {new: 'back_figure', old: 'back_disabled'}]);
       // 改变当前点击的设备的id
       if (cellView.model.attributes.hasOwnProperty('equipId')) {
-        // console.log(cellView.model.attributes);
         that.store.commit('changeEquipmentId', cellView.model.attributes.uuid);
       }
       that.unHighLight();
-      // that.toolTip(cellView);
       let parent = cellView.model.getAncestors()[cellView.model.getAncestors().length - 1];
       if (parent) {
         // 取消子元素的移动
@@ -868,10 +1030,58 @@ const jointD = {
       that.propertyPane(cellView);
     });
     paper.on('cell:pointermove', function(cellView) {
-      that.creatWrapper(cellView, that.centerPaper);
+      // 权限控制，其他层不能对第0层的图形进行操作
+      if (that.options.layer && that.currentLayer !== 0) {
+        if (cellView.model.attributes.layer === 0) {
+          return false;
+        }
+      }
+      if (that.options.refer_line) {
+        let pos = that.creatWrapper(cellView, that.centerPaper);
+        let [minX, maxX, minY, maxY] = [pos.min_x, pos.max_x, pos.min_y, pos.max_y];
+        let cells = that.centerGraph.getCells();
+        // 排除当前cell和其后代元素
+        let result = cells.filter(function (cell) {
+          return cell.id !== cellView.model.id && !cell.isEmbeddedIn(cellView.model);
+        });
+        let repeatParent = [];
+        for (let i = 0; i < result.length; i++) {
+          repeatParent.push(that.getParent(result[i]).id);
+        }
+        // 获取非当前点击元素的各个parent
+        let parent = Array.from(new Set(repeatParent));
+        let otherPos = [];
+        // 获取非当前点击元素的最大最小x,y
+        for (let i = 0; i < parent.length; i++) {
+          let sPos = that.getBorder(that.centerPaper.findViewByModel(that.centerGraph.getCell(parent[i])), that.centerPaper);
+          otherPos.push({min_x: sPos.min_x, max_x: sPos.max_x, min_y: sPos.min_y, max_y: sPos.max_y});
+        }
+        for (let i = 0; i < otherPos.length; i++) {
+          // 左边
+          if (Math.abs(otherPos[i].min_x - minX) < 2 || Math.abs(otherPos[i].min_x - maxX) < 2) {
+            that.generateLine('v', $('#display_box').height(), otherPos[i].min_x);
+          }
+          // 右边
+          if (Math.abs(otherPos[i].max_x - minX) < 2 || Math.abs(otherPos[i].max_x - maxX) < 2) {
+            that.generateLine('v', $('#display_box').height(), otherPos[i].max_x);
+          }
+          // 上边
+          if (Math.abs(otherPos[i].min_y - minY) < 2 || Math.abs(otherPos[i].min_y - maxY) < 2) {
+            that.generateLine('h', $('#display_box').width(), otherPos[i].min_y);
+          }
+          // 下边
+          if (Math.abs(otherPos[i].max_y - minY) < 2 || Math.abs(otherPos[i].max_y - maxY) < 2) {
+            that.generateLine('h', $('#display_box').width(), otherPos[i].max_y);
+          }
+        }
+      } else {
+        that.creatWrapper(cellView, that.centerPaper);
+      }
     });
     paper.on('cell:pointerup', function(cellView) {
-      that.idUp = cellView.id;
+      // that.idUp = cellView.id;
+      $('.refer_line_v').hide();
+      $('.refer_line_h').hide();
     });
     paper.on('cell:contextmenu', function (cellView, evt, x, y) {
       $('#toolTip').css({
@@ -891,6 +1101,40 @@ const jointD = {
     // paper.on('cell:mouseleave', function (cellView) {
     //   that.hover = cellView;
     // });
+  },
+  generateLine(type, param1, param2) {
+    // 生成参考线
+    if (type === 'v') {
+      if ($('.refer_line_v')[0]) {
+        $('.refer_line_v').css({
+          'display': 'block',
+          'height': param1,
+          'left': param2
+        });
+      } else {
+        $('#display_box').append('<div class="refer_line_v"></div>');
+        $('.refer_line_v').css({
+          'display': 'block',
+          'height': param1,
+          'left': param2
+        });
+      }
+    } else {
+      if ($('.refer_line_h')[0]) {
+        $('.refer_line_h').css({
+          'display': 'block',
+          'width': param1,
+          'top': param2
+        });
+      } else {
+        $('#display_box').append('<div class="refer_line_h"></div>');
+        $('.refer_line_h').css({
+          'display': 'block',
+          'width': param1,
+          'top': param2
+        });
+      }
+    }
   },
   singleClick(cellView) {
     if ($('#iframe').length === 0) {
@@ -960,6 +1204,15 @@ const jointD = {
       alert('未选中任何元素');
       return;
     }
+    if (this.options.layer && this.currentLayer !== 0) {
+      // 如果选中的图形有第0层的图形，则报错
+      for (let i = 0; i < this.cells.length; i++) {
+        if (this.cells[i].attributes.layer === 0) {
+          alert('不能操作第0层的图形');
+          return;
+        }
+      }
+    }
     // 取消元素高亮
     this.unHighLight();
     if (this.cells.length === 1) {
@@ -967,14 +1220,14 @@ const jointD = {
       return;
     }
     let parent = this.getParent(this.cells[0]);
-    let ids = [];
+    /* let ids = [];
     for (let j = 0; j < this.groups.length; j++) {
       ids.push(this.groups[j].parent);
     }
     if (!ids.includes(parent.id) && parent.getEmbeddedCells({deep: true}).length !== 0) {
       alert('该图形是组合过的模板图形');
       return;
-    }
+    } */
     let newCells = [];
     for (let j = 0; j < this.cells.length; j++) {
       if (this.cells[j].id === parent.id) {
@@ -1028,6 +1281,15 @@ const jointD = {
   /* 解绑是unembed获取选中的所有cell上的最后一步组合操作 */
   unembed() {
     this.unHighLight();
+    if (this.options.layer && this.currentLayer !== 0) {
+      // 如果选中的图形有第0层的图形，则报错
+      for (let i = 0; i < this.cells.length; i++) {
+        if (this.cells[i].attributes.layer === 0) {
+          alert('不能操作第0层的图形');
+          return;
+        }
+      }
+    }
     // 要判断是否还能解绑，完全解绑后所有元素都没有祖先元素
     let count = 0;
     for (let m = 0; m < this.cells.length; m++) {
@@ -1040,14 +1302,14 @@ const jointD = {
       return;
     }
     let parent = this.getParent(this.cells[0]);
-    let ids = [];
+    /* let ids = [];
     for (let j = 0; j < this.groups.length; j++) {
       ids.push(this.groups[j].parent);
     }
     if (!ids.includes(parent.id)) {
       alert('该图形是模板图形，不能解绑');
       return;
-    }
+    } */
     // var copyCell = cells.slice(0);
     let index;
     let matches;
@@ -1094,6 +1356,7 @@ const jointD = {
       if (allChilds[j].getAncestors().length !== 0) {
         ids.push(allChilds[j].getAncestors()[0].id);
       }
+      this.delSvg(allChilds[j].id);
     }
     for (let k = 0; k < this.groups.length; k++) {
       if (ids.includes(this.groups[k].parent)) {
@@ -1116,17 +1379,34 @@ const jointD = {
         this.store.commit('changeEquipmentId', '');
       }
     }
+    this.delSvg(parent.id);
     parent.remove();
-    $('#functionBtn').hide();
-    $('#dragBtn').hide();
-    $('#labelBox').hide();
-    $('#toolTip').hide();
+    this.hideBtn();
+  },
+  delSvg(id) {
+    // 删除图层对应数据
+    if (this.options.layer) {
+      $('.cell').each(function () {
+        if ($(this).attr('data-id') === id) {
+          $(this.remove());
+        }
+      });
+      for (let i = 0; i < this.svg.length; i++) {
+        if (this.svg[i].id === id) {
+          this.svg.splice(i, 1);
+        }
+      }
+    }
+    if (this.centerGraph.getCells().length === 1) {
+      this.changeClassName([{new: 'clear_disabled', old: 'clear_paper'}]);
+    }
   },
   copySelf() {
     console.log('copy');
     // 获取所有cell如果组合过，则包含所有父cell和子cell
     let allCells = this.getAllCells(this.view);
     let clone = this.centerPaper.findViewByModel(allCells[0]).model.clone({deep: true});
+    // clone[0].position(allCells[0].position().x + 50, allCells[0].position().y + 50, {deep: true});
     for (let i = 0; i < clone.length; i++) {
       clone[i].attributes['defaultName'] = '图形' + (this.centerGraph.getCells().length + i + 1);
     }
@@ -1291,10 +1571,10 @@ const jointD = {
       for (let j = 1; j < allCells.length; j++) {
         allCells[j].resize(ratioX * width[j], ratioY * height[j], {direction: that.judgeDirection(id)});
         allCells[j].position(ratioX * disX[j - 1], ratioY * disY[j - 1], {parentRelative: true});
-        // 拉伸时只显示当前按钮
-        $('.stretch-icon').hide();
-        $('#stretchSelf' + id).show();
       }
+      // 拉伸时只显示当前按钮
+      $('.stretch-icon').hide();
+      $('#stretchSelf' + id).show();
       that.creatWrapper(that.centerPaper.findViewByModel(allCells[0]), that.centerPaper);
     });
     // 鼠标松开解除mousemove事件
@@ -1502,6 +1782,13 @@ const jointD = {
     });
     return cell;
   },
+  // 画直线
+  getLine(paper) {
+    let line = joint.V('line', { x1: 20, y1: 30, x2: 100, y2: 30, stroke: '#8792c3' });
+    joint.V(paper.viewport).append(line);
+    console.log(joint.V(paper.viewport).append(line));
+    // this.addLeftPaperEvent(paper);  // 添加paper事件
+  },
   /**
    *获取圆
    *sx  开始x坐标
@@ -1545,12 +1832,22 @@ const jointD = {
    }, */
   // 清除
   clearPaper() {
-    // console.log(3);
-    this.centerGraph.clear();
-    $('#functionBtn').hide();
-    $('#dragBtn').hide();
-    $('#labelBox').hide();
-    $('#toolTip').hide();
+    let cells = [];
+    if (this.currentLayer === 0) {
+      cells = this.centerGraph.getCells();
+    } else {
+      for (let i = 0; i < this.centerGraph.getCells().length; i++) {
+        if (parseInt(this.centerGraph.getCells()[i].attributes.layer) !== 0) {
+          cells.push(this.centerGraph.getCells()[i]);
+        }
+      }
+    }
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].remove();
+      this.delSvg(cells[i].id);
+    }
+    this.unHighLight();
+    this.hideBtn();
     this.groups = [];
     this.cells = [];
     // localStorage.setItem('groups', JSON.stringify(this.groups));
@@ -1740,6 +2037,7 @@ const jointD = {
     for (let i = 0; i < this.cells.length; i++) {
       this.centerPaper.findViewByModel(this.cells[i]).unhighlight();
     }
+    this.changeClassName([{new: 'group_disabled', old: 'group_figure'}, {new: 'ungroup_disabled', old: 'ungroup_figure'}]);
   },
   creatWrapper(cellView, centerPaper) {
     let getBorderXY = this.getBorder(cellView, centerPaper);
@@ -1843,6 +2141,24 @@ const jointD = {
     // $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
     return {max_x: maxX, min_x: minX, min_y: minY, max_y: maxY};
   },
+  hideBtn () {
+    // 隐藏图形外加按钮
+    $('#functionBtn').hide();
+    $('#dragBtn').hide();
+    $('#labelBox').hide();
+    $('#toolTip').hide();
+    this.changeClassName([{new: 'front_disabled', old: 'front_figure'}, {new: 'back_disabled', old: 'back_figure'}]);
+  },
+  changeClassName(arr) {
+    // 改变元素类名
+    if (arr instanceof Array === true && arr.length !== 0) {
+      for (let i = 0; i < arr.length; i++) {
+        $('.' + arr[i].old).removeClass(arr[i].old).addClass(arr[i].new);
+      }
+    } else {
+      console.log('参数不正确');
+    }
+  },
   snUuid(snName) {
     let s = [];
     // 32位uuid所使用的字符
@@ -1880,11 +2196,6 @@ const jointD = {
 
     return finalSn;
   },
-  // 获取图上所有元素
-  getAllV() {
-    let allV = this.centerGraph.getElements();
-    return allV;
-  }
   /**
    *定义连线
    *sx 开始x坐标
@@ -1920,7 +2231,7 @@ const jointD = {
     return link;
   }, */
   // 获取线段初始化样式
-  /* getLeftLinkView() {
+  getLeftLinkView() {
     let LinkView = joint.dia.LinkView.extend({
       addVertex: function(evt, x, y) {},
       removeVertex: function(endType) {},
@@ -1938,7 +2249,7 @@ const jointD = {
       }
     });
     return LinkView;
-  } */
+  }
 };
 export default jointD;
 /* function connect() {
