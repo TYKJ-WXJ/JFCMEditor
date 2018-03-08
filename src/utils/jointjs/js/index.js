@@ -11,6 +11,7 @@ import Draggabilly from 'draggabilly';
 /**
  * Created by 吴旭健 on 2017/11/29.
  */
+let lineArr = [];// 存放线段和点的数据
 const jointD = {
   centerGraph: null,
   centerPaper: null,
@@ -623,11 +624,11 @@ const jointD = {
       gridSize: 1,
       linkView: LinkView
     });
-    this.getLine(paper1);
-    console.log(paper1);
+    // this.getLine(paper1);
+    // console.log(paper1);
     // console.log(this.getLine(paper1));
-    // graph1.addCells([this.getShape(6)]);
-    console.log(graph1.getCells());
+    graph1.addCells([this.getShape(8)]);
+    // console.log(graph1.getCells());
     this.addLeftPaperEvent(paper1);  // 添加paper事件
     return this;
   },
@@ -762,6 +763,8 @@ const jointD = {
       cell = this.getCircle(...[25, 30, '', '', 60, 60, '2,5']);
     } else if (index === 7) {
       cell = this.getRect(...[25, 100, '', '', 60, 60, '2,5']);
+    } else if (index === 8) {
+      cell = this.getLink(10, 25, 110, 25, '#31d0c6', 'M 10 0 L 0 5 L 10 10 z', '#fe854f', 'M 10 0 L 0 5 L 10 10 z', '#222138', 1, '', '#7c68fc', '');
     }
     return cell;
   },
@@ -769,67 +772,78 @@ const jointD = {
     // 给所有左侧元素添加点击事件
     let that = this;
     paper.on('cell:click', function (cellView, evt, x, y) {
-      console.log(cellView);
-      // 添加中间画图板内容通过clone()
-      let role = that.judgeRole(cellView);
-      if (JSON.stringify(role) === '{}') {
-        let clone = cellView.model.clone();
-        // 复制时z也是一样，要重新修复
-        if (clone.attributes.hasOwnProperty('link') && clone.attributes.link) {
-          clone.attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
-        } else {
-          clone.attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
-        }
-        clone.set('z', that.centerGraph.getCells().length + 1);
-        clone.position(10, 10);
-        that.centerGraph.addCells(clone);
-        if (clone.attributes.hasOwnProperty('equipId')) {
-          // 判断是每个设备的终极父级图形
-          let uuid = that.snUuid('device');
-          clone.attributes.uuid = uuid;
-          that.store.commit('changeEquipments', {
-            'id': clone.attributes.equipId,
-            'uuid': uuid,
-            'add': true
-          });
-        }
-        // if (that.options.layer) {
-        //   that.addSvg(clone);
-        // }
+      // console.log(cellView);
+      // 判断是否为线段
+      // let linkP = cellView.model.clone();
+      if (cellView.model.attributes.type === 'link') {
+        // console.log(linkP);
+        that.centerGraph.addCells(that.setState(10, 10, ''));
       } else {
-        let clone = role.parent.clone({deep: true});
-        that.centerGraph.addCells(clone);
-        // let allCells = that.getAllCells(cellView);
-        // let size = [];
-        let getBorderXY = that.getBorder(that.centerPaper.findViewByModel(clone[0]), that.centerPaper);
-        let minX = getBorderXY.min_x;
-        let minY = getBorderXY.min_y;
-        // for (let i = 0; i < allCells.length; i++) {
-        //   size.push(that.size[allCells[i].id]);
-        // }
-        // clone[0].resize(size[0].width, size[0].height);
-        for (let i = 0; i < clone.length; i++) {
-          clone[i].set('z', that.centerGraph.getCells().length + i + 1);
-          if (clone[i].attributes.hasOwnProperty('link') && clone[i].attributes.link) {
-            clone[i].attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
+        // 添加中间画图板内容通过clone()
+        let role = that.judgeRole(cellView);
+        if (JSON.stringify(role) === '{}') {
+          let clone = cellView.model.clone();
+          console.log(clone);
+          // 复制时z也是一样，要重新修复
+          if (clone.attributes.hasOwnProperty('link') && clone.attributes.link) {
+            clone.attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
           } else {
-            clone[i].attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
+            clone.attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
           }
-          if (clone[i].attributes.hasOwnProperty('equipId')) {
-            console.log(11111111111111);
+          clone.set('z', that.centerGraph.getCells().length + 1);
+          // 判断是否被线段
+          if (clone.attributes.type !== 'link') {
+            clone.position(10, 10);
+          }
+          that.centerGraph.addCells(clone);
+          if (clone.attributes.hasOwnProperty('equipId')) {
             // 判断是每个设备的终极父级图形
             let uuid = that.snUuid('device');
-            clone[i].attributes.uuid = uuid;
+            clone.attributes.uuid = uuid;
             that.store.commit('changeEquipments', {
-              'id': clone[i].attributes.equipId,
+              'id': clone.attributes.equipId,
               'uuid': uuid,
               'add': true
             });
           }
-          // clone[i].resize(size[i].width, size[i].height);
-          // clone[i].position(size[i].disX + clone[0].position().x, size[i].disY + clone[0].position().y);
+          // if (that.options.layer) {
+          //   that.addSvg(clone);
+          // }
+        } else {
+          let clone = role.parent.clone({deep: true});
+          that.centerGraph.addCells(clone);
+          // let allCells = that.getAllCells(cellView);
+          // let size = [];
+          let getBorderXY = that.getBorder(that.centerPaper.findViewByModel(clone[0]), that.centerPaper);
+          let minX = getBorderXY.min_x;
+          let minY = getBorderXY.min_y;
+          // for (let i = 0; i < allCells.length; i++) {
+          //   size.push(that.size[allCells[i].id]);
+          // }
+          // clone[0].resize(size[0].width, size[0].height);
+          for (let i = 0; i < clone.length; i++) {
+            clone[i].set('z', that.centerGraph.getCells().length + i + 1);
+            if (clone[i].attributes.hasOwnProperty('link') && clone[i].attributes.link) {
+              clone[i].attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
+            } else {
+              clone[i].attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
+            }
+            if (clone[i].attributes.hasOwnProperty('equipId')) {
+              console.log(11111111111111);
+              // 判断是每个设备的终极父级图形
+              let uuid = that.snUuid('device');
+              clone[i].attributes.uuid = uuid;
+              that.store.commit('changeEquipments', {
+                'id': clone[i].attributes.equipId,
+                'uuid': uuid,
+                'add': true
+              });
+            }
+            // clone[i].resize(size[i].width, size[i].height);
+            // clone[i].position(size[i].disX + clone[0].position().x, size[i].disY + clone[0].position().y);
+          }
+          clone[0].position(clone[0].position().x - minX + 10, clone[0].position().y - minY + 10, {deep: true});
         }
-        clone[0].position(clone[0].position().x - minX + 10, clone[0].position().y - minY + 10, {deep: true});
       }
     });
   },
@@ -936,98 +950,115 @@ const jointD = {
       }
       [ex, ey, sy, sx] = [];
     });
+    // 双击事件
     paper.on('cell:pointerdblclick', function (cellView) {
-      if (cellView.model.attributes.hasOwnProperty('link') && cellView.model.attributes.link) {
-        clearTimeout(intervalTimer);
-        if (that.options.double_click === true) {
-          that.doubleClick();
+      // console.log(cellView);
+      // 判断是否为线段
+      let linkP = cellView.model.clone();
+      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
+        // console.log(cellView);
+        that.centerGraph.addCells(linkP);
+        that.centerGraph.addCells(that.setLink(cellView.model, linkP, ''));
+      } else {
+        if (cellView.model.attributes.hasOwnProperty('link') && cellView.model.attributes.link) {
+          clearTimeout(intervalTimer);
+          if (that.options.double_click === true) {
+            that.doubleClick();
+          }
         }
       }
     });
     paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-      // 权限控制，其他层不能对第0层的图形进行操作
-      if (that.options.layer && that.currentLayer !== 0) {
-        if (cellView.model.attributes.layer === 0) {
-          return false;
+      // console.log(cellView);
+      // 判断是否为线段
+      // let linkP = cellView.model.clone();
+      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
+        // console.log(linkP);
+      } else {
+        // 权限控制，其他层不能对第0层的图形进行操作
+        if (that.options.layer && that.currentLayer !== 0) {
+          if (cellView.model.attributes.layer === 0) {
+            return false;
+          }
         }
-      }
-      clearTimeout(intervalTimer); // 取消上次延时未执行的方法
-      intervalTimer = setTimeout(function () {
-        if (that.options.single_click === true) {
-          that.singleClick(cellView);
+        clearTimeout(intervalTimer); // 取消上次延时未执行的方法
+        intervalTimer = setTimeout(function () {
+          if (that.options.single_click === true) {
+            that.singleClick(cellView);
+          }
+        }, 300);
+        // 判断元素是否为同一个
+        // that.idDown = cellView.id;
+        $('#toolTip').hide();
+        // if (that.idUp !== that.idDown) { // 判断点击的是否为当前view
+        //   if ($('#functionBtn').length === 0 && that.options.move_figure) {
+        //     that.loadBtn(cellView);
+        //   } else {
+        //     that.creatWrapper(cellView, that.centerPaper);
+        //   }
+        // }
+        if ($('#functionBtn').length === 0 && that.options.move_figure) {
+          that.loadBtn(cellView);
+        } else {
+          that.creatWrapper(cellView, that.centerPaper);
         }
-      }, 300);
-      // 判断元素是否为同一个
-      // that.idDown = cellView.id;
-      $('#toolTip').hide();
-      // if (that.idUp !== that.idDown) { // 判断点击的是否为当前view
-      //   if ($('#functionBtn').length === 0 && that.options.move_figure) {
-      //     that.loadBtn(cellView);
-      //   } else {
-      //     that.creatWrapper(cellView, that.centerPaper);
-      //   }
-      // }
-      if ($('#functionBtn').length === 0 && that.options.move_figure) {
-        that.loadBtn(cellView);
-      } else {
-        that.creatWrapper(cellView, that.centerPaper);
-      }
-      that.changeClassName([{new: 'front_figure', old: 'front_disabled'}, {new: 'back_figure', old: 'back_disabled'}]);
-      // 改变当前点击的设备的id
-      if (cellView.model.attributes.hasOwnProperty('equipId')) {
-        that.store.commit('changeEquipmentId', cellView.model.attributes.uuid);
-      }
-      that.unHighLight();
-      let parent = cellView.model.getAncestors()[cellView.model.getAncestors().length - 1];
-      if (parent) {
-        // 取消子元素的移动
-        cellView.pointerup(evt);
-        // 将当前被拖动的元素替换为父元素
-        that.centerPaper.sourceView = that.centerPaper.findViewByModel(parent);
-        // 获取父元素的位置
-        let localPoint = that.centerPaper.snapToGrid({ x: evt.clientX, y: evt.clientY });
-        that.centerPaper.findViewByModel(parent).pointerdown(evt, localPoint.x, localPoint.y);
-      }
-      // 点击cell右侧属性面板显示对应的数据
-      // cell类型
-      let type = cellView.model.get('type').split('.')[1].toLowerCase();
-      $('#font-size').val(cellView.model.attr('text/font-size'));
-      // 边框宽度
-      $('#outline-thickness').val(parseInt(cellView.model.attr('' + type + '/stroke-width')));
-      $('#text-content').val(cellView.model.attr('text/text'));
-      if (cellView.model.attr('text/font-weight') === '300') {
-        $('#font-sickness').val(1);
-      } else if (cellView.model.attr('text/font-weight') === 'normal') {
-        $('#font-sickness').val(2);
-      } else {
-        $('#font-sickness').val(3);
-      }
-      // 边框类型
-      if (cellView.model.attr('' + type + '/stroke-dasharray') === 0) {
-        $('#outline-styles').val(1);
-      } else if (cellView.model.attr('' + type + '/stroke-dasharray') === '2,5') {
-        $('#outline-styles').val(2);
-      } else {
-        $('#outline-styles').val(3);
-      }
+        that.changeClassName([{new: 'front_figure', old: 'front_disabled'}, {new: 'back_figure', old: 'back_disabled'}]);
+        // 改变当前点击的设备的id
+        if (cellView.model.attributes.hasOwnProperty('equipId')) {
+          that.store.commit('changeEquipmentId', cellView.model.attributes.uuid);
+        }
+        that.unHighLight();
+        let parent = cellView.model.getAncestors()[cellView.model.getAncestors().length - 1];
+        if (parent) {
+          // 取消子元素的移动
+          cellView.pointerup(evt);
+          // 将当前被拖动的元素替换为父元素
+          that.centerPaper.sourceView = that.centerPaper.findViewByModel(parent);
+          // 获取父元素的位置
+          let localPoint = that.centerPaper.snapToGrid({ x: evt.clientX, y: evt.clientY });
+          that.centerPaper.findViewByModel(parent).pointerdown(evt, localPoint.x, localPoint.y);
+        }
+        // 点击cell右侧属性面板显示对应的数据
+        // cell类型
+        let type = cellView.model.get('type').split('.')[1].toLowerCase();
+        $('#font-size').val(cellView.model.attr('text/font-size'));
+        // 边框宽度
+        $('#outline-thickness').val(parseInt(cellView.model.attr('' + type + '/stroke-width')));
+        $('#text-content').val(cellView.model.attr('text/text'));
+        if (cellView.model.attr('text/font-weight') === '300') {
+          $('#font-sickness').val(1);
+        } else if (cellView.model.attr('text/font-weight') === 'normal') {
+          $('#font-sickness').val(2);
+        } else {
+          $('#font-sickness').val(3);
+        }
+        // 边框类型
+        if (cellView.model.attr('' + type + '/stroke-dasharray') === 0) {
+          $('#outline-styles').val(1);
+        } else if (cellView.model.attr('' + type + '/stroke-dasharray') === '2,5') {
+          $('#outline-styles').val(2);
+        } else {
+          $('#outline-styles').val(3);
+        }
 
-      /* if(cellView.model.attr('text/font-family') == 'Alegreya Sans'){
-       $('#font-family').val(1);
-       } else if(cellView.model.attr('text/font-family') == 'Averia Libre'){
-       $('#font-family').val(2);
-       } else {
-       $('#font-family').val(3);
-       } */
-      // 字体粗细
-      if (cellView.model.attr('text/font-weight') === '300') {
-        $('#font-sickness').val(1);
-      } else if (cellView.model.attr('text/font-weight') === 'normal') {
-        $('#font-sickness').val(2);
-      } else {
-        $('#font-sickness').val(3);
+        /* if(cellView.model.attr('text/font-family') == 'Alegreya Sans'){
+         $('#font-family').val(1);
+         } else if(cellView.model.attr('text/font-family') == 'Averia Libre'){
+         $('#font-family').val(2);
+         } else {
+         $('#font-family').val(3);
+         } */
+        // 字体粗细
+        if (cellView.model.attr('text/font-weight') === '300') {
+          $('#font-sickness').val(1);
+        } else if (cellView.model.attr('text/font-weight') === 'normal') {
+          $('#font-sickness').val(2);
+        } else {
+          $('#font-sickness').val(3);
+        }
+        that.view = cellView;
+        that.propertyPane(cellView);
       }
-      that.view = cellView;
-      that.propertyPane(cellView);
     });
     paper.on('cell:pointermove', function(cellView) {
       // 权限控制，其他层不能对第0层的图形进行操作
@@ -1084,12 +1115,22 @@ const jointD = {
       $('.refer_line_h').hide();
     });
     paper.on('cell:contextmenu', function (cellView, evt, x, y) {
-      $('#toolTip').css({
-        'left': cellView.getBBox().origin().x + 'px',
-        'top': (cellView.model.getBBox().origin().y - 50) + 'px'
-      });
-      that.hover = cellView;
-      $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
+      // 判断是否为线段
+      // let linkP = cellView.model.clone();
+      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
+        // console.log(linkP);
+        // 关闭移动属性
+        that.centerPaper.setInteractivity(function (cellView) {
+          return false;// true为开启，false
+        });
+      } else {
+        $('#toolTip').css({
+          'left': cellView.getBBox().origin().x + 'px',
+          'top': (cellView.model.getBBox().origin().y - 50) + 'px'
+        });
+        that.hover = cellView;
+        $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
+      }
     });
     // paper.on('cell:mouseenter', function (cellView) {
     //   $('#toolTip').css({
@@ -2211,7 +2252,7 @@ const jointD = {
    *sstroke    头部边框颜色
    *estroke   尾部分的边框颜色
    */
-  /* getLink(sx, sy, ex, ey, scolor, sstyle, ecolor, estyle, strokecolor, pstrokewidth, sstroke, estroke, plabel) {
+  getLink(sx, sy, ex, ey, scolor, sstyle, ecolor, estyle, strokecolor, pstrokewidth, sstroke, estroke, plabel) {
     let link = new joint.dia.Link({
       source: { x: sx, y: sy },
       target: { x: ex, y: ey },
@@ -2229,7 +2270,7 @@ const jointD = {
       ]
     });
     return link;
-  }, */
+  },
   // 获取线段初始化样式
   getLeftLinkView() {
     let LinkView = joint.dia.LinkView.extend({
@@ -2249,6 +2290,28 @@ const jointD = {
       }
     });
     return LinkView;
+  },
+  // 构筑点
+  setState(x, y, label) {
+    let cell = new joint.shapes.fsa.State({
+      position: { x: x, y: y },
+      size: { width: 15, height: 15 },
+      attrs: {text: { text: label }}
+    });
+     // graph.addCell(cell);
+    return cell;
+  },
+  // 构筑线
+  setLink(source, target, label, vertices) {
+    console.log(source, target);
+    let cell = new joint.shapes.fsa.Arrow({
+      source: { id: source.id },
+      target: { id: target.id },
+      labels: [{ position: 0.5, attrs: { text: { text: label || '', 'font-weight': 'bold' } } }],
+      vertices: vertices || []
+    });
+    // graph.addCell(cell);
+    return cell;
   }
 };
 export default jointD;
