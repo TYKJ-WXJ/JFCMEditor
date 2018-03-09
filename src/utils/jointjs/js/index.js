@@ -281,6 +281,64 @@ const jointD = {
     // }
     // this.groups = [];
   },
+  // 加载线段端点按钮
+  loadLinkBtn(cellView) {
+    let that = this;
+    $('#display_box').append(`
+          <div id="functionBtn">
+            <div id="delPoint" class="left_top"><i class="iconfont" style="font-size: 18px;">&#xe6a7;</i></div>
+            <div id="straightLine" class="left_bottom"><i class="iconfont">&#xe61d;</i></div>
+            <div id="curve" class="right_top"><i class="iconfont">&#xe772;</i></div>
+          </div>
+        `);
+    // 删除
+    $('.tool_wrap').on('click', '#delPoint', function () {
+      console.log('Point');
+      that.delLinkPoint(cellView);
+      $('#functionBtn').hide();
+      $('#delPoint').hide();
+      $('#straightLine').hide();
+      $('#curve').hide();
+    });
+    // 直线
+    $('.tool_wrap').on('click', '#straightLine', function () {
+      // 判断是否为线段
+      let linkP = cellView.model.clone();
+      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
+        console.log(linkP);
+        // 修改克隆点的位置
+        linkP.attributes.position = {
+          x: cellView.model.attributes.position.x + 30,
+          y: cellView.model.attributes.position.y + 30
+        }
+        that.centerGraph.addCells(linkP);
+        that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', false));
+        console.log(that.setLink(cellView.model, linkP, '', ''));
+      }
+    });
+    // 曲线
+    $('.tool_wrap').on('click', '#curve', function () {
+      // 判断是否为线段
+      let linkP = cellView.model.clone();
+      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
+        console.log(linkP);
+        // 修改克隆点的位置
+        linkP.attributes.position = {
+          x: cellView.model.attributes.position.x + 30,
+          y: cellView.model.attributes.position.y + 30
+        }
+        that.centerGraph.addCells(linkP);
+        that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', true));
+        console.log(that.setLink(cellView.model, linkP, '', ''));
+      }
+    });
+    // 改变外加按钮的位置，使之跟随当前元素移动
+    this.creatWrapper(cellView, this.centerPaper);
+  },
+  // 删除线段端点
+  delLinkPoint(cellView) {
+    this.centerGraph.removeCells(cellView.model);
+  },
   // 加载周围按钮，删除，旋转，复制，拉伸
   loadBtn(cellView) {
     let that = this;
@@ -952,28 +1010,22 @@ const jointD = {
     });
     // 双击事件
     paper.on('cell:pointerdblclick', function (cellView) {
-      // console.log(cellView);
-      // 判断是否为线段
-      let linkP = cellView.model.clone();
-      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
-        // console.log(cellView);
-        that.centerGraph.addCells(linkP);
-        that.centerGraph.addCells(that.setLink(cellView.model, linkP, ''));
-      } else {
-        if (cellView.model.attributes.hasOwnProperty('link') && cellView.model.attributes.link) {
+      if (cellView.model.attributes.hasOwnProperty('link') && cellView.model.attributes.link) {
           clearTimeout(intervalTimer);
           if (that.options.double_click === true) {
             that.doubleClick();
           }
         }
-      }
     });
     paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-      // console.log(cellView);
+      console.log(cellView);
       // 判断是否为线段
       // let linkP = cellView.model.clone();
       if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
         // console.log(linkP);
+        if (cellView.model.attributes.type === 'fsa.State') {
+          that.loadLinkBtn(cellView);
+        }
       } else {
         // 权限控制，其他层不能对第0层的图形进行操作
         if (that.options.layer && that.currentLayer !== 0) {
@@ -2302,13 +2354,26 @@ const jointD = {
     return cell;
   },
   // 构筑线
-  setLink(source, target, label, vertices) {
+  setLink(source, target, label, vertices, TF) {
     console.log(source, target);
     let cell = new joint.shapes.fsa.Arrow({
       source: { id: source.id },
       target: { id: target.id },
-      labels: [{ position: 0.5, attrs: { text: { text: label || '', 'font-weight': 'bold' } } }],
-      vertices: vertices || []
+      labels: [{ position: 0.5, attrs: { text: { text: label || '', 'font-weight': '' } } }],
+      smooth: false || TF, // 控制线段能否有弧度的弯曲
+      vertices: vertices || [],
+      attrs: {
+        '.connection': {
+          stroke: '#7c68fc', // 线段颜色
+          'stroke-width': 10, // 线段宽度
+          // 'stroke-dasharray': '5 2' // 虚线
+          'stroke-dasharray': '' // 实线
+        },
+        // '.marker-source': { stroke: '#7c68fc', fill: '#7c68fc', d: 'M24.316,5.318,9.833,13.682,9.833,5.5,5.5,5.5,5.5,25.5,9.833,25.5,9.833,17.318,24.316,25.682z' },
+        // '.marker-target': { stroke: '#feb663', fill: '#feb663', d: 'M14.615,4.928c0.487-0.986,1.284-0.986,1.771,0l2.249,4.554c0.486,0.986,1.775,1.923,2.864,2.081l5.024,0.73c1.089,0.158,1.335,0.916,0.547,1.684l-3.636,3.544c-0.788,0.769-1.28,2.283-1.095,3.368l0.859,5.004c0.186,1.085-0.459,1.553-1.433,1.041l-4.495-2.363c-0.974-0.512-2.567-0.512-3.541,0l-4.495,2.363c-0.974,0.512-1.618,0.044-1.432-1.041l0.858-5.004c0.186-1.085-0.307-2.6-1.094-3.368L3.93,13.977c-0.788-0.768-0.542-1.525,0.547-1.684l5.026-0.73c1.088-0.158,2.377-1.095,2.864-2.081L14.615,4.928z' }
+        '.marker-source': '', // 控制线段左侧图案
+        '.marker-target': '' // 控制线段右侧图案
+      }
     });
     // graph.addCell(cell);
     return cell;
