@@ -20,9 +20,9 @@
       }
     },
     mounted: function() {
-      var _this = this;
+      let that = this;
       $('button').click(function() {
-        userChildFunc(_this.inputVal);
+        userChildFunc(that.inputVal);
       });
     },
     components: {},
@@ -31,7 +31,7 @@
   window.funcInParent = function (str) {
     // 把子页面传过来的值绑定到父页面的input中
     document.getElementById('shuru').value = str;
-  }
+  };
   // 点击父页面的按钮时调用此方法，去调子页面中的方法
   function userChildFunc(value) {
     window.frames[0].window.FuncInChild(value);
