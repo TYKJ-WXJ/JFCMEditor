@@ -3,6 +3,7 @@
     <router-link to="/">pageMain</router-link>
     <router-link to="/pageDetail">pageDetail</router-link>
     <router-link to="/pageThree">pageThree</router-link>
+    <router-link to="/pageIframe">pageIframe</router-link>
     <router-view></router-view>
   </div>
 </template>

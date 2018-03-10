@@ -25,6 +25,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageThree'], resolve);
       }
+    },
+    {
+      path: '/pageIframe',
+      name: 'pageIframe',
+      component (resolve) {
+        require(['@/views/pageIframe'], resolve);
+      }
     }
   ]
 });
