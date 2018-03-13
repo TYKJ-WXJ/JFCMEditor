@@ -302,38 +302,31 @@ const jointD = {
     });
     // 直线
     $('.tool_wrap').on('click', '#straightLine', function () {
-      // 判断是否为线段
-      let linkP = cellView.model.clone();
-      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
-        console.log(linkP);
-        // 修改克隆点的位置
-        linkP.attributes.position = {
-          x: cellView.model.attributes.position.x + 30,
-          y: cellView.model.attributes.position.y + 30
-        }
-        that.centerGraph.addCells(linkP);
-        that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', false));
-        console.log(that.setLink(cellView.model, linkP, '', ''));
-      }
+      this.setLinkPoint(cellView);
     });
     // 曲线
     $('.tool_wrap').on('click', '#curve', function () {
-      // 判断是否为线段
-      let linkP = cellView.model.clone();
-      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
-        console.log(linkP);
-        // 修改克隆点的位置
-        linkP.attributes.position = {
-          x: cellView.model.attributes.position.x + 30,
-          y: cellView.model.attributes.position.y + 30
-        }
-        that.centerGraph.addCells(linkP);
-        that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', true));
-        console.log(that.setLink(cellView.model, linkP, '', ''));
-      }
+      this.setLinkPoint(cellView);
     });
     // 改变外加按钮的位置，使之跟随当前元素移动
     this.creatWrapper(cellView, this.centerPaper);
+  },
+  // 创建新的点和线
+  setLinkPoint(cellView) {
+    let that = this;
+    // 判断是否为线段
+    let linkP = cellView.model.clone();
+    if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
+      console.log(linkP);
+      // 修改克隆点的位置
+      linkP.attributes.position = {
+        x: cellView.model.attributes.position.x + 30,
+        y: cellView.model.attributes.position.y + 30
+      }
+      that.centerGraph.addCells(linkP);
+      that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', false));
+      console.log(that.setLink(cellView.model, linkP, '', ''));
+    }
   },
   // 删除线段端点
   delLinkPoint(cellView) {
@@ -1011,11 +1004,11 @@ const jointD = {
     // 双击事件
     paper.on('cell:pointerdblclick', function (cellView) {
       if (cellView.model.attributes.hasOwnProperty('link') && cellView.model.attributes.link) {
-          clearTimeout(intervalTimer);
-          if (that.options.double_click === true) {
-            that.doubleClick();
-          }
+        clearTimeout(intervalTimer);
+        if (that.options.double_click === true) {
+          that.doubleClick();
         }
+      }
     });
     paper.on('cell:pointerdown', function(cellView, evt, x, y) {
       console.log(cellView);

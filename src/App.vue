@@ -4,6 +4,7 @@
     <router-link to="/pageDetail">pageDetail</router-link>
     <router-link to="/pageThree">pageThree</router-link>
     <router-link to="/pageIframe">pageIframe</router-link>
+    <router-link to="/pageCirculation">pageCirculation</router-link>
     <router-view></router-view>
   </div>
 </template>

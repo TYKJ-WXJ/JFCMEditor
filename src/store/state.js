@@ -10,8 +10,10 @@ const state = {
   webs: {
     web: {},
     sx: {}
+  },
+  JsonData: {
+    JsonD: {}
   }
-
 };
 
 export default state;

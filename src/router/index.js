@@ -32,6 +32,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageIframe'], resolve);
       }
+    },
+    {
+      path: '/pageCirculation',
+      name: 'pageCirculation',
+      component (resolve) {
+        require(['@/views/pageCirculation'], resolve);
+      }
     }
   ]
 });

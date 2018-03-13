@@ -14,6 +14,12 @@ const actions = {
       type: 'changeWebs',
       webs: payload
     })
+  },
+  changeJsonD(store, payload) {
+    store.commit({
+      type: 'changeJsonD',
+      JsonD: payload
+    })
   }
 };
 

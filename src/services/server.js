@@ -23,6 +23,11 @@ const server = {
     return axios('api/v1/topic/5433d5e4e737cbe96dcef312', {
       method: 'get'
     });
+  },
+  getJSON() {
+    return axios('http://localhost:8889/dist/static/JSON/svgData.json', {
+      method: 'get'
+    });
   }
 };
 

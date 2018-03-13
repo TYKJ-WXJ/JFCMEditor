@@ -5,7 +5,7 @@
 // import SockJS from 'sockjs-client';// 'sockjs-client' 必须与package.json文件当中dependencies 当中的一模一样
 import SockJS from 'reconnectingwebsocket';
 import Stomp from '@stomp/stompjs';
-
+import SeparateData from '@/utils/modular';
 // var SockJS = require('../../node_modules/sockjs-client/dist/sockjs.min');
 // var Stomp = require('../../node_modules/@stomp/stompjs/lib/stomp.min');
 // let stompClient = null;
@@ -22,12 +22,27 @@ const webSock = {
       stompClient.subscribe('/stock/price', function (greeting) {
         // console.log(greeting);
         sju = greeting.body;
-        // console.log(sju);
         // 修改vuex当中的参数
         st.socks.commit('changeWebs', {
-          'web': sju,
+          'web': JSON.parse(sju),
           'sx': {}
         });
+        console.log(st);
+        console.log(st.socks.getters.getJsonD.JsonD.dynamic[0].id);
+        console.log(st.socks.getters.getWebs.web.attrId);
+        // 进行数据修改
+        SeparateData.separate(st.socks.getters.getJsonD.JsonD, st);
+        // if (st.socks.getters.getJsonD.JsonD.dynamic[0].id === st.socks.getters.getWebs.web.attrId) {
+        //   // 修改vuex当中的参数
+        //   // st.socks.getters.getJsonD.JsonD.dynamic[0].value = st.socks.getters.getWebs.web.attrValue;
+        //   st.socks.getters.getJsonD.JsonD.dynamic[0] = {
+        //     id: st.socks.getters.getWebs.web.attrId,
+        //     value: st.socks.getters.getWebs.web.attrValue
+        //   };
+        //   st.socks.commit('changeJsonD', {
+        //     'JsonD': st.socks.getters.getJsonD.JsonD
+        //   });
+        // }
         // 直接修改
       });
       stompClient.subscribe('/app/price', function (greeting) {

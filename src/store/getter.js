@@ -8,6 +8,9 @@ const getters = {
   },
   getWebs(state) {
     return state.webs;
+  },
+  getJsonD(state) {
+    return state.JsonData;
   }
 };
 

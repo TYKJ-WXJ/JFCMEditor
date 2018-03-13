@@ -22,15 +22,19 @@
         'getWebs'
       ])
     },
+    mounted() {
+      this.xiugai();
+    },
     methods: {
       ...mapActions([
         'changeWebs'
       ]),
       xiugai() {
         console.log(this.$store);
-        webSock.connectZDY({
+        let fa = {
           'socks': this.$store
-        });
+        };
+        webSock.connectZDY(fa);
 //        console.log(gaib);
       },
       Shuju: function () {
