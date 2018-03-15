@@ -3,13 +3,14 @@
       <iframe ref="iframe" :src="urlr" id="ifm1" name="fei" frameborder="0" scrolling="no">
       </iframe>
       <p id="ms">{{ mbsj }}</p>
-      <input id="shuru" type="text" v-model="inputVal">
+      <input id="shuru" type="text" v-model="inputVal" v-on:fromData="fromData">
       <button id="btn">change iframe</button>
     </div>
 </template>
 
 <script>
   import $ from 'jquery';
+  import inputCommon from './inputCommon.vue'
   export default{
     data() {
       return {
@@ -25,12 +26,19 @@
         userChildFunc(that.inputVal);
       });
     },
-    components: {},
-    methods: {}
+    components: {
+      inputCommon,
+    },
+    methods: {
+      fromData:function(data){
+        console.log(data);
+      }
+    },
   }
   window.funcInParent = function (str) {
     // 把子页面传过来的值绑定到父页面的input中
-    document.getElementById('shuru').value = str;
+    document.getElementById('app').contentWindow;
+    /* parent.getElementById('iframeBtn').value = document.getElementById('shuru').value; */
   };
   // 点击父页面的按钮时调用此方法，去调子页面中的方法
   function userChildFunc(value) {
