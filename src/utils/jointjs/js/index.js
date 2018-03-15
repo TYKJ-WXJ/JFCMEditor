@@ -281,57 +281,6 @@ const jointD = {
     // }
     // this.groups = [];
   },
-  // 加载线段端点按钮
-  loadLinkBtn(cellView) {
-    let that = this;
-    $('#display_box').append(`
-          <div id="functionBtn">
-            <div id="delPoint" class="left_top"><i class="iconfont" style="font-size: 18px;">&#xe6a7;</i></div>
-            <div id="straightLine" class="left_bottom"><i class="iconfont">&#xe61d;</i></div>
-            <div id="curve" class="right_top"><i class="iconfont">&#xe772;</i></div>
-          </div>
-        `);
-    // 删除
-    $('.tool_wrap').on('click', '#delPoint', function () {
-      console.log('Point');
-      that.delLinkPoint(cellView);
-      $('#functionBtn').hide();
-      $('#delPoint').hide();
-      $('#straightLine').hide();
-      $('#curve').hide();
-    });
-    // 直线
-    $('.tool_wrap').on('click', '#straightLine', function () {
-      this.setLinkPoint(cellView);
-    });
-    // 曲线
-    $('.tool_wrap').on('click', '#curve', function () {
-      this.setLinkPoint(cellView);
-    });
-    // 改变外加按钮的位置，使之跟随当前元素移动
-    this.creatWrapper(cellView, this.centerPaper);
-  },
-  // 创建新的点和线
-  setLinkPoint(cellView) {
-    let that = this;
-    // 判断是否为线段
-    let linkP = cellView.model.clone();
-    if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
-      console.log(linkP);
-      // 修改克隆点的位置
-      linkP.attributes.position = {
-        x: cellView.model.attributes.position.x + 30,
-        y: cellView.model.attributes.position.y + 30
-      }
-      that.centerGraph.addCells(linkP);
-      that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', false));
-      console.log(that.setLink(cellView.model, linkP, '', ''));
-    }
-  },
-  // 删除线段端点
-  delLinkPoint(cellView) {
-    this.centerGraph.removeCells(cellView.model);
-  },
   // 加载周围按钮，删除，旋转，复制，拉伸
   loadBtn(cellView) {
     let that = this;
@@ -828,13 +777,13 @@ const jointD = {
       // let linkP = cellView.model.clone();
       if (cellView.model.attributes.type === 'link') {
         // console.log(linkP);
-        that.centerGraph.addCells(that.setState(10, 10, ''));
+        that.centerGraph.addCells(that.setState(10, 10));
       } else {
         // 添加中间画图板内容通过clone()
         let role = that.judgeRole(cellView);
         if (JSON.stringify(role) === '{}') {
           let clone = cellView.model.clone();
-          console.log(clone);
+          // console.log(clone);
           // 复制时z也是一样，要重新修复
           if (clone.attributes.hasOwnProperty('link') && clone.attributes.link) {
             clone.attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
@@ -1011,7 +960,7 @@ const jointD = {
       }
     });
     paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-      console.log(cellView);
+      // console.log(cellView);
       // 判断是否为线段
       // let linkP = cellView.model.clone();
       if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
@@ -1106,6 +1055,14 @@ const jointD = {
       }
     });
     paper.on('cell:pointermove', function(cellView) {
+      // 获取中心点
+      let mP = that.getCenterPoint(cellView);
+      // 判断是否中心点重合
+      for (let i = 0; i < lineArr.length; i++) {
+        if (lineArr[i].x === mP.x && lineArr[i].y === mP.y) {
+          that.centerGraph.addCells(that.setState(mP.x, mP.y, 3, ''));
+        }
+      }
       // 权限控制，其他层不能对第0层的图形进行操作
       if (that.options.layer && that.currentLayer !== 0) {
         if (cellView.model.attributes.layer === 0) {
@@ -1158,6 +1115,10 @@ const jointD = {
       // that.idUp = cellView.id;
       $('.refer_line_v').hide();
       $('.refer_line_h').hide();
+      // 获取中心点
+      let cP = that.getCenterPoint(cellView);
+      lineArr.push(cP);
+      console.log(lineArr);
     });
     paper.on('cell:contextmenu', function (cellView, evt, x, y) {
       // 判断是否为线段
@@ -2337,14 +2298,74 @@ const jointD = {
     return LinkView;
   },
   // 构筑点
-  setState(x, y, label) {
+  setState(x, y, s, label) {
     let cell = new joint.shapes.fsa.State({
       position: { x: x, y: y },
-      size: { width: 15, height: 15 },
-      attrs: {text: { text: label }}
+      size: { width: 5 || s, height: 5 || s }, // 点的大小
+      attrs: {
+        text: {
+          text: label
+        },
+        circle: {
+          'stroke-width': 1, // 点的线条宽度
+          'fill': '#af9bff', // 点的填充色
+          'stroke': '#7c68fc' // 点的线条颜色
+        }
+      }
     });
      // graph.addCell(cell);
     return cell;
+  },
+  // 加载线段端点按钮
+  loadLinkBtn(cellView) {
+    let that = this;
+    $('#display_box').append(`
+          <div id="functionBtn">
+            <div id="delPoint" class="left_top"><i class="iconfont" style="font-size: 18px;">&#xe6a7;</i></div>
+            <div id="straightLine" class="left_bottom"><i class="iconfont">&#xe61d;</i></div>
+            <div id="curve" class="right_top"><i class="iconfont">&#xe772;</i></div>
+          </div>
+        `);
+    // 删除
+    $('.tool_wrap').on('click', '#delPoint', function () {
+      console.log('Point');
+      that.delLinkPoint(cellView);
+      $('#functionBtn').hide();
+      $('#delPoint').hide();
+      $('#straightLine').hide();
+      $('#curve').hide();
+    });
+    // 直线
+    $('.tool_wrap').on('click', '#straightLine', function () {
+      this.setLinkPoint(cellView);
+    });
+    // 曲线
+    $('.tool_wrap').on('click', '#curve', function () {
+      this.setLinkPoint(cellView);
+    });
+    // 改变外加按钮的位置，使之跟随当前元素移动
+    this.creatWrapper(cellView, this.centerPaper);
+  },
+  // 创建新的点和线
+  setLinkPoint(cellView) {
+    let that = this;
+    // 判断是否为线段
+    let linkP = cellView.model.clone();
+    if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
+      console.log(linkP);
+      // 修改克隆点的位置
+      linkP.attributes.position = {
+        x: cellView.model.attributes.position.x + 30,
+        y: cellView.model.attributes.position.y + 30
+      }
+      that.centerGraph.addCells(linkP);
+      that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', false));
+      console.log(that.setLink(cellView.model, linkP, '', ''));
+    }
+  },
+  // 删除线段端点
+  delLinkPoint(cellView) {
+    this.centerGraph.removeCells(cellView.model);
   },
   // 构筑线
   setLink(source, target, label, vertices, TF) {
@@ -2370,6 +2391,22 @@ const jointD = {
     });
     // graph.addCell(cell);
     return cell;
+  },
+  // 获取中心点
+  getCenterPoint(cellView) {
+    // console.log(cellView);
+    // 获取定位点
+    let oPoint = cellView.model.attributes.position;
+    // 获取长宽
+    let sPoint = cellView.model.attributes.size;
+    // 计算中心点
+    let cPoint = {
+      x: oPoint.x + sPoint.width / 2,
+      y: oPoint.y + sPoint.height / 2
+    };
+    // 将数据加入数组
+    // lineArr.push(cPoint);
+    return cPoint;
   }
 };
 export default jointD;
