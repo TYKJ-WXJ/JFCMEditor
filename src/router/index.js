@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import eject from '../components/eject.vue';
 
 Vue.use(Router);
 
@@ -39,6 +40,11 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageCirculation'], resolve);
       }
+    },
+    {
+      path: '/eject',
+      name: 'eject',
+      component: eject
     }
   ]
 });
