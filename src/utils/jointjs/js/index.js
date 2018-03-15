@@ -1057,9 +1057,17 @@ const jointD = {
     paper.on('cell:pointermove', function(cellView) {
       // 获取中心点
       let mP = that.getCenterPoint(cellView);
+      console.log(mP);
+      // 获取画布所有图形
+      let allT = that.getCellDelSlef(cellView);
+      console.log(allT);
       // 判断是否中心点重合
-      for (let i = 0; i < lineArr.length; i++) {
-        if (lineArr[i].x === mP.x && lineArr[i].y === mP.y) {
+      for (let i = 0; i < allT.length; i++) {
+        console.log(1);
+        let xc = allT[i].attributes.position.x + allT[i].attributes.size.width / 2;
+        let yc = allT[i].attributes.position.y + allT[i].attributes.size.height / 2;
+        if (xc === mP.x && yc === mP.y) {
+          console.log(2);
           that.centerGraph.addCells(that.setState(mP.x, mP.y, 3, ''));
         }
       }
@@ -1116,9 +1124,9 @@ const jointD = {
       $('.refer_line_v').hide();
       $('.refer_line_h').hide();
       // 获取中心点
-      let cP = that.getCenterPoint(cellView);
-      lineArr.push(cP);
-      console.log(lineArr);
+      // let cP = that.getCenterPoint(cellView);
+      // lineArr.push(cP);
+      // console.log(lineArr);
     });
     paper.on('cell:contextmenu', function (cellView, evt, x, y) {
       // 判断是否为线段
@@ -2407,6 +2415,25 @@ const jointD = {
     // 将数据加入数组
     // lineArr.push(cPoint);
     return cPoint;
+  },
+  // 获取画布当中除自己以外的图形
+  getCellDelSlef(cellView) {
+    // 创建默认数组
+    let arr = [];
+    // console.log(cellView);
+    let allT = this.centerGraph.getCells();
+    // console.log(allT);
+    // 获取本身的cid
+    let slefId = cellView.model.cid;
+    // 删除选中的图形数据
+    for (let i = 0; i < allT.length; i++) {
+      // 判断cid是否相同
+      let arrId = allT[i].cid;
+      if (arrId !== slefId) {
+        arr.push(allT[i]);
+      }
+    }
+    return arr;
   }
 };
 export default jointD;
