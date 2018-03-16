@@ -11,18 +11,19 @@
 </template>
 
 <script>
-  import svgThree from '@/utils/svg-three';
-  export default{
-    data() {
-      return {
-        msg: 'hello vue'
-      }
-    },
-    mounted() {
-      svgThree.drawSvg();
-    },
-    components: {}
-  }
+//  import svgThree from '@/utils/svg-three';
+import svgThreeR from '@/utils/restructureSVG';
+export default{
+  data() {
+    return {
+      msg: 'hello vue'
+    }
+  },
+  mounted() {
+    svgThreeR.drawSvg();
+  },
+  components: {}
+}
 </script>
 
 <style>

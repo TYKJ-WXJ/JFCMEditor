@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import IframeD from '@/components/iframe.vue';
+//  import IframeD from '@/components/iframe.vue';
   export default{
     data() {
       return {
@@ -13,7 +13,7 @@
       }
     },
     components: {
-      IframeD
+//      IframeD
     }
   }
 </script>

@@ -156,7 +156,7 @@ const svgThree = {
     controls.update();
     this.render();
    // 更新性能插件
-    Stats.update();
+    Stats().update();
     requestAnimationFrame(this.animate());
   },
   drawSvg() {
