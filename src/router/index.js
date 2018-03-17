@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import eject from '../components/eject.vue';
+import alert from '../components/alert.vue';
 
 Vue.use(Router);
 
@@ -45,6 +46,11 @@ export default new Router({
       path: '/eject',
       name: 'eject',
       component: eject
+    },
+    {
+      path: '/alert',
+      name: 'alert',
+      component: alert
     }
   ]
 });

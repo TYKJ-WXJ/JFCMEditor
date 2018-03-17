@@ -6,6 +6,7 @@
     <router-link to="/pageIframe">pageIframe</router-link>
     <router-link to="/pageCirculation">pageCirculation</router-link>
     <router-link to="/eject">eject</router-link>
+    <router-link to="/alert">alert</router-link>
     <router-view></router-view>
   </div>
 </template>
