@@ -9,9 +9,11 @@
       @on-cancel="cancel">
       <p>TEST......</p>
     </Modal>
+    <button @click="postData()">click me</button>
   </div>
 </template>
 <script>
+  import server from '@/services/server'
   export default {
     data () {
       return {
@@ -26,10 +28,17 @@
         this.$Message.info('点击取消');
       },
       position () {
-        let cur = document.querySelectorAll('Modal');
-        console.log(cur);
-        let curHeight = cur.height;
-        console.log(curHeight);
+      },
+      postData () {
+        server.getTest().then((res) => {
+          console.log(res.data);
+          let window = document.documentElement.clientHeight;
+          console.log(window);
+          let cur = document.querySelectorAll("div[class='ivu-modal']");
+          console.log(cur);
+          let curHeight = cur.clientHeight;
+          console.log(curHeight);
+        })
       }
     }
   }
