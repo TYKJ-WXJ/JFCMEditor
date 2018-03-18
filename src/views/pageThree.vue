@@ -11,7 +11,7 @@
 </template>
 
 <script>
-//  import svgThree from '@/utils/svg-three';
+// import svgThree from '@/utils/svg-three';
 import svgThreeR from '@/utils/restructureSVG';
 export default{
   data() {
@@ -20,7 +20,7 @@ export default{
     }
   },
   mounted() {
-    svgThreeR.drawSvg();
+    svgThreeR.drawSvgL();
   },
   components: {}
 }

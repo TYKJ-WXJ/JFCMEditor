@@ -3,6 +3,7 @@
  */
 // 重构SVG转3D函数
 var THREE = require('../../node_modules/three/build/three.module');
+var OrbitControls = require('../../node_modules/three-orbitcontrols');
 var Stats = require('../../node_modules/three/examples/js/libs/stats.min');
 // var dat = require('../../node_modules/three/examples/js/libs/dat.gui.min');
 var d3T = require('../../src/utils/d3-threeD');
@@ -12,6 +13,7 @@ let scene;
 let light;
 let stats;
 let shape;
+let controls;
 const svgThreeR = {
   initRender() {
     renderer = new THREE.WebGLRenderer({antialias: true});
@@ -66,7 +68,7 @@ const svgThreeR = {
   // 初始化性能插件
   initStats() {
     stats = new Stats();
-    console.log(stats);
+    // console.log(stats);
     document.body.appendChild(stats.dom);
   },
   // 导入场景
@@ -100,16 +102,34 @@ const svgThreeR = {
   onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    this.render();
+    // this.render();
     renderer.setSize(window.innerWidth, window.innerHeight);
   },
-  drawSvg() {
+  // 用户交互插件 鼠标左键按住旋转，右键按住平移，滚轮缩放
+  initControls() {
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = false;
+  },
+  animate() {
+    // 更新控制器
+    controls.update();
+    this.render();
+    // 更新性能插件
+    stats.update();
+    console.log('si');
+    // requestAnimationFrame(this.render());
+  },
+  drawSvgL() {
     this.initRender();
     this.initScene();
     this.initCamera();
     this.initLight();
     this.setScene();
-    // this.initStats();
+    this.initControls();
+    this.initStats();
+    this.animate();
     window.onresize = this.onWindowResize();
   }
 }

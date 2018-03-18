@@ -3,6 +3,7 @@
  */
 
 var THREE = require('../../node_modules/three/build/three.module');
+var OrbitControls = require('../../node_modules/three-orbitcontrols');
 var Stats = require('../../node_modules/three/examples/js/libs/stats.min');
 var dat = require('../../node_modules/three/examples/js/libs/dat.gui.min');
 var d3T = require('../../src/utils/d3-threeD');
@@ -73,7 +74,8 @@ const svgThree = {
   },
   // 用户交互插件 鼠标左键按住旋转，右键按住平移，滚轮缩放
   initControls() {
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls = new OrbitControls(camera, renderer.domElement);
+    // controls = new THREE.OrbitControls(camera, renderer.domElement);
     // 如果使用animate方法时，将此函数删除
     // controls.addEventListener( 'change', render );
     // 使动画循环使用时阻尼或自转 意思是否有惯性
@@ -116,7 +118,7 @@ const svgThree = {
           steps: gui.steps
         };
         console.log(that);
-        shape = this.createMesh(new THREE.ExtrudeGeometry(that.drawShape(), options));
+        shape = that.createMesh(new THREE.ExtrudeGeometry(that.drawShape(), options));
       // 将模型添加到场景当中
         scene.add(shape);
       }
@@ -135,7 +137,7 @@ const svgThree = {
   },
   // 生成2d图形
   drawShape() {
-    console.log(3);
+    // console.log(3);
     let svgString = document.querySelector('#batman-path').getAttribute('d');
     let shape1 = d3T.transformSVGPathExposed(svgString);
     // 返回shape
