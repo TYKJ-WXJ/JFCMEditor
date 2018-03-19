@@ -1,52 +1,51 @@
 <!--alert弹窗组件，用了iview插件-->
+<!--安装less模块 npm install less --save-dev -->
+<!--安装less-loader模块 npm install less-loader-->
+<style lang="less">
+  .vertical-center-modal{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .ivu-modal{
+      top: 0;
+    }
+  }
+</style>
 <template>
   <div>
-    <Button type="primary" @click="modal1 = true">alert</Button>
-    <Modal
-      v-model="modal1"
-      title="这是一个测试alert"
-      @on-ok="ok"
-      @on-cancel="cancel">
-      <p>TEST......</p>
-    </Modal>
-    <button @click="postData()">click me</button>
+  <Button @click="modal10 = true">Vertical center</Button>
+  <Modal
+    title="报警"
+    v-model="modal10"
+    class-name="vertical-center-modal"
+    okText="联系报修人员"
+    cancelText="Cancel">
+    <input type="text">
+    <p>Content of dialog</p>
+    <p>Content of dialog</p>
+  </Modal>
   </div>
 </template>
 <script>
-  import server from '@/services/server'
   export default {
     data () {
       return {
-        modal1: false
-      }
-    },
-    methods: {
-      ok () {
-        this.$Message.info('点击确定');
-      },
-      cancel () {
-        this.$Message.info('点击取消');
-      },
-      position () {
-      },
-      postData () {
-        server.getTest().then((res) => {
-          console.log(res.data);
-          let window = document.documentElement.clientHeight;
-          console.log(window);
-          let cur = document.querySelectorAll("div[class='ivu-modal']");
-          console.log(cur);
-          let curHeight = cur.clientHeight;
-          console.log(curHeight);
-        })
+        modal10: false
       }
     }
+//    methods: {
+//      custom () {
+//        this.$Modal.confirm({
+//          vModel: 'modal10',
+//          className: 'vertical-center-modal',
+//          title: '报警',
+//          content: '<p>Content of dialog</p><p>Content of dialog</p>',
+//          okText: '联系报修人员',
+//          cancelText: 'Cancel'
+//        });
+//      }
+//    }
   }
 </script>
-<style>
-  .ivu-modal{
-    top: 45%;
-  }
-</style>
 
 <!--具体参考网址：https://www.iviewui.com/components/modal-->
