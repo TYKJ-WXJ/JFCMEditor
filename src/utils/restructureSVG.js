@@ -102,24 +102,37 @@ const svgThreeR = {
   onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    // this.render();
+    this.render();
     renderer.setSize(window.innerWidth, window.innerHeight);
   },
   // 用户交互插件 鼠标左键按住旋转，右键按住平移，滚轮缩放
   initControls() {
     controls = new OrbitControls(camera, renderer.domElement);
+    // 如果使用animate方法时，将此函数删除
+    // controls.addEventListener( 'change', render );
+    // 使动画循环使用时阻尼或自转 意思是否有惯性
     controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.enableZoom = false;
+    // 动态阻尼系数 就是鼠标拖拽旋转灵敏度
+    // controls.dampingFactor = 0.25;
+    // 是否可以缩放
+    controls.enableZoom = true;
+    // 是否自动旋转
+    controls.autoRotate = false;
+    // 设置相机距离原点的最远距离
+    controls.minDistance = 20;
+    // 设置相机距离原点的最远距离
+    controls.maxDistance = 10000;
+    // 是否开启右键拖拽
+    controls.enablePan = true;
   },
   animate() {
     // 更新控制器
     controls.update();
     this.render();
     // 更新性能插件
-    stats.update();
+    Stats().update();
     console.log('si');
-    // requestAnimationFrame(this.render());
+    // requestAnimationFrame(this.animate());
   },
   drawSvgL() {
     this.initRender();
