@@ -132,7 +132,7 @@ const svgThreeR = {
     // 更新性能插件
     Stats().update();
     console.log('si');
-    // requestAnimationFrame(this.animate());
+    requestAnimationFrame(this.animate());
   },
   drawSvgL() {
     this.initRender();

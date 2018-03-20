@@ -76,6 +76,13 @@ export default new Router({
           }
         }
       ]
+    },
+    {
+      path: '/pageObj',
+      name: 'pageObj',
+      component (resolve) {
+        require(['@/views/pageObj'], resolve);
+      }
     }
   ]
 });
