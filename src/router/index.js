@@ -6,9 +6,10 @@ import data from '../components/data.vue';
 import module1 from '@/components/module-one.vue';
 import module2 from '@/components/module-two.vue';
 import module3 from '@/components/module-three.vue';
-
 Vue.use(Router);
-
+Vue.component('one', module1);
+Vue.component('two', module2);
+Vue.component('three', module3);
 export default new Router({
   routes: [
     {
@@ -76,6 +77,20 @@ export default new Router({
           }
         }
       ]
+    },
+    {
+      path: '/pageTest2',
+      name: 'pageTest2',
+      component (resolve) {
+        require(['@/views/pageTest2'], resolve);
+      }
+    },
+    {
+      path: '/pageTest3',
+      name: 'pageTest3',
+      component (resolve) {
+        require(['@/views/pageTest3'], resolve);
+      }
     }
   ]
 });

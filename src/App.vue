@@ -9,6 +9,8 @@
     <router-link to="/alert">alert</router-link>
     <router-link to="/data">data</router-link>
     <router-link to="/pageTest">pageTest</router-link>
+    <router-link to="/pageTest2">pageTest2</router-link>
+    <router-link to="/pageTest3">pageTest3</router-link>
     <router-view></router-view>
   </div>
 </template>

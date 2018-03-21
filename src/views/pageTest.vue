@@ -1,7 +1,7 @@
 <style lang="less">
   .main{
     width: 300px;
-    height: 300px;
+    height: 500px;
     border: 1px solid #55a532;
     margin: 0 auto;
     cursor: pointer;
@@ -41,12 +41,27 @@
 </style>
 <template>
   <div>
-  <div class="main" @click="modal10 = true">pagetest</div>
+  <div class="main" @click="modal10 = true">
+    <draggable :move="getdata" @update="datadragEnd">
+      <transition-group class="one">
+        <div :key="1">
+          <router-view :name=aa></router-view>
+        </div>
+        <div :key="2">
+          <router-view :name=bb></router-view>
+        </div>
+        <div :key="3">
+          <router-view :name=cc></router-view>
+        </div>
+      </transition-group>
+    </draggable>
+  </div>
   <Modal
     title="模块排序"
     v-model="modal10"
     class-name="vertical-center-modal"
     okText="确定"
+    @on-ok="onOk"
     cancelText="Cancel">
     <router-view :name=aa></router-view>
     <router-view :name=bb></router-view>
@@ -55,26 +70,26 @@
     <div class="dialog" v-show="isShow">
       <div class="dialog-one">
         <span>顶部div</span>
-        <select name="selected-one" v-model="aa">
-          <option value="a">A</option>
-          <option value="b">B</option>
-          <option value="c">C</option>
+        <select v-model="aa">
+          <option v-for="option in options" v-bind:value="option.value">
+            {{ option.text }}
+          </option>
         </select>
       </div>
       <div class="dialog-two">
         <span>中部div</span>
-        <select name="selected-two" v-model="bb">
-          <option value="a">A</option>
-          <option value="b">B</option>
-          <option value="c">C</option>
+        <select v-model="bb">
+          <option v-for="option in options" v-bind:value="option.value">
+            {{ option.text }}
+          </option>
         </select>
       </div>
       <div class="dialog-three">
         <span>底部div</span>
-        <select name="selected-three" v-model="cc">
-          <option value="a">A</option>
-          <option value="b">B</option>
-          <option value="c">C</option>
+        <select v-model="cc">
+          <option v-for="option in options" v-bind:value="option.value">
+            {{ option.text }}
+          </option>
         </select>
       </div>
     </div>
@@ -82,6 +97,8 @@
   </div>
 </template>
 <script>
+//  引入可拖拽的插件   npm install vuedraggable   下载draggable
+  import draggable from 'vuedraggable';
   export default {
     data() {
       return {
@@ -89,12 +106,27 @@
         isShow: false,
         aa: 'a',
         bb: 'b',
-        cc: 'c'
+        cc: 'c',
+        options: [
+          {text: 'A', value: 'a'},
+          {text: 'B', value: 'b'},
+          {text: 'C', value: 'c'}
+        ]
       }
+    },
+    components: {
+      draggable
     },
     methods: {
       show: function () {
         this.isShow = !this.isShow;
+      },
+      getdata (evt) {
+      },
+      datadragEnd (evt) {
+      },
+      onOk() {
+        console.log(1);
       }
     }
   }
