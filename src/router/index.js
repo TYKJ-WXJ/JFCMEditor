@@ -91,6 +91,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageTest3'], resolve);
       }
+    },
+    {
+      path: '/pageDetector',
+      name: 'pageDetector',
+      component (resolve) {
+        require(['@/views/pageDetector'], resolve);
+      }
     }
   ]
 });

@@ -33,6 +33,11 @@ const server = {
     return axios('http://localhost:8890/src/views/test.json', {
       method: 'get'
     });
+  },
+  dataJSON() {
+    return axios('http://localhost:8889/static/data.json', {
+      method: 'get'
+    })
   }
 };
 

@@ -5,6 +5,7 @@
     <router-link to="/pageThree">pageThree</router-link>
     <router-link to="/pageIframe">pageIframe</router-link>
     <router-link to="/pageCirculation">pageCirculation</router-link>
+    <router-link to="/pageDetector">pageDetector</router-link>
     <router-link to="/eject">eject</router-link>
     <router-link to="/alert">alert</router-link>
     <router-link to="/data">data</router-link>
