@@ -54,7 +54,7 @@
       },
       loadJson() {
         // 获取JSON数据
-        server.getJSON().then((res) => {
+        server.getSvgJSON().then((res) => {
           console.log(res.data);
           // 分离数据
           SeparateData.separate(res.data, this.$store);

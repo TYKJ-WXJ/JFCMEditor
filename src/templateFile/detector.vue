@@ -109,12 +109,11 @@ import server from '@/services/server'
 export default {
   name: 'ed-title',
   data () {
-    return{
+    return {
       name: ''
     }
   },
-  computed: {
-    },
+  computed: {},
   mounted() {
     this.nameJson();
   },
@@ -124,7 +123,7 @@ export default {
       server.dataJSON().then((res) => {
         this.name = res.data.name;
         console.log(this.name);
-      }).cath((err) => {
+      }).catch((err) => {
         console.log(err);
       })
     }

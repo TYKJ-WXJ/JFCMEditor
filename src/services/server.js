@@ -24,7 +24,7 @@ const server = {
       method: 'get'
     });
   },
-  getJSON() {
+  getSvgJSON() {
     return axios('http://localhost:8890/dist/static/JSON/svgData.json', {
       method: 'get'
     });
