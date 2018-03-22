@@ -83,6 +83,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageObj'], resolve);
       }
+    },
+    {
+      path: '/pageDetector',
+      name: 'pageDetector',
+      component (resolve) {
+        require(['@/views/pageDetector'], resolve);
+      }
     }
   ]
 });

@@ -19,8 +19,9 @@
 </script>
 
 <style>
-  .whole{ // 整体显示的定位
-  width: 1000px;
+  /* 整体显示的定位 */
+  .whole{
+    width: 1000px;
     height: 700px;
     position: fixed;
     left: 250px;
