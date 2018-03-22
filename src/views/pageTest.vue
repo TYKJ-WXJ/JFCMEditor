@@ -97,7 +97,7 @@
   </div>
 </template>
 <script>
-//  引入可拖拽的插件   npm install vuedraggable   下载draggable
+//  引入可拖拽的插件   npm install vuedraggable   下载draggable .
   import draggable from 'vuedraggable';
   export default {
     data() {
