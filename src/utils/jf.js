@@ -4,9 +4,10 @@
 // 机房模拟
 var THREE = require('../../node_modules/three/build/three.module');
 var OrbitControls = require('../../node_modules/three-orbitcontrols');
-var Stats = require('../../node_modules/three/examples/js/libs/stats.min');
+var stats = require('../../node_modules/three/examples/js/libs/stats.min');
+var tween = require('../../node_modules/three/examples/js/libs/tween.min');
 // 设置全局变量
-let scene, camera, renderer, controls, tween, door;
+let scene, camera, renderer, controls, door;
 let keyboard = new THREEx.KeyboardState();// 保持键盘的当前状态，可以随时查询
 let clock = new THREE.Clock();
 let SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
@@ -34,7 +35,7 @@ function initCamera() {
 // 3.渲染器
 function initRender() {
   if (Detector.webgl) {
-    renderer = new THREE.WebGLRenderer( {antialias:true} );
+    renderer = new THREE.WebGLRenderer({antialias: true});
   } else {
     renderer = new THREE.CanvasRenderer();
   }
@@ -53,7 +54,7 @@ function initEvent() {
 
 // 5.控制
 function initControls() {
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
 }
 
 // 6.光源
@@ -108,7 +109,7 @@ function createFloor() {
 
 // 墙上挖门，通过两个几何体生成BSP对象
 function createResultBsp(bsp, less_bsp, mat) {
-  switch(mat) {
+  switch (mat) {
     case 1:
       let material = new THREE.MeshPhongMaterial({color: 0x9cb2d1, specular: 0x9cb2d1, shininess: 30, transparent: true, opacity: 1});
       break;
@@ -261,10 +262,10 @@ function onkeyDown(event) {
   switch(event.keyCode) {
     case 13:
       console.log(event.keyCode);
-      if(door_state){
-        dummy.rotation.y += 0.5*Math.PI;
+      if (door_state) {
+        dummy.rotation.y += 0.5 * Math.PI;
         door_state = false;
-      }else{
+      } else {
         dummy.rotation.y -= 0.5 * Math.PI;
         door_state = true;
       }
@@ -275,16 +276,14 @@ function onkeyDown(event) {
   }
 }
 
-function animate()
-{
+function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   TWEEN.update();
   update();
 }
 
-function update()
-{
+function update() {
   let delta = clock.getDelta();
   let moveDistance = 200 * delta;
   let rotateAngle = Math.PI / 2 * delta;
