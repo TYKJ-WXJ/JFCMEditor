@@ -98,6 +98,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageDetector'], resolve);
       }
+    },
+    {
+      path: '/pageJF',
+      name: 'pageJF',
+      component (resolve) {
+        require(['@/views/pageJF'], resolve);
+      }
     }
   ]
 });
