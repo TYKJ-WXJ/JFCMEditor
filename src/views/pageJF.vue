@@ -1,20 +1,20 @@
 <template>
-    <div></div>
+  <div id="ThreeJS" style="position: absolute; left: 0px; top: 0px"></div>
 </template>
 
 <script>
-  //  import svgThree from '@/utils/svg-three';
-  export default{
-    data() {
-      return {
-        msg: 'hello vue'
-      }
-    },
-    methods: {
-//      svgThree.drawSvg();
-    },
-    components: {}
-  }
+import JF from '@/utils/jf';
+export default{
+  data() {
+    return {
+      msg: 'hello vue'
+    }
+  },
+  mounted() {
+    JF();
+  },
+  components: {}
+}
 </script>
 
 <style>

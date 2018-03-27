@@ -20,7 +20,7 @@ export default{
     }
   },
   mounted() {
-    svgThreeR.drawSvgL();
+    svgThreeR();
   },
   components: {}
 }
