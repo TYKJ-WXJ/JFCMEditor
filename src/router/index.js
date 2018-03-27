@@ -98,6 +98,20 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageDetector'], resolve);
       }
+    },
+    {
+      path: '/pagedistriBution',
+      name: 'pagedistriBution',
+      component (resolve) {
+        require(['@/views/pagedistriBution'], resolve);
+      }
+    },
+    {
+      path: '/pageUps',
+      name: 'pageUps',
+      component (resolve) {
+        require(['@/views/pageUps'], resolve);
+      }
     }
   ]
 });

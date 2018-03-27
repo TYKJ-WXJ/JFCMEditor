@@ -12,6 +12,8 @@
     <router-link to="/pageTest">pageTest</router-link>
     <router-link to="/pageTest2">pageTest2</router-link>
     <router-link to="/pageTest3">pageTest3</router-link>
+    <router-link to="/pagedistriBution">pagedistriBution</router-link>
+    <router-link to="/pageUps">pageUps</router-link>
     <router-view></router-view>
   </div>
 </template>

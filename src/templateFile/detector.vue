@@ -55,9 +55,9 @@
             <table>
               <tr>
                 <td class="ed-mess">设备品牌：</td>
-                <td><a>海康</a></td>
+                <td><a>{{ brand }}</a></td>
                 <td class="ed-mess">设备型号：</td>
-                <td><a>DS-1T228N</a></td>
+                <td><a>{{ modell }}</a></td>
               </tr>
               <tr>
                 <td class="ed-mess">类型：</td>
@@ -110,19 +110,23 @@ export default {
   name: 'ed-title',
   data () {
     return {
-      name: ''
+      name: '',
+      brand: '',
+      modell: ''
     }
   },
   computed: {},
   mounted() {
     this.nameJson();
+    /* this.getItem(); */
   },
   methods: {
     nameJson() {
       // 获取数据
       server.dataJSON().then((res) => {
         this.name = res.data.name;
-        console.log(this.name);
+        this.brand = res.data.brand;
+        /* var start1 = this.lists[0].mpdel; */
       }).catch((err) => {
         console.log(err);
       })
