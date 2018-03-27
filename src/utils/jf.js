@@ -5,9 +5,9 @@
 var THREE = require('../../node_modules/three/build/three.module');
 var OrbitControls = require('../../node_modules/three-orbitcontrols');
 // var stats = require('../../node_modules/three/examples/js/libs/stats.min');
-var TWEEN = require('../../node_modules/three/examples/js/libs/tween.min');
+// var TWEEN = require('../../node_modules/three/examples/js/libs/tween.min');
 var Detector = require('../../node_modules/three/examples/js/Detector');
-var ThreeBSP = require('../../src/utils/THree/ThreeBSP');
+// var ThreeBSP = require('../../src/utils/THree/ThreeBSP');
 // 设置全局变量
 let scene, camera, renderer, controls, door;
 // let keyboard = new THREEx.KeyboardState();// 保持键盘的当前状态，可以随时查询
@@ -59,6 +59,27 @@ function initRender() {
 //   THREEx.WindowResize(renderer, camera);
 //   THREEx.FullScreen.bindKey({ charCode: 'm'.charCodeAt(0) });
 // }
+
+// hover高亮
+let raycaster = new THREE.Raycaster();// 光线投射，用于确定鼠标点击位置
+let mouse = new THREE.Vector2();// 创建二维平面
+function initHover() {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  // update the picking ray with the camera and mouse position
+  raycaster.setFromCamera(mouse, camera);
+  // calculate objects intersecting the picking ray
+  let intersects = raycaster.intersectObjects(scene.children);
+
+  for (let i = 0; i < intersects.length; i++) {
+    intersects[i].object.material.color = {
+      r: 0,
+      g: 0,
+      b: 0
+    };
+    console.log(intersects);
+  }
+}
 
 // 5.控制
 function initControls() {
@@ -154,15 +175,15 @@ function createCubeWall(width, height, depth, angle, material, x, y, z) {
 }
 
 // 返回墙对象
-function returnWallObject(width, height, depth, angle, material, x, y, z) {
-  let cubeGeometry = new THREE.BoxGeometry(width, height, depth);
-  let cube = new THREE.Mesh(cubeGeometry, material);
-  cube.position.x = x;
-  cube.position.y = y;
-  cube.position.z = z;
-  cube.rotation.y += angle * Math.PI;
-  return cube;
-}
+// function returnWallObject(width, height, depth, angle, material, x, y, z) {
+//   let cubeGeometry = new THREE.BoxGeometry(width, height, depth);
+//   let cube = new THREE.Mesh(cubeGeometry, material);
+//   cube.position.x = x;
+//   cube.position.y = y;
+//   cube.position.z = z;
+//   cube.rotation.y += angle * Math.PI;
+//   return cube;
+// }
 
 // 创建墙纹理
 function createWallMaterail() {
@@ -261,6 +282,7 @@ function init() {
   initObject();
   // 监听键盘按键
   document.addEventListener('keydown', onkeyDown, false);
+  window.addEventListener('mousedown', initHover);// 页面绑定鼠标点击事件
 }
 
 let doorState = true;// 默认是门是关闭的
