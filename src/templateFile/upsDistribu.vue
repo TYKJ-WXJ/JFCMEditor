@@ -172,31 +172,31 @@
                 <ul>
                   <li class="ed-item">
                     <a>品牌名称：</a>
-                    <a>爱默生</a>
+                    <a>{{ name }}</a>
                   </li>
                   <li class="ed-item">
                     <a>设备型号：</a>
-                    <a>UPS NXR</a>
+                    <a>{{ model }}</a>
                   </li>
                   <li class="ed-item">
                     <a>出厂编号：</a>
-                    <a>1234567</a>
+                    <a>{{ number }}</a>
                   </li>
                   <li class="ed-item">
                     <a>尺 寸：</a>
-                    <a>{{  }}</a>
+                    <a>{{ size }}</a>
                   </li>
                   <li class="ed-item">
                     <a>颜  色：</a>
-                    <a>{{  }}</a>
+                    <a>{{ color }}</a>
                   </li>
                   <li class="ed-item">
                     <a>重  量：</a>
-                    <a>{{  }}</a>
+                    <a>{{ weight }}</a>
                   </li>
                   <li class="ed-item">
                     <a>设备描述:</a>
-                    <a>{{  }}</a>
+                    <a>{{ bewrite }}</a>
                   </li>
                 </ul>
               </div>
@@ -232,7 +232,7 @@ data () {
     user6: '',
     user7: '',
     user8: '',
-    user9: '',
+    user9: ''
     }
   }
 }

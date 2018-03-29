@@ -169,27 +169,27 @@
                 <ul>
                   <li class="ed-item">
                     <a>设备型号：</a>
-                    <a>定制</a>
+                    <a>{{ name }}</a>
                   </li>
                   <li class="ed-item">
                     <a>出厂编号：</a>
-                    <a>1234567</a>
+                    <a>{{ number }}</a>
                   </li>
                   <li class="ed-item">
                     <a>尺 寸：</a>
-                    <a>{{  }}</a>
+                    <a>{{ size }}</a>
                   </li>
                   <li class="ed-item">
                     <a>颜  色：</a>
-                    <a>{{  }}</a>
+                    <a>{{ color }}</a>
                   </li>
                   <li class="ed-item">
                     <a>重  量：</a>
-                    <a>{{  }}</a>
+                    <a>{{ weight }}</a>
                   </li>
                   <li class="ed-item">
                     <a>设备描述：</a>
-                    <a>{{  }}</a>
+                    <a>{{ bewrite }}</a>
                   </li>
                 </ul>
               </div>
@@ -212,25 +212,33 @@
 </div>
 </template>
 <script>
+import server from '@/services/server';
 import echarts from 'echarts/dist/echarts.min';
-export default {
-data () {
-  return {
-    user: '',
-    user1: '',
-    user2: '',
-    user3: '',
-    user4: '',
-    user5: '',
-    user6: '',
-    user7: '',
-    user8: '',
-    user9: ''
-  }
-},
 
-mounted(options) {
-    let myChart = echarts.init(document.getElementById('myChart'));
+export default {
+  name: 'tab-vertical',
+  data () {
+    return {
+      name: '',
+      user: '',
+      user1: '',
+      user2: '',
+      user3: '',
+      user4: '',
+      user5: '',
+      user6: '',
+      user7: '',
+      user8: '',
+      user9: ''
+    }
+  },
+  computed: {},
+  mounted() {
+    this.dataJson();
+    /* this.getItem(); */
+    this.drawLine();
+
+
     let myChart1 = echarts.init(document.getElementById('myChart-1'));
     let myChart2 = echarts.init(document.getElementById('myChart-2'));
     let myChart3 = echarts.init(document.getElementById('myChart-3'));
@@ -250,70 +258,7 @@ mounted(options) {
     let option7 = null;
     let option8 = null;
     let option9 = null;
-option = {
-  tooltip : {
-        formatter: "{a} {b} : {c}V"
-    },
-    toolbox: {
-        show : true
-    },
-    series : [
-        {
-        name:'电压',
-        type:'gauge',
-        radius: '90%',
-        min:0,
-        max:400,
-        splitNumber: 3,       // 分割段数，默认为5
-        axisLine: {            // 坐标轴线
-            lineStyle: {       // 属性lineStyle控制线条样式
-                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                width: 2
-            }
-        },
-        axisTick: {            // 坐标轴小标记
-            splitNumber: 5,   // 每份split细分多少段
-            length :5,        // 属性length控制线长
-            lineStyle: {       // 属性lineStyle控制线条样式
-                color: 'auto',
-                length: 5
-            }
-        },
-        axisLabel: {           // 坐标轴文本标签
-            textStyle: {       // 其余属性默认使用全局文本样式
-                color: 'auto',
-                fontSize: 3
-            }
-        },
-        splitLine: {           // 分隔线
-            show: true,        // 默认显示，属性show控制显示与否
-            length :7,         // 属性length控制线长
-            lineStyle: {       // 属性lineStyle 控制线条样式
-                color: 'auto'
-            }
-        },
-        pointer : {  // 指针
-            width : 1.5,
-            length: 25
-        },
-        title : {
-            show : true,
-            offsetCenter: [0, '-40%'],       // x, y，单位px
-            textStyle: {       // 其余属性默认使用全局文本样式
-                fontWeight: 'bolder'
-            }
-        },
-        detail : {
-            formatter:'{value}V',
-            textStyle: {       // 其余属性默认使用全局文本样式
-                color: 'auto',
-                fontSize: 12
-            }
-        },
-        data:[{value: 200}]
-  }
- ]
-};
+    let that = this;
 
 option1 = {
       tooltip : {
@@ -899,11 +844,10 @@ option9 = {
       }
     ]
 };
-    app.timeTicket = setInterval(function() {
+    /* app.timeTicket = setInterval(function() {
       option.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
-      myChart.setOption(option,true);
-    },2000);
-    this.user = (Math.random()).toFixed(2) - 0;
+    },2000); */
+    myChart.setOption(option,true);
 
     app.timeTicket = setInterval(function() {
       option1.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
@@ -959,8 +903,85 @@ option9 = {
     },2000);
     this.user9 = (Math.random()).toFixed(2) - 0;
   },
+  methods: {
+    dataJson() {
+      // 获取数据
+      server.userJSON().then((res) => {
+        this.user = res.data.user;
+        this.name = res.data.name;
+        option.series[0].data[0].value = res.data.user;
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    drawLine() {
+      let myChart = echarts.init(document.getElementById('myChart'));
+      myChart.setOption({
+        tooltip : {
+        formatter: "{a} {b} : {c}V"
+    },
+    toolbox: {
+        show : true
+    },
+    series : [
+        {
+        name:'电压',
+        type:'gauge',
+        radius: '90%',
+        min:0,
+        max:400,
+        splitNumber: 3,       // 分割段数，默认为5
+        axisLine: {            // 坐标轴线
+            lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+            }
+        },
+        axisTick: {            // 坐标轴小标记
+            splitNumber: 5,   // 每份split细分多少段
+            length :5,        // 属性length控制线长
+            lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+            }
+        },
+        axisLabel: {           // 坐标轴文本标签
+            textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+            }
+        },
+        splitLine: {           // 分隔线
+            show: true,        // 默认显示，属性show控制显示与否
+            length :7,         // 属性length控制线长
+            lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+            }
+        },
+        pointer : {  // 指针
+            width : 1.5,
+            length: 25
+        },
+        title : {
+            show : true,
+            offsetCenter: [0, '-40%'],       // x, y，单位px
+            textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+            }
+        },
+        detail : {
+            textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+            }
+        },
+        data:[{value:250}]
+  }
+ ]
+      });
+    }
+  }
 }
-
 </script>
 
 <style scoped>

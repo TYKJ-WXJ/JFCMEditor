@@ -37,7 +37,12 @@ const server = {
   dataJSON() {
     return axios('http://localhost:8889/static/data.json', {
       method: 'get'
-    })
+    });
+  },
+  userJSON() {
+    return axios('http://localhost:8889/static/user.json', {
+      method: 'get'
+    });
   }
 };
 
