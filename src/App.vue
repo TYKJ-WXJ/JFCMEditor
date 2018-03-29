@@ -12,7 +12,12 @@
     <router-link to="/pageTest">pageTest</router-link>
     <router-link to="/pageTest2">pageTest2</router-link>
     <router-link to="/pageTest3">pageTest3</router-link>
+<<<<<<< HEAD
+    <router-link to="/pagedistriBution">pagedistriBution</router-link>
+    <router-link to="/pageUps">pageUps</router-link>
+=======
     <router-link to="/pageJF">pageJF</router-link>
+>>>>>>> 4c056a2a209a723904ee5601ba3bfe58ed667797
     <router-view></router-view>
   </div>
 </template>

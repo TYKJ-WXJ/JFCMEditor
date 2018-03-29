@@ -1,3 +1,16 @@
 {
-    "name": "红红外线"
+  "list": [
+    {
+      "brand": "海康",
+      "modell": "DS-1T228N"
+    },
+    {
+      "brand": "1",
+      "modell": "2"
+    }
+  ],
+  "name": "红外线",
+  "brand": "海康",
+  "model": "DS-1T228N",
+  "type": "微波入侵探测器"
 }

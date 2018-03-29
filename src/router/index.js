@@ -100,6 +100,20 @@ export default new Router({
       }
     },
     {
+      path: '/pagedistriBution',
+      name: 'pagedistriBution',
+      component (resolve) {
+        require(['@/views/pagedistriBution'], resolve);
+      }
+    },
+    {
+      path: '/pageUps',
+      name: 'pageUps',
+      component (resolve) {
+        require(['@/views/pageUps'], resolve);
+      }
+    },
+    {
       path: '/pageJF',
       name: 'pageJF',
       component (resolve) {
