@@ -1,220 +1,231 @@
 <template>
-  <div class="tab-vertical">
-    <div class="ed-titles">
-      <p>机房配电柜</p>
+<div class="tab-vertical">
+  <div class="ed-titles">
+    <p>机房配电柜</p>
+  </div>
+  <div class="tab-content">
+    <div class="ed-img">
+      <img src="" alt="">
     </div>
-    <div class="tab-content">
-      <div class="ed-img">
-        <img src="" alt="">
-      </div>
-      <div class="ed-items">
-        <ul>
-          <li class="ed-title">
-            <a>市电配电柜：</a>
-            <img src="/src/assets/img/m4 (2).png" alt="">正常接入
-            <a class="ed-red"><img src="/src/assets/img/m4 (1).png" alt="">未接入</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="ed-data">
+    <div class="ed-items">
       <ul>
-        <li class="ed-select">
-        <a>添加到实时数据：</a>
-            <select>
-              <option value="1"><input type="checkbox">1</option>
-              <option value="2"><input type="checkbox">2</option>
-              <option value="3"><input type="checkbox">3</option>
-              <option value="4"><input type="checkbox">4</option>
-              <option value="5"><input type="checkbox">5</option>
-              <option value="6"><input type="checkbox">6</option>
-            </select>
+        <li class="ed-title">
+          <a>市电配电柜：</a>
+          <img src="/src/assets/img/m4 (2).png" alt="">正常接入
+          <a class="ed-red"><img src="/src/assets/img/m4 (1).png" alt="">未接入</a>
         </li>
       </ul>
     </div>
+  </div>
+  <div class="ed-data">
+    <ul>
+      <li class="ed-select">
+      <a>添加到实时数据：</a>
+          <select>
+            <option value="1"><input type="checkbox">1</option>
+            <option value="2"><input type="checkbox">2</option>
+            <option value="3"><input type="checkbox">3</option>
+            <option value="4"><input type="checkbox">4</option>
+            <option value="5"><input type="checkbox">5</option>
+            <option value="6"><input type="checkbox">6</option>
+          </select>
+      </li>
+    </ul>
+  </div>
+  <div id="ed-tab">
     <div class="ed-tab">
-      <div class="ed-lab">
-        <input type="radio" id="r-1" name="tab" checked class="tab">
-        <label for="r-1">设备详情</label>
-        <div class="mod">
-          <div class="ed-tet">
-           <div class="ed-time">
-            <ul>
-              <li class="ed-item-1">
-                ▪市电进线三项电压
-              </li>
-            </ul>
-            <div class="ed-surface">
-              <div id="myChart">
-              </div>
-              <div class="meth">
-                <p>{{ user }}V</p>
+    <div class="ed-lab">
+        <div id="c1">
+          <a href="#c1" title="First">设</br>备</br>详</br>情</a>
+            <div class="tab-content">
+              <div class="ed-tet">
+                <div class="ed-time">
+                  <ul>
+                    <li class="ed-item-1">
+                      ▪市电进线三项电压
+                    </li>
+                  </ul>
+                  <div class="ed-surface">
+                    <div id="myChart">
+                    </div>
+                    <div class="meth">
+                      <p>{{ user }}V</p>
+                    </div>
+                  </div>
+                  <div class="ed-surface">
+                    <div id="myChart-1">
+
+                    </div>
+                    <div class="meth">
+                      <p>{{ user1 }}A</p>
+                    </div>
+                  </div>
+                  <div class="ed-surface">
+                    <div id="myChart-2">
+
+                    </div>
+                    <div class="meth">
+                    <p>{{ user2 }}KW</p>
+                    </div>
+                  </div>
+                  <div class="ed-time">
+                    <ul>
+                      <li class="ed-item-1">
+                        ▪输出电压
+                      </li>
+                    </ul>
+                    <div class="ed-surface">
+                      <div id="myChart-3">
+
+                      </div>
+                      <div class="meth">
+                        <p>{{ user3 }}V</p>
+                      </div>
+                    </div>
+                    <div class="ed-surface">
+                      <div id="myChart-4">
+
+                      </div>
+                      <div class="meth">
+                        <p>{{ user4 }}A</p>
+                      </div>
+                    </div>
+                    <div class="ed-surface">
+                      <div id="myChart-5">
+
+                      </div>
+                      <div class="meth">
+                        <p>{{ user5 }}KW</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ed-time">
+                    <ul>
+                      <li class="ed-item-1">
+                        ▪输出电流
+                      </li>
+                    </ul>
+                    <div class="ed-surface">
+                      <div id="myChart-6">
+
+                      </div>
+                      <div class="meth">
+                        <p>{{ user6 }}V</p>
+                      </div>
+                    </div>
+                    <div class="ed-surface">
+                      <div id="myChart-7">
+
+                      </div>
+                      <div class="meth">
+                        <p>{{ user7 }}A</p>
+                      </div>
+                    </div>
+                    <div class="ed-surface">
+                      <div id="myChart-8">
+
+                      </div>
+                      <div class="meth">
+                        <p>{{ user8 }}KW</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ed-tet2">
+                  <ul>
+                    <li class="ed-item-1">
+                      ▪PUE
+                    </li>
+                  </ul>
+                  <div class="ed-out">
+                    <div id="myChart-9">
+
+                      </div>
+                    <div class="meth">
+                        <p>{{ user9 }}</p>
+                      </div>
+                  </div>
+                  <div class="ed-pue">
+                      <p>PUE={{ user9 }}</p>
+                    </div>
+                  </div>
+                  <div class="ed-tet3">
+                    <ul>
+                      <li class="ed-item-1">
+                        ▪重要开关状态
+                      </li>
+                    </ul>
+                    <div class="ed-out1">
+
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="ed-surface">
-              <div id="myChart-1">
-
+        <div id="c2">
+          <a href="#c2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
+            <div class="tab-content">
+              <div class="ed-mod">
+                <ul>
+                  <li class="ed-item">
+                    <a>设备型号：</a>
+                    <a>定制</a>
+                  </li>
+                  <li class="ed-item">
+                    <a>出厂编号：</a>
+                    <a>1234567</a>
+                  </li>
+                  <li class="ed-item">
+                    <a>尺 寸：</a>
+                    <a>{{  }}</a>
+                  </li>
+                  <li class="ed-item">
+                    <a>颜  色：</a>
+                    <a>{{  }}</a>
+                  </li>
+                  <li class="ed-item">
+                    <a>重  量：</a>
+                    <a>{{  }}</a>
+                  </li>
+                  <li class="ed-item">
+                    <a>设备描述：</a>
+                    <a>{{  }}</a>
+                  </li>
+                </ul>
               </div>
-              <div class="meth">
-                <p>{{ user1 }}A</p>
-              </div>
-            </div>
-            <div class="ed-surface">
-              <div id="myChart-2">
-
-              </div>
-              <div class="meth">
-               <p>{{ user2 }}KW</p>
-              </div>
-            </div>
-          </div>
-          <div class="ed-time">
-            <ul>
-              <li class="ed-item-1">
-                ▪输出电压
-              </li>
-            </ul>
-            <div class="ed-surface">
-              <div id="myChart-3">
-
-              </div>
-              <div class="meth">
-                <p>{{ user3 }}V</p>
-              </div>
-            </div>
-            <div class="ed-surface">
-              <div id="myChart-4">
-
-              </div>
-              <div class="meth">
-                <p>{{ user4 }}A</p>
-              </div>
-            </div>
-            <div class="ed-surface">
-              <div id="myChart-5">
-
-              </div>
-              <div class="meth">
-                <p>{{ user5 }}KW</p>
-              </div>
-            </div>
-          </div>
-          <div class="ed-time">
-            <ul>
-              <li class="ed-item-1">
-                ▪输出电流
-              </li>
-            </ul>
-            <div class="ed-surface">
-              <div id="myChart-6">
-
-              </div>
-              <div class="meth">
-                <p>{{ user6 }}V</p>
-              </div>
-            </div>
-            <div class="ed-surface">
-              <div id="myChart-7">
-
-              </div>
-              <div class="meth">
-                <p>{{ user7 }}A</p>
-              </div>
-            </div>
-            <div class="ed-surface">
-              <div id="myChart-8">
-
-              </div>
-              <div class="meth">
-                <p>{{ user8 }}KW</p>
+              <div class="ed-ment">
+                <div class="ed-ments">
+                  <img src="../assets/img/m1.png" alt="">
+                  <a>设备管理员：</a>
+                  <a>叶一凡</a>
+                </div>
+                <div class="ed-ments1">
+                  <img src="../assets/img/m2.png" alt="">
+                  <a>设备管理员联系方式：</a><a>123 1234 1234</a>
+                </div>
               </div>
             </div>
         </div>
-      </div>
-        <div class="ed-tet2">
-          <ul>
-            <li class="ed-item-1">
-              ▪PUE
-            </li>
-          </ul>
-          <div class="ed-out">
-            <div id="myChart-9">
-
-              </div>
-            <div class="meth">
-                <p>{{ user9 }}</p>
-              </div>
-          </div>
-          <div class="ed-pue">
-            <p>PUE={{ user9 }}</p>
-          </div>
-        </div>
-        <div class="ed-tet3">
-          <ul>
-            <li class="ed-item-1">
-              ▪重要开关状态
-            </li>
-          </ul>
-          <div class="ed-out1">
-
-          </div>
-        </div>
-      </div>
     </div>
-      <div class="ed-labs">
-        <input type="radio" id="r-2" name="tab" class="tab">
-        <label for="r-2">设备基础信息</label>
-         <div class="mod-2">
-          <div class="ed-mod">
-          <ul>
-            <li class="ed-item">
-              <a>设备型号：</a>
-              <a>定制</a>
-            </li>
-            <li class="ed-item">
-              <a>出厂编号：</a>
-              <a>1234567</a>
-            </li>
-            <li class="ed-item">
-              <a>尺 寸：</a>
-              <a>{{  }}</a>
-            </li>
-            <li class="ed-item">
-              <a>颜  色：</a>
-              <a>{{  }}</a>
-            </li>
-            <li class="ed-item">
-              <a>重  量：</a>
-              <a>{{  }}</a>
-            </li>
-            <li class="ed-item">
-              <a>设备描述：</a>
-              <a>{{  }}</a>
-            </li>
-          </ul>
-          </div>
-          <div class="ed-ment">
-            <div class="ed-ments">
-              <img src="../assets/img/m1.png" alt="">
-              <a>设备管理员：</a>
-              <a>叶一凡</a>
-            </div>
-            <div class="ed-ments1">
-              <img src="../assets/img/m2.png" alt="">
-              <a>设备管理员联系方式：</a><a>123 1234 1234</a>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
+</div>
 </template>
 <script>
 import echarts from 'echarts/dist/echarts.min';
 export default {
 data () {
   return {
-    user: ''
+    user: '',
+    user1: '',
+    user2: '',
+    user3: '',
+    user4: '',
+    user5: '',
+    user6: '',
+    user7: '',
+    user8: '',
+    user9: ''
   }
 },
 
@@ -239,69 +250,69 @@ mounted(options) {
     let option7 = null;
     let option8 = null;
     let option9 = null;
-    option = {
-      tooltip : {
-            formatter: "{a} {b} : {c}V"
+option = {
+  tooltip : {
+        formatter: "{a} {b} : {c}V"
+    },
+    toolbox: {
+        show : true
+    },
+    series : [
+        {
+        name:'电压',
+        type:'gauge',
+        radius: '90%',
+        min:0,
+        max:400,
+        splitNumber: 3,       // 分割段数，默认为5
+        axisLine: {            // 坐标轴线
+            lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+            }
         },
-        toolbox: {
-            show : true
+        axisTick: {            // 坐标轴小标记
+            splitNumber: 5,   // 每份split细分多少段
+            length :5,        // 属性length控制线长
+            lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+            }
         },
-        series : [
-            {
-            name:'电压',
-            type:'gauge',
-            radius: '90%',
-            min:0,
-            max:400,
-            splitNumber: 3,       // 分割段数，默认为5
-            axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
-            },
-            axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
-            },
-            axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
-            },
-            splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
-            },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
-            },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
-            },
-            detail : {
-                formatter:'{value}V',
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
-            },
-            data:[{value: 20}]
-      }
-    ]
+        axisLabel: {           // 坐标轴文本标签
+            textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+            }
+        },
+        splitLine: {           // 分隔线
+            show: true,        // 默认显示，属性show控制显示与否
+            length :7,         // 属性length控制线长
+            lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+            }
+        },
+        pointer : {  // 指针
+            width : 1.5,
+            length: 25
+        },
+        title : {
+            show : true,
+            offsetCenter: [0, '-40%'],       // x, y，单位px
+            textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+            }
+        },
+        detail : {
+            formatter:'{value}V',
+            textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+            }
+        },
+        data:[{value: 200}]
+  }
+ ]
 };
 
 option1 = {
@@ -364,7 +375,7 @@ option1 = {
                 fontSize: 12
               }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -429,7 +440,7 @@ option2 = {
                     fontSize: 12
                 }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -494,7 +505,7 @@ option3 = {
                     fontSize: 12
                 }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -559,7 +570,7 @@ option4 = {
                     fontSize: 12
                 }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -624,7 +635,7 @@ option5 = {
                     fontSize: 12
                 }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -689,7 +700,7 @@ option6 = {
                     fontSize: 12
                 }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -754,7 +765,7 @@ option7 = {
                     fontSize: 12
                 }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -819,7 +830,7 @@ option8 = {
                     fontSize: 12
                 }
             },
-            data:[{value: 1}]
+            data:[{value: 100}]
       }
     ]
 };
@@ -889,55 +900,55 @@ option9 = {
     ]
 };
     app.timeTicket = setInterval(function() {
-      option.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart.setOption(option,true);
     },2000);
     this.user = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option1.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option1.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart1.setOption(option1,true);
     },2000);
      this.user1 = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option2.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option2.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart2.setOption(option2,true);
     },2000);
      this.user2 = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option3.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option3.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart3.setOption(option3,true);
     },2000);
     this.user3 = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option4.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option4.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart4.setOption(option4,true);
     },2000);
     this.user4 = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart5.setOption(option5,true);
     },2000);
     this.user5 = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option6.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option6.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart6.setOption(option6,true);
     },2000);
     this.user6 = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option7.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option7.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart7.setOption(option7,true);
     },2000);
     this.user7 = (Math.random()).toFixed(2) - 0;
 
     app.timeTicket = setInterval(function() {
-      option8.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
+      option8.series[0].data[0].value = (Math.random()*400).toFixed(2) - 0;
       myChart8.setOption(option8,true);
     },2000);
     this.user8 = (Math.random()).toFixed(2) - 0;
@@ -945,21 +956,22 @@ option9 = {
     app.timeTicket = setInterval(function() {
       option9.series[0].data[0].value = (Math.random()).toFixed(2) - 0;
       myChart9.setOption(option9,true);
-      this.user = option9.series[0].data[0].value;
-      console.log(this.user);
     },2000);
     this.user9 = (Math.random()).toFixed(2) - 0;
-  }
+  },
 }
 
 </script>
+
 <style scoped>
 .tab-vertical {
   margin: 0 auto;
   display: block;
-  height: 650px;
+  height: 594px;
   background-color: #036EB8;
   width: 1060px;
+  color: #ffffff;
+  font-family: 黑体;
 }
 
 .tab-vertical a{
@@ -971,7 +983,7 @@ option9 = {
   background-color: #0F65AE;
   margin-left: 30px;
   width: 263px;
-  height: 442px;
+  height: 399px;
   border-radius: 4px;
 }
 
@@ -1004,7 +1016,7 @@ option9 = {
   margin-left: 30px;
   float: left;
   position: fixed;
-  bottom: 95px;
+  bottom: 139px;
   border-radius: 4px;
   width: 263px;
   height: 36px;
@@ -1023,7 +1035,6 @@ option9 = {
   display: flex;
   padding: 5px;
   font-size: 12pt;
-  font-family: 黑体;
   color: #ffffff;
   background-color: #0F65AE;
   padding-left: 28px;
@@ -1033,52 +1044,67 @@ option9 = {
   background-color: #0B4D95;
 }
 
-.ed-tab{
-  width: 700px;
+#ed-tab{
   height: 500px;
   position: relative;
   overflow: hidden;
-  background-color: #0B4D95;
-  margin-top: 5px;
-  margin-left: 340px;
-  color: #ffffff;
-  border-radius: 4px;
 }
 
-input[type='radio']{
-  display: none;
-}
-
-input[type='radio']:checked~div[class^='mod']{
-  display: block;
-}
-
-input[type='radio']:checked~label{
-  background-color:#004075;
-}
-
-[class^='mod']{
-  position: absolute;
-  top: 40px;
-  left: 20px;
-  display: none;
-}
-
-.tab+label{
-  top: 0;
-  float: left;
-  writing-mode: tb-rl;
-  text-align: center;
-  color: #ffffff;
-  flex-grow: 3;
-  transition: 0.3s background-color ease, 0.3s box-shadow ease;
+.ed-lab > div > a {
+	color: #ffffff;
   font-family: 黑体;
   font-size: 14pt;
+	display: inline-block;
+	margin: 1px;
+  background-color: #004075;
+	padding: 42px 15px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 0px;
+	border-radius: 3px;
+  margin-left: -238px;
 }
 
-.tab:checked + label[data-v-34e1e036] {
-    background-color: #036EB8;
-    cursor: default;
+.ed-class{
+  color: #ffffff;
+  font-family: 黑体;
+  font-size: 14pt;
+	display: inline-block;
+	margin: 1px;
+  background-color: #004075;
+	padding: 42px 15px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 0px;
+	border-radius: 3px;
+  margin-left: -100px;
+}
+
+.ed-lab > div:target > a {
+    background: #0B4D95;
+}
+
+
+.ed-lab > div > div {
+	background: #0B4D95;
+	z-index: -2;
+	top: 0;
+	padding: 20px;
+	outline-offset: -8px;
+	min-height: 250px;
+	position: absolute;
+	left: 51px;
+	width: 618px;
+  height: 440px;
+  font-size: 12pt;
+}
+
+.ed-lab > div:not(:target) > div {
+	display: block;
+}
+
+
+.ed-lab > div:target > div {
+	position: absolute;
+	z-index: 3 !important;
 }
 
 .ed-lab{
@@ -1086,7 +1112,6 @@ input[type='radio']:checked~label{
   height: 250px;
   width: 351px;
   text-align: center;
-  padding-top: 100px;
 }
 
 .ed-labs{
@@ -1094,12 +1119,6 @@ input[type='radio']:checked~label{
   height: 250px;
   width: 350px;
   padding-top: 40px;
-}
-
-.mod{
-  width: 618px;
-  height: 440px;
-  margin-left: 15px;
 }
 
 .ed-item{
@@ -1118,7 +1137,6 @@ input[type='radio']:checked~label{
 .ed-title{
   list-style: none;
   display: flex;
-  padding-top: 50px;
   padding-left: 28px;
   font-family: 黑体;
   font-size: 14pt;
@@ -1131,30 +1149,18 @@ input[type='radio']:checked~label{
   color: #ffffff;
 }
 
-.mod-2{
-  width: 558px;
-  height: 440px;
-  font-size: 12pt;
-  font-family: 黑体;
-  color: #ffffff;
-}
-
 .ed-mod{
   width: 558px;
   height: 279px;
   border: 1px solid #275E84;
-  margin-left: 60px;
-}
-
-.mod1{
-  padding-top: 279px;
+  margin-left: 12px;
 }
 
 .ed-ment{
   width: 558px;
   height: 111px;
   border: 1px solid #275E84;
-  margin-left: 60px;
+  margin-left: 12px;
   margin-top: 15px;
 }
 
@@ -1172,7 +1178,7 @@ input[type='radio']:checked~label{
 .ed-tet{
   width: 371px;
   height: 390px;
-  margin-left: 25px;
+  margin-left: 12px;
   border: 1px solid #275E84;
   margin-top: 5px;
 }
@@ -1259,8 +1265,7 @@ input[type='radio']:checked~label{
   width: 169px;
   height: 210px;
   border: 1px solid #275E84;
-  float: right;
-  margin-top: -390px;
+  margin-left: 387px;
 }
 
 .ed-out{
@@ -1282,8 +1287,8 @@ input[type='radio']:checked~label{
   width: 169px;
   height: 170px;
   border: 1px solid #275E84;
-  float: right;
-  margin-top: -170px;
+  margin-left: 387px;
+  margin-top: 10px;
 }
 
 .ed-out1{
