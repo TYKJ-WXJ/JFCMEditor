@@ -282,7 +282,7 @@ function init() {
   initObject();
   // 监听键盘按键
   document.addEventListener('keydown', onkeyDown, false);
-  window.addEventListener('mousedown', initHover);// 页面绑定鼠标点击事件
+  window.addEventListener('mousemove', initHover);// 页面绑定鼠标移动事件
 }
 
 let doorState = true;// 默认是门是关闭的
