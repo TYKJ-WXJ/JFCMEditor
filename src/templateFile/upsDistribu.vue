@@ -42,7 +42,7 @@
                 <div class="ed-time">
                   <ul>
                     <li class="ed-item-1">
-                      ▪市电进线三项电压
+                      •市电进线三项电压
                     </li>
                   </ul>
                   <div class="ed-surface">
@@ -71,7 +71,7 @@
                   <div class="ed-time">
                     <ul>
                       <li class="ed-item-1">
-                        ▪输出电压
+                        •输出电压
                       </li>
                     </ul>
                     <div class="ed-surface">
@@ -102,7 +102,7 @@
                   <div class="ed-time">
                     <ul>
                       <li class="ed-item-1">
-                        ▪输出电流
+                        •输出电流
                       </li>
                     </ul>
                     <div class="ed-surface">
@@ -134,7 +134,7 @@
                 <div class="ed-tet2">
                   <ul>
                     <li class="ed-item-1">
-                      ▪PUE
+                      •PUE
                     </li>
                   </ul>
                   <div class="ed-out">
@@ -152,7 +152,7 @@
                   <div class="ed-tet3">
                     <ul>
                       <li class="ed-item-1">
-                        ▪重要开关状态
+                        •重要开关状态
                       </li>
                     </ul>
                     <div class="ed-out1">
@@ -219,23 +219,847 @@
 </div>
 </template>
 <script>
+import server from '@/services/server';
 import echarts from 'echarts/dist/echarts.min';
+import $ from 'jquery';
 export default {
-data () {
-  return {
-    user: '',
-    user1: '',
-    user2: '',
-    user3: '',
-    user4: '',
-    user5: '',
-    user6: '',
-    user7: '',
-    user8: '',
-    user9: ''
+  name: 'tab-vertical',
+  data () {
+    return {
+      name: '',
+      model: '',
+      number: '',
+      size: '',
+      color: '',
+      weight: '',
+      bewrite: '',
+      user: '',
+      user1: '',
+      user2: '',
+      user3: '',
+      user4: '',
+      user5: '',
+      user6: '',
+      user7: '',
+      user8: '',
+      user9: ''
     }
+  },
+  computed: {},
+  mounted() {
+    this.upsdataJson();
+    this.dataLine();
+  },
+  methods: {
+    upsdataJson() {
+      // 获取数据
+      server.upsJSON().then((res) => {
+        this.user = res.data.user;
+        this.user1 = res.data.user1;
+        this.user2 = res.data.user2;
+        this.user3 = res.data.user3;
+        this.user4 = res.data.user4;
+        this.user5 = res.data.user5;
+        this.user6 = res.data.user6;
+        this.user7 = res.data.user7;
+        this.user8 = res.data.user8;
+        this.user9 = res.data.user9;
+        this.name = res.data.name;
+        this.model = res.data.model;
+        this.number = res.data.number;
+        this.size = res.data.size;
+        this.color = res.data.color;
+        this.weight = res.data.weight;
+        this.bewrite = res.data.bewrite;
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    dataLine() {
+      let myChart = echarts.init(document.getElementById('myChart'));
+      let myChart1 = echarts.init(document.getElementById('myChart-1'));
+      let myChart2 = echarts.init(document.getElementById('myChart-2'));
+      let myChart3 = echarts.init(document.getElementById('myChart-3'));
+      let myChart4 = echarts.init(document.getElementById('myChart-4'));
+      let myChart5 = echarts.init(document.getElementById('myChart-5'));
+      let myChart6 = echarts.init(document.getElementById('myChart-6'));
+      let myChart7 = echarts.init(document.getElementById('myChart-7'));
+      let myChart8 = echarts.init(document.getElementById('myChart-8'));
+      let myChart9 = echarts.init(document.getElementById('myChart-9'));
+      myChart.setOption({
+        tooltip : {
+        formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data: []
+              }
+            ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart.setOption({
+            series: [{data: data.data}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart1.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压:',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
+            },
+            axisTick: {            // 坐标轴小标记
+              splitNumber: 5,   // 每份split细分多少段
+              length :5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
+            },
+            axisLabel: {           // 坐标轴文本标签
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
+            },
+            splitLine: {           // 分隔线
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
+            },
+            pointer : {  // 指针
+              width : 1.5,
+              length: 25
+            },
+            title : {
+              show : true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
+            },
+            detail : {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
+            },
+            data:[]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart1.setOption({
+            series: [{data: data.data1}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart2.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart2.setOption({
+            series: [{data: data.data2}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart3.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart3.setOption({
+            series: [{data: data.data3}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart4.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[{value: 100}]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart4.setOption({
+            series: [{data: data.data4}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart5.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart5.setOption({
+            series: [{data: data.data5}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart6.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart6.setOption({
+            series: [{data: data.data6}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart7.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart7.setOption({
+            series: [{data: data.data7}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart8.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart8.setOption({
+            series: [{data: data.data8}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+
+      myChart9.setOption({
+        tooltip : {
+            formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+            show : true
+        },
+        series : [
+            {
+            name:'电压',
+            type:'gauge',
+            radius: '90%',
+            min:0,
+            max:400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                    width: 2
+                }
+            },
+            axisTick: {            // 坐标轴小标记
+                splitNumber: 5,   // 每份split细分多少段
+                length :5,        // 属性length控制线长
+                lineStyle: {       // 属性lineStyle控制线条样式
+                    color: 'auto',
+                    length: 5
+                }
+            },
+            axisLabel: {           // 坐标轴文本标签
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 3
+                }
+            },
+            splitLine: {           // 分隔线
+                show: true,        // 默认显示，属性show控制显示与否
+                length :7,         // 属性length控制线长
+                lineStyle: {       // 属性lineStyle 控制线条样式
+                    color: 'auto'
+                }
+            },
+            pointer : {  // 指针
+                width : 1.5,
+                length: 25
+            },
+            title : {
+                show : true,
+                offsetCenter: [0, '-40%'],       // x, y，单位px
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    fontWeight: 'bolder'
+                }
+            },
+            detail : {
+                textStyle: {       // 其余属性默认使用全局文本样式
+                    color: 'auto',
+                    fontSize: 12
+                }
+            },
+            data:[{value: 100}]
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/upsUser.json",
+        async: false,
+        cache: false,
+        success: function(data){
+          myChart9.setOption({
+            series: [{data: data.data9}]
+          });
+        },
+        error:function(error){
+          console.log(error);
+        }
+      });
+    },
+
   }
 }
+
 </script>
 <style scoped>
 .tab-vertical {

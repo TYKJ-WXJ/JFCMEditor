@@ -43,6 +43,11 @@ const server = {
     return axios('http://localhost:8889/static/user.json', {
       method: 'get'
     });
+  },
+  upsJSON() {
+    return axios('http://localhost:8889/static/upsUser.json', {
+      method: 'get'
+    });
   }
 };
 
