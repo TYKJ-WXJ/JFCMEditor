@@ -43,29 +43,29 @@
                     <a class="ed-item-1">参数</a>
                   <div class="meth">
                     <table>
-                      <tr class="ed-item">
+                      <tr class="ed-temp">
                         <td>•送风温度</td>
-                        <td>
+                        <td class="ed-mess">
                           <div class="ed-text">
                           <a>25℃</a>
                         </div>
                         </td>
-                        <td>•回风温度</td>
-                        <td>
+                        <td class="ed-mess-1">•回风温度</td>
+                        <td class="ed-mess">
                           <div class="ed-text">
                           <a>28℃</a>
                         </div>
                         </td>
                       </tr>
-                      <tr class="ed-item">
+                      <tr class="ed-temp">
                         <td>•送风湿度</td>
-                        <td>
+                        <td class="ed-mess">
                           <div class="ed-text">
                           <a>50%</a>
                         </div>
                         </td>
-                        <td>•回风湿度</td>
-                        <td>
+                        <td class="ed-mess-1">•回风湿度</td>
+                        <td class="ed-mess">
                           <div class="ed-text">
                           <a>45%</a>
                         </div>
@@ -74,13 +74,60 @@
                     </table>
                   </div>
                   <div class="ed-circle">
-                    <Circle :percent="percent" :stroke-color="color">
-                        <Icon v-if="percent == 100" type="ios-checkmark-empty" size="60" style="color:#5cb85c"></Icon>
-                        <span v-else style="font-size:24px">{{ percent }}%</span>
-                    </Circle>
+                    <div class="ed-circle-1">
+                      <i-circle :percent="10" style="width:68px;height:70px;">
+                        <span class="demo-Circle-inner"><img src="../assets/img/j1.png" alt=""></span>
+                      </i-circle>
+                    </div>
+                    <div class="ed-circle-2">
+                      <i-circle :percent="20" style="width:68px;height:70px;">
+                        <span class="demo-Circle-inner"><img src="../assets/img/j2.png" alt=""></span>
+                      </i-circle>
+                    </div>
+                    <div class="ed-circle-3">
+                      <i-circle :percent="80" style="width:68px;height:70px;">
+                        <span class="demo-Circle-inner"><img src="../assets/img/j3.png" alt=""></span>
+                      </i-circle>
+                    </div>
+                    <div class="ed-circle-4">
+                      <i-circle :percent="80" style="width:68px;height:70px;">
+                        <span class="demo-Circle-inner" ><img src="../assets/img/j4.png" alt=""></span>
+                      </i-circle>
+                    </div>
+                    <div class="ed-circle-5">
+                     <i-circle :percent="80" style="width:68px;height:70px;">
+                        <span class="demo-Circle-inner"><img src="../assets/img/j5.png" alt=""></span>
+                      </i-circle>
+                    </div>
                   </div>
                 </div>
                 </div>
+                <div class="ed-state">
+                <div class="ed-time">
+                  <a class="ed-state-1">状态监测</a>
+                  <a class="ed-state-2">正常</a>
+                </div>
+                <div class="ed-statue">
+                  <div class="ed-status-1">
+                    <img src="../assets/img/jmkt6.png" alt="">
+                  </div>
+                  <div class="ed-status-2">
+                    <img src="../assets/img/jmkt7.png" alt="">
+                  </div>
+                  <div class="ed-status-3">
+                    <img src="../assets/img/jmkt8.png" alt="">
+                  </div>
+                  <div class="ed-status-4">
+                    <img src="../assets/img/jmkt9.png" alt="">
+                  </div>
+                  <div class="ed-status-5">
+                    <img src="../assets/img/jmkt10.png" alt="">
+                  </div>
+                  <div class="ed-status-6">
+                    <img src="../assets/img/jmkt11.png" alt="">
+                  </div>
+                </div>
+              </div>
               </div>
             </div>
         <div id="c2">
@@ -212,6 +259,7 @@ export default {
   width: 263px;
   height: 399px;
   border-radius: 4px;
+  font-size: 12pt;
 }
 
 .ed-titles{
@@ -239,11 +287,15 @@ export default {
   height: 100%;
 }
 
+.ed-title img{
+  padding-left: 40px;
+}
+
  .ed-data{
   margin-left: 30px;
   float: left;
   position: fixed;
-  bottom: 139px;
+  bottom: 157px;
   border-radius: 4px;
   width: 263px;
   height: 36px;
@@ -321,7 +373,6 @@ export default {
 	left: 51px;
 	width: 618px;
   height: 440px;
-  font-size: 12pt;
 }
 
 .ed-lab > div:not(:target) > div {
@@ -349,7 +400,7 @@ export default {
 }
 
 .meth{
-  padding-top:10px;
+  margin-top: -35px;
 }
 
 .ed-item{
@@ -359,9 +410,25 @@ export default {
   padding-left: 50px;
 }
 
+.ed-temp{
+  list-style: none;
+  display: flex;
+  padding-top: 10px;
+  padding-left: 67px;
+}
+
+.ed-mess{
+  padding-left: 10px;
+  padding-top: 2px;
+}
+
+.ed-mess-1{
+  margin-left: 90px;
+}
+
 .ed-text{
-  width: 85px;
-  height: 20px;
+  width: 90px;
+  height: 25px;
   border: 1px solid #2CA6E0;
   border-radius: 4px;
   margin-left: 15px;
@@ -374,8 +441,41 @@ export default {
 }
 
 .ed-circle{
+  margin-left: 18px;
+  margin-top: 13px;
+}
+
+.ed-circle-1{
   width:80px;
   height:80px;
+  margin-left: 30px;
+  margin-top: 10px;
+}
+
+.ed-circle-2{
+  height:80px;
+  margin-left: 130px;
+  margin-top: -81px;
+}
+
+.ed-circle-3{
+  height:80px;
+  margin-left: 230px;
+  margin-top: -79px;
+}
+
+.ed-circle-4{
+  width:80px;
+  height:80px;
+  margin-left: 330px;
+  margin-top: -81px;
+}
+
+.ed-circle-5{
+  width:80px;
+  height:80px;
+  margin-left: 430px;
+  margin-top: -79px;
 }
 
 .ed-title{
@@ -424,7 +524,33 @@ export default {
   height: 170px;
   margin-left: 12px;
   border: 1px solid #275E84;
-  margin-top: 5px;
+  font-size: 12pt;
+}
+
+.ed-state{
+  width: 550px;
+  height: 225px;
+  margin-left: 12px;
+  border: 1px solid #275E84;
+  margin-top: 10px;
+}
+
+.ed-state-1{
+  width: 100px;
+  list-style: none;
+  display: flex;
+  padding-top: 20px;
+  padding-left: 20px;
+  font-size: 12pt;
+}
+
+.ed-state-2{
+  width: 100px;
+  list-style: none;
+  display: flex;
+  padding-top: 10px;
+  padding-left: 30px;
+  font-size: 16pt;
 }
 
 .ed-surface{
@@ -444,11 +570,11 @@ export default {
 }
 
 .ed-item-1{
-  width: 45px;
+  width: 55px;
   list-style: none;
   display: flex;
   padding-top: 10px;
-  padding-left: 10px;
+  padding-left: 15px;
   font-size: 12pt;
 }
 
@@ -493,4 +619,37 @@ export default {
   font-size: 12pt;
 }
 
+.ivu-chart-circle{
+  position: relative;
+  width: 65px;
+}
+
+.ed-status-1{
+  margin-top: 20px;
+  padding-right: 300px;
+}
+
+.ed-status-2{
+  margin-top: -87px;
+}
+
+.ed-status-3{
+  padding-left: 395px;
+  margin-top: -87px;
+}
+
+.ed-status-4{
+  padding-right: 197px;
+  margin-top: 20px;
+}
+
+.ed-status-5{
+  margin-left: 100px;
+  margin-top: -85px;
+}
+
+.ed-status-6{
+  margin-left: 397px;
+  margin-top: -85px;
+}
 </style>
