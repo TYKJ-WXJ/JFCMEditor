@@ -119,6 +119,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageJF'], resolve);
       }
+    },
+    {
+      path: '/pagePrecision',
+      name: 'pagePrecision',
+      component (resolve) {
+        require(['@/views/pagePrecision'], resolve);
+      }
     }
   ]
 });
