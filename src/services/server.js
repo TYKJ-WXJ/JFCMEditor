@@ -25,7 +25,7 @@ const server = {
     });
   },
   getSvgJSON() {
-    return axios('http://localhost:8890/dist/static/JSON/svgData.json', {
+    return axios('http://localhost:8889/src/views/test.json', {
       method: 'get'
     });
   },

@@ -201,6 +201,12 @@ function createWallMaterail() {
   matArrayB.push(new THREE.MeshPhongMaterial({color: 0xafc0ca}));  // 左   0xafc0ca :灰色
   matArrayB.push(new THREE.MeshPhongMaterial({color: 0xafc0ca}));  // 右
 }
+
+// 数据转化函数
+function conversionData(dt) {
+  console.log(dt);
+}
+
 // 创建房间布局
 function createLayout() {
   // 墙面1 立方体比较长的面  左一
@@ -272,11 +278,12 @@ function initObject() {
 }
 
 // 初始化函数
-function init() {
+function init(dt) {
   initScene();
   initCamera();
   initRender();
   // initEvent();
+  conversionData(dt);
   initControls();
   initLight();
   initObject();
@@ -318,7 +325,7 @@ function update() {
   rotateAngle = Math.PI / 2 * delta;
   controls.update();
 }
-export default function() {
-  init();
+export default function JF(dt) {
+  init(dt);
   animate();
 }
