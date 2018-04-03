@@ -126,6 +126,48 @@ export default new Router({
       component (resolve) {
         require(['@/views/pagePrecision'], resolve);
       }
+    },
+    {
+      path: '/pageMonitor',
+      name: 'pageMonitor',
+      component (resolve) {
+        require(['@/views/pageMonitor'], resolve);
+      }
+    },
+    {
+      path: '/pageCamera',
+      name: 'pageCamera',
+      component (resolve) {
+        require(['@/views/pageCamera'], resolve);
+      }
+    },
+    {
+      path: '/Entrance',
+      name: 'Entrance',
+      component (resolve) {
+        require(['@/views/Entrance'], resolve);
+      }
+    },
+    {
+      path: '/Channel',
+      name: 'Channel',
+      component (resolve) {
+        require(['@/views/Channel'], resolve);
+      }
+    },
+    {
+      path: '/Noone',
+      name: 'Noone',
+      component (resolve) {
+        require(['@/views/Noone'], resolve);
+      }
+    },
+    {
+      path: '/SolidState',
+      name: 'SolidState',
+      component (resolve) {
+        require(['@/views/SolidState'], resolve);
+      }
     }
   ]
 });

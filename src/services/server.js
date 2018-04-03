@@ -48,6 +48,11 @@ const server = {
     return axios('http://localhost:8889/static/upsUser.json', {
       method: 'get'
     });
+  },
+  preJSON() {
+    return axios('http://localhost:8889/static/preUser.json', {
+      method: 'get'
+    });
   }
 };
 

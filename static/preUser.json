@@ -1,0 +1,17 @@
+{
+  "name": "爱默生",
+  "model": "定制",
+  "number": "1234567",
+  "size": "600×500×1975mm",
+  "color": "白色",
+  "weight": "100kg",
+  "heating": "4kw",
+  "humidification": "2.5kg/h",
+  "fla": "2.5kg/h",
+  "bewrite": "这是一条描述",
+  "givewind": "25℃",
+  "rewind": "28℃",
+  "givewind1": "50%",
+  "rewind1": "45%",
+  "percent": "50"
+}
