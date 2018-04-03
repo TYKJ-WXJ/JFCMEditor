@@ -1,5 +1,5 @@
 <template>
-  <div id="ThreeJS" style="position: absolute; left: 0px; top: 0px"></div>
+  <div id="ThreeJS" style="position: absolute; left: 0px; top: 200px"></div>
 </template>
 
 <script>
