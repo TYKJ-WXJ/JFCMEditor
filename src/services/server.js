@@ -48,6 +48,11 @@ const server = {
     return axios('http://localhost:8889/static/upsUser.json', {
       method: 'get'
     });
+  },
+  getAreas() {
+    return axios('http://192.168.1.2:8010/areas', {
+      method: 'get'
+    });
   }
 };
 

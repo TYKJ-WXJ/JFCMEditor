@@ -18,13 +18,12 @@ export default{
   methods: {
     svgData() {
       // 获取JSON数据
-      server.getSvgJSON().then((res) => {
-        console.log(res.data);
-        let dt = {
-          id: '12',
-          name: 'ni'
-        }
-        JF(dt);
+      server.getAreas().then((res) => {
+        console.log(res.data.data);
+        // 将字符串转成对象
+        let svgData = JSON.parse(res.data.data[0].svg);
+        console.log(svgData);
+        JF(svgData);
       }).catch((err) => {
         console.log(err);
       })
