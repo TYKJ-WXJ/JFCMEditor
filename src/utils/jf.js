@@ -174,6 +174,28 @@ function createCubeWall(width, height, depth, angle, material, x, y, z) {
   scene.add(cube);
 }
 
+// 创建机柜,思路是：先创建一个矩形，而后正面透明，内部挖空
+/*
+length width height x y z
+num 机柜有几层
+* */
+function createCabinet(length, width, height, x, y, z, num) {
+  let cubeGeometry = new THREE.BoxGeometry(length, width, height);
+  let cubeMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff0000
+  });
+  let cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+  cube.position.x = x;
+  cube.position.y = y;
+  cube.position.z = z;
+  return cube;
+}
+
+// 创建主机
+function createHost() {
+  //
+}
+
 // 返回墙对象
 // function returnWallObject(width, height, depth, angle, material, x, y, z) {
 //   let cubeGeometry = new THREE.BoxGeometry(width, height, depth);
@@ -206,8 +228,6 @@ function createWallMaterail() {
 function conversionData(dt) {
   console.log(dt);
 }
-
-// 创建机柜
 
 // 创建房间布局
 function createLayout() {
