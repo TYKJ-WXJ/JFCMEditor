@@ -207,6 +207,8 @@ function conversionData(dt) {
   console.log(dt);
 }
 
+// 创建机柜
+
 // 创建房间布局
 function createLayout() {
   // 墙面1 立方体比较长的面  左一
