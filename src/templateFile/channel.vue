@@ -227,12 +227,12 @@ export default {
 
 .ed-tet{
   list-style: none;
-  padding-right: 140px;
+  padding-right: 155px;
 }
 
 .ed-tet1{
   list-style: none;
-  padding-right: 28px;
+  padding-right: 43px;
   margin-top: 10px;
 }
 

@@ -32,11 +32,11 @@
       </li>
     </ul>
   </div>
-  <div id="ed-tab">
+  <div id="ed-upsDistribu">
     <div class="ed-tab">
     <div class="ed-lab">
-        <div id="c1">
-          <a href="#c1" title="First" class="ed-class">设</br>备</br>详</br>情</a>
+        <div id="upsDistribu">
+          <a href="#upsDistribu" title="First" class="ed-class">设</br>备</br>详</br>情</a>
             <div class="tab-content">
               <div class="ed-tet">
                 <div class="ed-time">
@@ -162,8 +162,8 @@
                 </div>
               </div>
             </div>
-        <div id="c2">
-          <a href="#c2" title="Second">设</br>备</br>基</br>础</br>信</br>息</a>
+        <div id="upsDistribu2">
+          <a href="#upsDistribu2" title="Second">设</br>备</br>基</br>础</br>信</br>息</a>
             <div class="tab-content">
               <div class="ed-upsimg">
                 <img src="../assets/img/UPS.png" alt="">
@@ -1148,7 +1148,7 @@ export default {
   background-color: #0B4D95;
 }
 
-#ed-tab{
+#ed-upsDistribu{
   height: 500px;
   position: relative;
   overflow: hidden;
@@ -1175,7 +1175,7 @@ export default {
 
 .ed-lab > div > div {
 	background: #0B4D95;
-	z-index: -2;
+	z-index: 1;
 	top: 0;
 	padding: 20px;
 	outline-offset: -8px;
@@ -1192,8 +1192,8 @@ export default {
 }
 
 .ed-lab > div:target > div {
-  display: block;
-	z-index: 1 !important;
+  position: absolute;
+	z-index: 2 !important;
 }
 
 .ed-lab{

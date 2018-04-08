@@ -21,6 +21,9 @@
     <router-link to="Channel">Channel</router-link>
     <router-link to="Noone">Noone</router-link>
     <router-link to="SolidState">SolidState</router-link>
+    <router-link to="pageHost">pageHost</router-link>
+    <router-link to="pageCabinet">pageCabinet</router-link>
+    <router-link to="pageEngine">pageEngine</router-link>
     <router-link to="/pageJF">pageJF</router-link>
     <router-view></router-view>
   </div>

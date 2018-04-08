@@ -79,11 +79,15 @@ export default {
   name: 'tab-vertical',
   data () {
     return {
+      name: '',
       model: '',
       number: '',
       size: '',
       color: '',
       weight: '',
+      heating: '',
+      humidification: '',
+      fla: '',
       bewrite: ''
     }
   },
@@ -95,11 +99,15 @@ export default {
     predataJson() {
       // 获取数据
       server.preJSON().then((res) => {
+        this.name = res.data.name;
         this.model = res.data.model;
         this.number = res.data.number;
         this.size = res.data.size;
         this.color = res.data.color;
         this.weight = res.data.weight;
+        this.heating = res.data.heating;
+        this.humidification = res.data.humidification;
+        this.fla = res.data.fla;
         this.bewrite = res.data.bewrite;
       }).catch((err) => {
         console.log(err);
@@ -168,15 +176,17 @@ export default {
 
 .ed-mod{
   width: 325px;
-  height: 353px;
+  height: 345px;
   border: 1px solid #275E84;
   margin-left: 20px;
+  margin-top: 12px;
+  float: left;
 }
 
 .ed-item{
   list-style: none;
   display: flex;
-  padding-top: 4px;
+  padding-top: 2px;
   padding-left: 22px;
   font-size: 12pt;
 }
@@ -186,6 +196,7 @@ export default {
   padding-top: 10px;
   font-size: 16pt;
   padding-right: 195px;
+  padding-bottom: 8px;
 }
 
 .ed-temp{
@@ -195,8 +206,8 @@ export default {
   font-size: 12pt;
   margin-left: 20px;
   margin-top: 7px;
+  float: left;
 }
-
 
  .ed-data{
   margin-left: 30px;
@@ -247,29 +258,5 @@ export default {
   padding-right: 30px;
   margin-top: 10px;
 }
-
-.ed-title{
-  list-style: none;
-  display: flex;
-  font-family: 黑体;
-  font-size: 12pt;
-  width: 170px;
-  margin-bottom: -28px;
-  margin-left: 77px;
-}
-
-.ed-title img{
-  padding-top: 6px;
-  height: 22px;
-  margin-left: 30px;
-}
-
-.ed-red{
-  display: none;
-  font-family: 黑体;
-  font-size: 12pt;
-  color: #ffffff;
-}
-
 
 </style>

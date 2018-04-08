@@ -32,11 +32,11 @@
       </li>
     </ul>
   </div>
-  <div id="ed-tab">
+  <div id="ed-distribution">
     <div class="ed-tab">
     <div class="ed-lab">
-        <div id="c1">
-          <a href="#c1" title="First">设</br>备</br>详</br>情</a>
+        <div id="distribution">
+          <a href="#distribution" title="First">设</br>备</br>详</br>情</a>
             <div class="tab-content">
               <div class="ed-tet">
                 <div class="ed-time">
@@ -162,8 +162,8 @@
                 </div>
               </div>
             </div>
-        <div id="c2">
-          <a href="#c2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
+        <div id="distribution2">
+          <a href="#distribution2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
             <div class="tab-content">
               <div class="ed-mod">
                 <ul>
@@ -1133,7 +1133,7 @@ export default {
   background-color: #0B4D95;
 }
 
-#ed-tab{
+#ed-distribution{
   height: 500px;
   position: relative;
   overflow: hidden;
@@ -1174,7 +1174,7 @@ export default {
 
 .ed-lab > div > div {
 	background: #0B4D95;
-	z-index: -2;
+	z-index: 1;
 	top: 0;
 	padding: 20px;
 	outline-offset: -8px;
@@ -1193,7 +1193,7 @@ export default {
 
 .ed-lab > div:target > div {
 	position: absolute;
-	z-index: 3 !important;
+	z-index: 2 !important;
 }
 
 .ed-lab{

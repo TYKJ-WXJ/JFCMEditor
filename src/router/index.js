@@ -168,6 +168,27 @@ export default new Router({
       component (resolve) {
         require(['@/views/SolidState'], resolve);
       }
+    },
+    {
+      path: '/pageHost',
+      name: 'pageHost',
+      component (resolve) {
+        require(['@/views/pageHost'], resolve);
+      }
+    },
+    {
+      path: '/pageCabinet',
+      name: 'pageCabinet',
+      component (resolve) {
+        require(['@/views/pageCabinet'], resolve);
+      }
+    },
+    {
+      path: '/pageEngine',
+      name: 'pageEngine',
+      component (resolve) {
+        require(['@/views/pageEngine'], resolve);
+      }
     }
   ]
 });
