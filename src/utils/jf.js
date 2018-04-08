@@ -196,9 +196,8 @@ function createCabinet(width, height, depth, x, z, y, num) {
   // cube.position.y = y;
   // cube.position.z = z;
   cube.position.set(x, z, y);
-  createDoor(width, height, depth, x, z, y);
   console.log(1);
-  return cube;
+  scene.add(cube);
 }
 
 // 创建主机
@@ -218,12 +217,12 @@ function createHost(x, y, z) {
 function createDoor(width, height, depth, x, z, y) {
   let loader = new THREE.TextureLoader();
   loader.load('../../src/assets/img/j1.png', function(texture) {
-    let doorgeometry = new THREE.BoxGeometry(width, height, depth);
+    let doorgeometry = new THREE.BoxGeometry(width, height, 1);
     let doormaterial = new THREE.MeshBasicMaterial({map: texture, color: 0XECF1F3});
     doormaterial.opacity = 1.0;
     doormaterial.transparent = true;
     doorA = new THREE.Mesh(doorgeometry, doormaterial);
-    doorA.position.set(x + 50, z, y);
+    doorA.position.set(x, z, y + (width / 2));
     console.log(2);
     scene.add(doorA);
   });
@@ -261,8 +260,8 @@ function createWallMaterail() {
 function conversionData(dt) {
   // console.log(dt);
   for (let i = 0; i < 1; i++) {
-    let cabinet = createCabinet(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y, 5);
-    scene.add(cabinet);
+    createCabinet(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y, 5);
+    createDoor(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y);
   }
 }
 
