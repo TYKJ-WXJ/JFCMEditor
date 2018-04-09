@@ -9,7 +9,7 @@ var OrbitControls = require('../../node_modules/three-orbitcontrols');
 var Detector = require('../../node_modules/three/examples/js/Detector');
 // var ThreeBSP = require('../../src/utils/THree/ThreeBSP');
 // 设置全局变量
-let scene, camera, renderer, controls, door;
+let scene, camera, renderer, controls, door, doorA;
 // let keyboard = new THREEx.KeyboardState();// 保持键盘的当前状态，可以随时查询
 let clock = new THREE.Clock();
 let SCREEN_WIDTH = window.innerWidth;
@@ -71,14 +71,14 @@ function initHover() {
   // calculate objects intersecting the picking ray
   let intersects = raycaster.intersectObjects(scene.children);
 
-  for (let i = 0; i < intersects.length; i++) {
-    intersects[i].object.material.color = {
-      r: 0,
-      g: 0,
-      b: 0
-    };
-    console.log(intersects);
-  }
+  // for (let i = 0; i < intersects.length; i++) {
+  //   intersects[i].object.material.color = {
+  //     r: 0,
+  //     g: 0,
+  //     b: 0
+  //   };
+  //   console.log(intersects);
+  // }
 }
 
 // 5.控制
@@ -174,6 +174,60 @@ function createCubeWall(width, height, depth, angle, material, x, y, z) {
   scene.add(cube);
 }
 
+// 创建机柜,思路是：先创建一个矩形，而后正面透明，内部挖空,机柜门是一个宽为1，长和高于机柜相等
+/*
+ width height depth x y z
+num 机柜有几层
+* */
+function createCabinet(width, height, depth, x, z, y, num) {
+  let cubeGeometry = new THREE.BoxGeometry(width, height, depth);
+  var materials = [];
+  for (let i = 0; i < 6; i++) {
+    materials.push(new THREE.MeshBasicMaterial({
+      map: THREE.ImageUtils.loadTexture('../../src/assets/logo.png', {}, function() {
+        renderer.render(scene, camera);
+      }),
+      overdraw: true
+    }));
+  };
+  let cubeMaterial = new THREE.MeshFaceMaterial(materials);
+  let cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+  // cube.position.x = x;
+  // cube.position.y = y;
+  // cube.position.z = z;
+  cube.position.set(x, z, y);
+  console.log(1);
+  scene.add(cube);
+}
+
+// 创建主机
+function createHost(x, y, z) {
+  let cubeGeometry = new THREE.BoxGeometry(4, 4, 2);
+  let cubeMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff0000
+  });
+  let cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+  cube.position.x = x;
+  cube.position.y = y;
+  cube.position.z = z;
+  return cube;
+}
+
+// 创建门
+function createDoor(width, height, depth, x, z, y) {
+  let loader = new THREE.TextureLoader();
+  loader.load('../../src/assets/img/j1.png', function(texture) {
+    let doorgeometry = new THREE.BoxGeometry(width, height, 1);
+    let doormaterial = new THREE.MeshBasicMaterial({map: texture, color: 0XECF1F3});
+    doormaterial.opacity = 1.0;
+    doormaterial.transparent = true;
+    doorA = new THREE.Mesh(doorgeometry, doormaterial);
+    doorA.position.set(x, z, y + (width / 2));
+    console.log(2);
+    scene.add(doorA);
+  });
+}
+
 // 返回墙对象
 // function returnWallObject(width, height, depth, angle, material, x, y, z) {
 //   let cubeGeometry = new THREE.BoxGeometry(width, height, depth);
@@ -201,6 +255,16 @@ function createWallMaterail() {
   matArrayB.push(new THREE.MeshPhongMaterial({color: 0xafc0ca}));  // 左   0xafc0ca :灰色
   matArrayB.push(new THREE.MeshPhongMaterial({color: 0xafc0ca}));  // 右
 }
+
+// 数据转化函数
+function conversionData(dt) {
+  // console.log(dt);
+  for (let i = 0; i < 1; i++) {
+    createCabinet(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y, 5);
+    createDoor(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y);
+  }
+}
+
 // 创建房间布局
 function createLayout() {
   // 墙面1 立方体比较长的面  左一
@@ -272,11 +336,12 @@ function initObject() {
 }
 
 // 初始化函数
-function init() {
+function init(dt) {
   initScene();
   initCamera();
   initRender();
   // initEvent();
+  conversionData(dt);
   initControls();
   initLight();
   initObject();
@@ -318,7 +383,7 @@ function update() {
   rotateAngle = Math.PI / 2 * delta;
   controls.update();
 }
-export default function() {
-  init();
+export default function JF(dt) {
+  init(dt);
   animate();
 }
