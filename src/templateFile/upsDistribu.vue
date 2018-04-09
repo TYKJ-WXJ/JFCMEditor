@@ -1188,7 +1188,7 @@ export default {
 }
 
 .ed-lab > div:not(:target) > div {
-	display: none;
+	display: block;
 }
 
 .ed-lab > div:target > div {

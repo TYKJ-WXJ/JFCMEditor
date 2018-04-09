@@ -1,13 +1,13 @@
 <template>
 <div class="tab-vertical">
   <div class="ed-titles">
-    <p>机房模板</p>
+    <p>摄像头模板</p>
   </div>
-  <div id="ed-engine">
+  <div id="ed-cabinet">
     <div class="ed-tab">
     <div class="ed-lab">
-        <div id="engine">
-          <a href="#engine" title="First">设</br>备</br>详</br>情</a>
+        <div id="cabinet">
+          <a href="#cabinet" title="First">设</br>备</br>详</br>情</a>
             <div class="tab-content">
               <div class="ed-tet">
                 <div class="ed-switch">
@@ -15,23 +15,22 @@
                     <p>配</br>电</br>信</br>息</p>
                   </div>
                   <div class="ed-switch-2">
-                    <div id="myChart">
+                    <div id="myChart-p1">
                     </div>
                     <div class="meth">
                       <p>输入电压：{{ user }}V</p>
                     </div>
                   </div>
                   <div class="ed-switch-3">
-                    <p>输出电压：{{  }}V</p>
+                    <p>输出电压：{{ user }}V</p>
                   </div>
                   <div class="ed-switch-4">
-                    <div id="myChart-1">
+                    <div id="myChart-p2">
                     </div>
                     <div class="meth">
                       <p>PUE：{{ pue }}</p>
                     </div>
                   </div>
-                 </div>
                 </div>
                 <div class="ed-fire">
                   <div class="ed-fire-1">
@@ -70,6 +69,34 @@
                   <div class="ed-information-1">
                     <p>环</br>境</br>监</br>控</br>信</br>息</p>
                   </div>
+                  <div class="ed-information-2">
+                    <div class="ed-intet">
+                      <p>温湿度探测器1</p>
+                    </div>
+                    <div class="ed-intet-1">
+                      <p>温度：23.1</p>
+                      <a>湿度：20%</a>
+                    </div>
+                  </div>
+                  <div class="ed-information-3">
+                    <div class="ed-intet-2">
+                      <p>精密空调A</p>
+                    </div>
+                    <div class="ed-intet-1">
+                      <p>温度：23.1</p>
+                      <a>湿度：20%</a>
+                    </div>
+                  </div>
+                  <div class="ed-information-4">
+                    <div class="ed-intet-3">
+                      <p>新风机A</p>
+                    </div>
+                    <div class="ed-intet-4">
+                      <p>co2浓度：5%</p>
+                      <p class="ed-p">H2浓度：2%</p>
+                      <a>PM2.5：50ug/㎡</a>
+                    </div>
+                  </div>
                 </div>
                 <div class="ed-state">
                   <div class="ed-state-1">
@@ -86,17 +113,30 @@
                       </select>
                     </div>
                   </div>
-                  <div class="ed-state-2">
-                    <img src="../assets/img/jf7.png" alt="">
-                    <p>配电系统：正常</p>
-                  </div>
-                  <div class="ed-state-4">
-
-                  </div>
+                    <div class="ed-state-2">
+                      <img src="../assets/img/jf7.png" alt="">
+                      <img src="../assets/img/jf11.png" alt="" style="display:none">
+                      <p>配电系统：正常</p>
+                    </div>
+                    <div class="ed-state-3">
+                      <img src="../assets/img/jf8.png" alt="">
+                      <img src="../assets/img/jf12.png" alt="" style="display:none">
+                      <p>环境监控系统：正常</p>
+                    </div>
+                    <div class="ed-state-2">
+                      <img src="../assets/img/jf13.png" alt="">
+                      <img src="../assets/img/jf9.png" alt="" style="display:none">
+                      <p>消防系统：异常</p>
+                    </div>
+                    <div class="ed-state-3">
+                      <img src="../assets/img/jf14.png" alt="">
+                      <img src="../assets/img/jf10.png" alt="" style="display:none">
+                      <p>环境监控系统：异常</p>
+                    </div>
                 </div>
                 <div class="ed-infor">
                   <div class="ed-infor-1">
-                    <p>机柜反馈信息</p>
+                    <p>机房反馈信息</p>
                   </div>
                   <div class="ed-infor-2">
 
@@ -106,77 +146,169 @@
                   <div class="ed-disk-1">
                     <p>服务器</p>
                   </div>
-                  <div class="ed-error">
-                    <img src="../assets/img/jg3.png" alt="">
-                    <p>服务器A：接入异常</p>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜A</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
                   </div>
-                  <div class="ed-switch-2">
-                    <img src="../assets/img/jg4.png" alt="">
-                    <p>服务器B：接入正常</p>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜B</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
                   </div>
-                  <div class="ed-switch-2">
-                    <img src="../assets/img/jg4.png" alt="">
-                    <p>服务器C：接入正常</p>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜C</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
                   </div>
-                  <div class="ed-switch-2">
-                    <img src="../assets/img/jg4.png" alt="">
-                    <p>服务器D：接入正常</p>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜D</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
                   </div>
-                  <div class="ed-switch-2">
-                    <img src="../assets/img/jg4.png" alt="">
-                    <p>服务器E：接入正常</p>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜E</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
                   </div>
-                  <div class="ed-switch-2">
-                    <img src="../assets/img/jg4.png" alt="">
-                    <p>服务器F：接入正常</p>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜F</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
                   </div>
-                  <div class="ed-switch-2">
-                    <img src="../assets/img/jg4.png" alt="">
-                    <p>服务器G：接入正常</p>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜G</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
+                  </div>
+                  <div class="ed-disk-2">
+                    <div class="subs">
+                      <p>机柜H</p>
+                    </div>
+                    <div class="subs1">
+                      <img src="../assets/img/jg5.png" alt="">
+                      <p>3㎡/8㎡</p>
+                    </div>
+                    <div class="subs2">
+                      <img src="../assets/img/jg6.png" alt="">
+                      <p>25℃</p>
+                    </div>
+                    <div class="subs3">
+                      <img src="../assets/img/jg7.png" alt="">
+                      <p>60kg/100kg</p>
+                    </div>
                   </div>
                 </div>
                 </div>
               </div>
             </div>
-        <div id="engine2">
-          <a href="#engine2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
+        <div id="cabinet2">
+          <a href="#cabinet2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
             <div class="tab-content">
               <div class="ed-mod">
                 <ul>
                   <li class="ed-item">
-                    <a>品  牌：</a>
-                    <a>{{ jname }}</a>
+                    <a>机房类型：</a>
+                    <a>{{ jftype }}</a>
                   </li>
                   <li class="ed-item">
-                    <a>机柜类型：</a>
-                    <a>{{ jtype }}</a>
-                  </li>
-                  <li class="ed-item">
-                    <a>尺  寸：</a>
-                    <a>{{ jsize }}</a>
+                    <a>施工单位：</a>
+                    <a>{{ jfunit }}</a>
                   </li>
                   <li class="ed-item">
                     <a>位  置：</a>
-                    <a>{{ jlocation }}</a>
+                    <a>{{ jflocation }}</a>
+                  </li>
+                  <li class="ed-item">
+                    <a>竣工时间：</a>
+                    <a>{{ jftime }}</a>
                   </li><li class="ed-item">
-                    <a>形  状：</a>
-                    <a>{{ jshape }}</a>
-                  </li>
-                  <li class="ed-item">
-                    <a>颜  色：</a>
-                    <a>{{ jcolor }}</a>
-                  </li>
-                  <li class="ed-item">
-                    <a>自身重量：</a>
-                    <a>{{ jweight }}</a>
-                  </li>
-                  <li class="ed-item">
-                    <a>标准容量：</a>
-                    <a>{{ jcapacity }}</a>
-                  </li>
-                  <li class="ed-item">
-                    <a>设备描述：</a>
-                    <a>{{ jbewrite }}</a>
+                    <a>面  积：</a>
+                    <a>{{ jfarea }}</a>
                   </li>
                 </ul>
               </div>
@@ -206,45 +338,39 @@ export default {
   name: 'tab-vertical',
   data () {
     return {
-     jname: '',
-     jtype: '',
-     jsize: '',
-     jlocation: '',
-     jshape: '',
-     jcolor: '',
-     jweight: '',
-     jcapacity: '',
-     jbewrite: '',
+     jftype: '',
+     jfunit: '',
+     jflocation: '',
+     jftime: '',
+     jfarea: '',
      user: '',
      pue: ''
     }
   },
   computed: {},
   mounted() {
-    this.predataJson();
-    this.methLine();
+    this.comdataJson();
+    this.puterLine();
   },
   methods: {
-    predataJson() {
+    comdataJson() {
       // 获取数据
       server.preJSON().then((res) => {
-        this.jname = res.data.jname;
-        this.jtype = res.data.jtype;
-        this.jsize = res.data.jsize;
-        this.jlocation = res.data.jlocation;
-        this.jshape = res.data.jshape;
-        this.jcolor = res.data.jcolor;
-        this.jweight = res.data.jweight;
-        this.jcapacity = res.data.jcapacity;
-        this.jbewrite = res.data.jbewrite;
+        this.jftype = res.data.jftype;
+        this.jfunit = res.data.jfunit;
+        this.jflocation = res.data.jflocation;
+        this.jftime = res.data.jftime;
+        this.jfarea = res.data.jfarea;
+        this.user = res.data.user;
+        this.pue = res.data.pue;
       }).catch((err) => {
         console.log(err);
       })
     },
-  methLine() {
-    let myChart = echarts.init(document.getElementById('myChart'));
-    let myChart1 = echarts.init(document.getElementById('myChart-1'));
-    myChart.setOption({
+    puterLine() {
+    let myChartp1 = echarts.init(document.getElementById('myChart-p1'));
+    let myChartp2 = echarts.init(document.getElementById('myChart-p2'));
+    myChartp1.setOption({
       tooltip: {
         formatter: "{a} {b} : {c}V"
       },
@@ -308,11 +434,11 @@ export default {
       ]
     });
     $.ajax({
-      url: '/static/user.json',
+      url: '/static/preUser.json',
       async: false,
       cache: false,
       success: function(data) {
-        myChart.setOption({
+        myChartp1.setOption({
           series: [{data: data.data}]
         });
       },
@@ -321,7 +447,7 @@ export default {
       }
     });
 
-    myChart1.setOption({
+    myChartp2.setOption({
       tooltip: {
         formatter: "{a} {b} : {c}V"
       },
@@ -385,12 +511,12 @@ export default {
       ]
     });
     $.ajax({
-      url: '/static/user.json',
+      url: '/static/preUser.json',
       async: false,
       cache: false,
       success: function(data) {
-        myChart1.setOption({
-          series: [{data: data.data}]
+        myChartp2.setOption({
+          series: [{data: data.data1}]
         });
       },
       error: function(error) {
@@ -476,7 +602,7 @@ export default {
   background-color: #0B4D95;
 }
 
-#ed-engine{
+#ed-cabinet{
   height: 500px;
   position: relative;
   overflow: hidden;
@@ -489,7 +615,7 @@ export default {
 	display: inline-block;
 	margin: 1px;
   background-color: #004075;
-	padding: 42px 15px;
+	padding: 54px 15px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 0px;
 	border-radius: 3px;
@@ -503,7 +629,7 @@ export default {
 	display: inline-block;
 	margin: 1px;
   background-color: #004075;
-	padding: 42px 15px;
+	padding: 54px 15px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 0px;
 	border-radius: 3px;
@@ -513,7 +639,6 @@ export default {
 .ed-lab > div:target > a {
     background: #0B4D95;
 }
-
 
 .ed-lab > div > div {
 	background: #0B4D95;
@@ -525,7 +650,7 @@ export default {
 	position: absolute;
 	left: 51px;
 	width: 950px;
-  height: 440px;
+  height: 490px;
 }
 
 .ed-lab > div:not(:target) > div {
@@ -545,29 +670,29 @@ export default {
 }
 
 .ed-switch{
-  width: 250px;
+  width: 260px;
   height: 143px;
   border: 1px solid #275E84;
 }
 
+#myChart-p1{
+  width: 81px;
+  height: 60px;
+}
+
+#myChart-p2{
+  width: 81px;
+  height: 60px;
+}
+
 .ed-switch-1{
   padding-top: 27px;
-  padding-right: 200px;
+  padding-right: 210px;
 }
 
 .ed-switch-1 p{
   line-height: 24px;
   margin: 0 auto;
-}
-
-#myChart{
-  width: 81px;
-  height: 60px;
-}
-
-#myChart-1{
-  width: 81px;
-  height: 60px;
 }
 
 .ed-switch-2{
@@ -596,7 +721,7 @@ export default {
 }
 
 .ed-fire{
-  width: 250px;
+  width: 260px;
   height: 140px;
   border: 1px solid #275E84;
   margin-top: 5px;
@@ -604,7 +729,7 @@ export default {
 
 .ed-fire-1{
   padding-top: 27px;
-  padding-right: 200px;
+  padding-right: 210px;
 }
 
 .ed-fire-2{
@@ -654,25 +779,83 @@ export default {
 }
 
 .ed-information{
-  width: 250px;
-  height: 117px;
+  width: 260px;
+  height: 158px;
   border: 1px solid #275E84;
   margin-top: 5px;
 }
 
 .ed-information-1 p{
   padding-top: 3px;
-  padding-right: 200px;
+  padding-right: 210px;
   line-height: 18px;
-  margin: 0 auto;
+  margin: 23px auto;
 }
 
-.ed-error{
-  margin-top: 22px;
+.ed-information-2{
+  border: 1px solid #2CA6E0;
+  width: 210px;
+  height: 40px;
+  margin-top: -150px;
+  margin-left: 40px;
+  position: absolute;
+  font-size: 10pt;
 }
 
-.ed-error img{
-  margin-right: 162px;
+.ed-intet {
+  padding-right: 90px;
+}
+
+.ed-intet-1 {
+  margin-left: 77px;
+  margin-top: -12px;
+  line-height: 14px;
+}
+
+.ed-intet-1 a{
+  padding-right: 7px;
+}
+
+.ed-information-3{
+  border: 1px solid #2CA6E0;
+  width: 210px;
+  height: 40px;
+  margin-top: -105px;
+  margin-left: 40px;
+  position: relative;
+  font-size: 10pt;
+}
+
+.ed-intet-2{
+  padding-right: 115px;
+}
+
+.ed-information-4{
+  border: 1px solid #2CA6E0;
+  width: 210px;
+  height: 53px;
+  margin-top: 5px;
+  margin-left: 40px;
+  font-size: 10pt;
+  position: relative;
+}
+
+.ed-intet-3{
+  padding-right: 126px;
+}
+
+.ed-intet-4{
+  margin-left: 85px;
+  margin-top: -12px;
+  line-height: 14px;
+}
+
+.ed-p {
+  padding-right: 6px;
+}
+
+.ed-intet-4 a{
+  padding-left: 19px;
 }
 
 .ed-error p{
@@ -682,11 +865,11 @@ export default {
 }
 
 .ed-state{
-  width: 398px;
-  height: 300px;
+  width: 382px;
+  height: 310px;
   border: 1px solid #275E84;
-  margin-left: 255px;
-  margin-top: -400px;
+  margin-left: 272px;
+  margin-top: -451px;
 }
 
 .ed-state-1{
@@ -709,46 +892,9 @@ export default {
   padding-right: 187px;
 }
 
-.ed-state-3{
-  padding-left: 3px;
-}
-
-.ed-capacity{
-  width: 110px;
-  height: 80px;
-  border: 1px solid #2CA6E0;
-  margin-top: 10px;
-  border-radius: 15px;
-  margin-left: 15px;
-  font-size: 11pt;
-}
-
-.ed-capacity img{
-  padding-top: 5px;
-}
-
-.ed-capacity p{
-  padding-left: 5px;
-}
-
-.ed-capacity-1{
-  width: 110px;
-  height: 80px;
-  border: 1px solid #2CA6E0;
-  margin-top: -79px;
-  border-radius: 15px;
-  margin-left: 140px;
-  font-size: 11pt;
-}
-
-.ed-capacity-2{
-  width: 110px;
-  height: 80px;
-  border: 1px solid #2CA6E0;
-  margin-top: -79px;
-  border-radius: 15px;
-  margin-left: 265px;
-  font-size: 11pt;
+.ed-state-3 {
+  margin-top: -107px;
+  margin-left: 160px;
 }
 
 .ed-select select{
@@ -769,19 +915,19 @@ export default {
 }
 
 .ed-infor{
-  width: 398px;
-  height: 90px;
+  width: 382px;
+  height: 131px;
   border: 1px solid #275E84;
-  margin-left: 255px;
+  margin-left: 272px;
   margin-top: 10px;
 }
 
 .ed-disk{
-  width: 240px;
-  height: 400px;
+  width: 245px;
+  height: 451px;
   border: 1px solid #275E84;
   margin-left: 668px;
-  margin-top: -400px;
+  margin-top: -451px;
 }
 
 .ed-infor-1{
@@ -792,41 +938,57 @@ export default {
 .ed-infor-2{
   border: 1px solid #2CA6E0;
   border-radius: 4px;
-  width: 357px;
-  height: 48px;
+  width: 341px;
+  height: 83px;
   margin-left: 20px;
   margin-top: 5px;
 }
 
 .ed-disk-1{
   padding-top: 10px;
-  padding-right: 145px;
+  padding-right: 173px;
 }
 
-.ed-ture-1{
-  padding-top: 35px;
+.ed-disk-2{
+  border: 1px solid #2CA6E0;
+  width: 225px;
+  height: 48px;
+  font-size: 10pt;
+  position: relative;
+  margin-left: 10px;
+  margin-top: 3px;
 }
 
-
-.ed-title{
-  list-style: none;
-  display: flex;
-  padding-left: 30px;
-  font-family: 黑体;
-  font-size: 12pt;
+.subs {
+  padding-right: 155px;
+  padding-top: 12px;
 }
 
-.ed-title img{
-  padding-top: 6px;
-  height: 22px;
-  margin-left: 88px;
+.subs1 {
+  margin-top: -26px;
+  padding-right: 70px;
 }
 
-.ed-red{
-  display: none;
-  font-family: 黑体;
-  font-size: 12pt;
-  color: #ffffff;
+.subs1 p{
+  margin-top: -6px;
+}
+
+.subs2 {
+  margin-top: -39px;
+  padding-left: 35px;
+}
+
+.subs2 p{
+  margin-top: -6px;
+}
+
+.subs3 {
+  margin-top: -41px;
+  padding-left: 143px;
+}
+
+.subs3 p{
+  margin-top: -6px;
 }
 
 .ed-mod{
@@ -839,14 +1001,14 @@ export default {
 .ed-item{
   list-style: none;
   display: flex;
-  padding-top: 5px;
+  padding-top: 25px;
   padding-left: 115px;
   font-size: 12pt;
 }
 
 .ed-ment{
   width: 885px;
-  height: 111px;
+  height: 151px;
   border: 1px solid #275E84;
   margin-left: 12px;
   margin-top: 15px;
@@ -854,12 +1016,12 @@ export default {
 
 .ed-ments{
   float: left;
-  padding-top: 20px;
+  padding-top: 45px;
   padding-left: 75px;
 }
 
 .ed-ments1{
-  padding-top: 20px;
+  padding-top: 48px;
   padding-left: 15px;
 }
 
