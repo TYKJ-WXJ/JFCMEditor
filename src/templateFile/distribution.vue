@@ -984,7 +984,7 @@ export default {
             type: 'gauge',
             radius: '90%',
             min: 0,
-            max: 400,
+            max: 4,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
               lineStyle: {       // 属性lineStyle控制线条样式
@@ -1104,8 +1104,8 @@ export default {
  .ed-data{
   margin-left: 30px;
   float: left;
-  position: fixed;
-  bottom: 158px;
+  position: absolute;
+  bottom: 141px;
   border-radius: 4px;
   width: 263px;
   height: 36px;

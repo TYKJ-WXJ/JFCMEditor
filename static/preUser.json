@@ -44,6 +44,9 @@
   "sbewrite": "这是一条描述",
 
   "机柜模板": "",
+  "jhave": "3㎡/8㎡",
+  "jsurface": "20℃",
+  "jhaveweight": "3kg/100kg",
   "jname": "图腾",
   "jtype": "42U、含走线槽、理线架",
   "jsize": "600*1000*2000mm",
@@ -63,5 +66,46 @@
   "user": "220",
   "pue": "2",
   "data": [220],
-  "data1": [2]
+  "data1": [2],
+
+  "mini主机设备": "",
+  "micapacity": "50%",
+  "miboard": "正常",
+  "miCPUstate": "正常",
+  "mifanstate": "正常",
+
+  "mini精密空调": "",
+  "migivewind": "25℃",
+  "mirewind": "25℃",
+  "migivewind1": "24%",
+  "mirewind1": "20%",
+
+  "mini机房设备": "",
+  "mijfpower": "正常",
+  "mijfenviron": "正常",
+  "mijffire": "异常",
+  "mijfsecurity": "异常",
+
+  "mini供电设备": "",
+  "supplydata": [1],
+  "supplydata1": [120],
+  "supplydata2": [220],
+  "supplydata3": [300],
+  "mipue": "1",
+  "mivoltage": "120",
+  "mioutvoltage": "220",
+  "micurrent": "300",
+
+  "mini机柜设备": "",
+  "mijcapacity": "3m³/8m³",
+  "mijsurface": "20℃",
+  "mijbearing": "50kg/90kg",
+  "mijstate": "正常",
+
+  "mini温湿度传感器": "",
+  "miwhum": "32%",
+  "miwtem": "20℃",
+  "miwstate": "正常",
+  "mini门禁设备": "",
+  "mimstate": "正常"
 }

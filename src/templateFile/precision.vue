@@ -48,27 +48,27 @@
                         <td class="ed-mess">
                           <div class="ed-text">
                           <a>{{ givewind }}</a>
-                        </div>
+                          </div>
                         </td>
                         <td class="ed-mess-1">•回风温度</td>
                         <td class="ed-mess">
                           <div class="ed-text">
                           <a>{{ rewind }}</a>
-                        </div>
+                          </div>
                         </td>
                       </tr>
                       <tr class="ed-temp">
                         <td>•送风湿度</td>
                         <td class="ed-mess">
                           <div class="ed-text">
-                          <a>{{ givewind1}}</a>
-                        </div>
+                          <a>{{ givewind1 }}</a>
+                          </div>
                         </td>
                         <td class="ed-mess-1">•回风湿度</td>
                         <td class="ed-mess">
                           <div class="ed-text">
                           <a>{{ rewind1 }}</a>
-                        </div>
+                          </div>
                         </td>
                       </tr>
                     </table>
@@ -318,8 +318,8 @@ export default {
  .ed-data{
   margin-left: 30px;
   float: left;
-  position: fixed;
-  bottom: 158px;
+  position: absolute;
+  bottom: 141px;
   border-radius: 4px;
   width: 263px;
   height: 36px;

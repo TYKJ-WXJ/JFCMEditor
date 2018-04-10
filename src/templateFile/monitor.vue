@@ -197,8 +197,8 @@ export default {
  .ed-data{
   margin-left: 30px;
   float: left;
-  position: fixed;
-  bottom: 158px;
+  position: absolute;
+  bottom: 141px;
   border-radius: 4px;
   width: 263px;
   height: 36px;

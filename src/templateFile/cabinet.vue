@@ -65,17 +65,17 @@
                     <div class="ed-capacity">
                       <img src="../assets/img/jg5.png" alt="">
                       <p>机柜已用容量：</p>
-                      <p>3㎡/8㎡</p>
+                      <p>{{ jhave }}</p>
                     </div>
                     <div class="ed-capacity-1">
                       <img src="../assets/img/jg7.png" alt="">
                       <p>机柜表面温度：</p>
-                      <p>20℃</p>
+                      <p>{{ jsurface }}</p>
                     </div>
                     <div class="ed-capacity-2">
                       <img src="../assets/img/jg6.png" alt="">
                       <p>机柜已用重量：</p>
-                      <p>3kg/100kg</p>
+                      <p>{{ jhaveweight }}</p>
                     </div>
                   </div>
                   <div class="ed-state-4">
@@ -194,15 +194,18 @@ export default {
   name: 'tab-vertical',
   data () {
     return {
-     jname: '',
-     jtype: '',
-     jsize: '',
-     jlocation: '',
-     jshape: '',
-     jcolor: '',
-     jweight: '',
-     jcapacity: '',
-     jbewrite: ''
+      jhave: '',
+      jsurface: '',
+      jhaveweight: '',
+      jname: '',
+      jtype: '',
+      jsize: '',
+      jlocation: '',
+      jshape: '',
+      jcolor: '',
+      jweight: '',
+      jcapacity: '',
+      jbewrite: ''
     }
   },
   computed: {},
@@ -213,6 +216,9 @@ export default {
     predataJson() {
       // 获取数据
       server.preJSON().then((res) => {
+        this.jhave = res.data.jhave;
+        this.jsurface = res.data.jsurface;
+        this.jhaveweight = res.data.jhaveweight;
         this.jname = res.data.jname;
         this.jtype = res.data.jtype;
         this.jsize = res.data.jsize;

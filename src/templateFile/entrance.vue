@@ -43,6 +43,7 @@
                  <p>当前状态：正常</p>
                  <div class="ed-temp">
                    <img src="../assets/img/mj1.png" alt="">
+                   <img src="../assets/img/mj2.png" alt="" style="display:none">
                  </div>
                 </div>
                 <div class="ed-time-1">
@@ -191,8 +192,8 @@ export default {
  .ed-data{
   margin-left: 30px;
   float: left;
-  position: fixed;
-  bottom: 158px;
+  position: absolute;
+  bottom: 141px;
   border-radius: 4px;
   width: 530px;
   height: 36px;

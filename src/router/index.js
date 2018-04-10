@@ -189,6 +189,55 @@ export default new Router({
       component (resolve) {
         require(['@/views/pageEngine'], resolve);
       }
+    },
+    {
+      path: '/miniHost',
+      name: 'miniHost',
+      component (resolve) {
+        require(['@/views/miniHost'], resolve);
+      }
+    },
+    {
+      path: '/miniPrecision',
+      name: 'miniPrecision',
+      component (resolve) {
+        require(['@/views/miniPrecision'], resolve);
+      }
+    },
+    {
+      path: '/miniEngine',
+      name: 'miniEngine',
+      component (resolve) {
+        require(['@/views/miniEngine'], resolve);
+      }
+    },
+    {
+      path: '/miniSupply',
+      name: 'miniSupply',
+      component (resolve) {
+        require(['@/views/miniSupply'], resolve);
+      }
+    },
+    {
+      path: '/miniCabinet',
+      name: 'miniCabinet',
+      component (resolve) {
+        require(['@/views/miniCabinet'], resolve);
+      }
+    },
+    {
+      path: '/miniSersor',
+      name: 'miniSersor',
+      component (resolve) {
+        require(['@/views/miniSersor'], resolve);
+      }
+    },
+    {
+      path: '/miniEntrance',
+      name: 'miniEntrance',
+      component (resolve) {
+        require(['@/views/miniEntrance'], resolve);
+      }
     }
   ]
 });

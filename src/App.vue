@@ -24,6 +24,13 @@
     <router-link to="pageHost">pageHost</router-link>
     <router-link to="pageCabinet">pageCabinet</router-link>
     <router-link to="pageEngine">pageEngine</router-link>
+    <router-link to="miniHost">miniHost</router-link>
+    <router-link to="miniPrecision">miniPrecision</router-link>
+    <router-link to="miniEngine">miniEngine</router-link>
+    <router-link to="miniSupply">miniSupply</router-link>
+    <router-link to="miniCabinet">miniCabinet</router-link>
+    <router-link to="miniSersor">miniSersor</router-link>
+    <router-link to="miniEntrance">miniEntrance</router-link>
     <router-link to="/pageJF">pageJF</router-link>
     <router-view></router-view>
   </div>

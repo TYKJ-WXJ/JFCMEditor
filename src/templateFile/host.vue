@@ -53,18 +53,22 @@
                 <div class="ed-state">
                   <div class="ed-state-1">
                     <img src="../assets/img/zj5.png" alt="">
+                    <img src="../assets/img/zj9.png" alt="" style="display:none">
                     <p>硬盘容量：{{ capacity }}</p>
                   </div>
                   <div class="ed-state-2">
                     <img src="../assets/img/zj6.png" alt="">
+                    <img src="../assets/img/zj10.png" alt="" style="display:none">
                     <p>主板状态：{{ board }}</p>
                   </div>
                   <div class="ed-state-3">
-                    <img src="../assets/img/zj7.png" alt="">
+                    <img src="../assets/img/zj7.png" alt="" style="display:none">
+                    <img src="../assets/img/zj11.png" alt="">
                     <p>CPU状态：{{ CPUstate }}</p>
                   </div>
                   <div class="ed-state-4">
-                    <img src="../assets/img/zj8.png" alt="">
+                    <img src="../assets/img/zj8.png" alt="" style="display:none">
+                    <img src="../assets/img/zj12.png" alt="">
                     <p>风扇状态：{{ fanstate }}</p>
                   </div>
                 </div>
