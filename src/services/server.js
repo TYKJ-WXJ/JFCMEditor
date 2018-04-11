@@ -49,6 +49,11 @@ const server = {
       method: 'get'
     });
   },
+  preJSON() {
+    return axios('http://localhost:8889/static/preUser.json', {
+      method: 'get'
+    });
+  },
   getAreas() {
     return axios('http://192.168.1.2:8010/areas', {
       method: 'get'

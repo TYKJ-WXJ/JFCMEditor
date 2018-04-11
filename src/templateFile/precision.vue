@@ -10,7 +10,7 @@
     <div class="ed-items">
       <ul>
         <li class="ed-title">
-          <a>精密空调:</a>
+          <a>精密空调</a>
           <img src="/src/assets/img/m4 (2).png" alt="">正常接入
           <a class="ed-red"><img src="/src/assets/img/m4 (1).png" alt="">未接入</a>
         </li>
@@ -32,11 +32,11 @@
       </li>
     </ul>
   </div>
-  <div id="ed-tab">
+  <div id="ed-precision">
     <div class="ed-tab">
     <div class="ed-lab">
-        <div id="c1">
-          <a href="#c1" title="First">设</br>备</br>详</br>情</a>
+        <div id="precision">
+          <a href="#precision" title="First">设</br>备</br>详</br>情</a>
             <div class="tab-content">
               <div class="ed-tet">
                 <div class="ed-time">
@@ -47,35 +47,34 @@
                         <td>•送风温度</td>
                         <td class="ed-mess">
                           <div class="ed-text">
-                          <a>25℃</a>
-                        </div>
+                          <a>{{ givewind }}</a>
+                          </div>
                         </td>
                         <td class="ed-mess-1">•回风温度</td>
                         <td class="ed-mess">
                           <div class="ed-text">
-                          <a>28℃</a>
-                        </div>
+                          <a>{{ rewind }}</a>
+                          </div>
                         </td>
                       </tr>
                       <tr class="ed-temp">
                         <td>•送风湿度</td>
                         <td class="ed-mess">
                           <div class="ed-text">
-                          <a>50%</a>
-                        </div>
+                          <a>{{ givewind1 }}</a>
+                          </div>
                         </td>
                         <td class="ed-mess-1">•回风湿度</td>
                         <td class="ed-mess">
                           <div class="ed-text">
-                          <a>45%</a>
-                        </div>
+                          <a>{{ rewind1 }}</a>
+                          </div>
                         </td>
                       </tr>
                     </table>
                   </div>
-                  <div class="ed-circle">
                     <div class="ed-circle-1">
-                      <i-circle :percent="10" style="width:68px;height:70px;">
+                      <i-circle :percent="40" style="width:68px;height:70px;">
                         <span class="demo-Circle-inner"><img src="../assets/img/j1.png" alt=""></span>
                       </i-circle>
                     </div>
@@ -90,16 +89,16 @@
                       </i-circle>
                     </div>
                     <div class="ed-circle-4">
-                      <i-circle :percent="80" style="width:68px;height:70px;">
+                      <i-circle :percent="50" style="width:68px;height:70px;">
                         <span class="demo-Circle-inner" ><img src="../assets/img/j4.png" alt=""></span>
                       </i-circle>
                     </div>
                     <div class="ed-circle-5">
-                     <i-circle :percent="80" style="width:68px;height:70px;">
+                     <i-circle :percent="70" style="width:68px;height:70px;">
                         <span class="demo-Circle-inner"><img src="../assets/img/j5.png" alt=""></span>
                       </i-circle>
                     </div>
-                  </div>
+
                 </div>
                 </div>
                 <div class="ed-state">
@@ -110,38 +109,47 @@
                 <div class="ed-statue">
                   <div class="ed-status-1">
                     <img src="../assets/img/jmkt6.png" alt="">
+                    <img src="../assets/img/jmkt12.png" alt="" style="display:none;">
                   </div>
                   <div class="ed-status-2">
-                    <img src="../assets/img/jmkt7.png" alt="">
+                    <img src="../assets/img/jmkt7.png" alt="" style="display:none;">
+                    <img src="../assets/img/jmkt13.png" alt="">
+                    <!-- <Alert type="warning" show-icon>
+                        电压故障
+                      </Alert> -->
                   </div>
                   <div class="ed-status-3">
                     <img src="../assets/img/jmkt8.png" alt="">
+                    <img src="../assets/img/jmkt14.png" alt="" style="display:none;">
                   </div>
                   <div class="ed-status-4">
                     <img src="../assets/img/jmkt9.png" alt="">
+                    <img src="../assets/img/jmkt15.png" alt="" style="display:none;">
                   </div>
                   <div class="ed-status-5">
-                    <img src="../assets/img/jmkt10.png" alt="">
+                    <img src="../assets/img/jmkt16.png" alt="">
+                    <img src="../assets/img/jmkt10.png" alt="" style="display:none;">
                   </div>
                   <div class="ed-status-6">
-                    <img src="../assets/img/jmkt11.png" alt="">
+                    <img src="../assets/img/jmkt17.png" alt="">
+                    <img src="../assets/img/jmkt11.png" alt="" style="display:none;">
                   </div>
                 </div>
               </div>
               </div>
             </div>
-        <div id="c2">
-          <a href="#c2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
+        <div id="precision2">
+          <a href="#precision2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
             <div class="tab-content">
               <div class="ed-mod">
                 <ul>
                   <li class="ed-item">
                     <a>品牌名称：</a>
-                    <a>{{ student }}</a>
+                    <a>{{ name }}</a>
                   </li>
                   <li class="ed-item">
                     <a>设备型号：</a>
-                    <a>{{ name }}</a>
+                    <a>{{ model }}</a>
                   </li>
                   <li class="ed-item">
                     <a>出厂编号：</a>
@@ -203,32 +211,46 @@ export default {
   name: 'tab-vertical',
   data () {
     return {
+      givewind: '',
+      rewind: '',
+      givewind1: '',
+      rewind1: '',
       name: '',
+      model: '',
       number: '',
       size: '',
       color: '',
       weight: '',
-      bewrite: '',
-      student: '',
       heating: '',
+      humidification: '',
       fla: '',
-      humidification: ''
+      bewrite: '',
+      percent: 0
     }
   },
   computed: {},
   mounted() {
-    this.dataJson();
+    this.predataJson();
   },
   methods: {
-    dataJson() {
+    predataJson() {
       // 获取数据
-      server.userJSON().then((res) => {
+      server.preJSON().then((res) => {
+        this.givewind = res.data.givewind;
+        this.rewind = res.data.rewind;
+        this.givewind1 = res.data.givewind1;
+        this.rewind1 = res.data.rewind1;
         this.name = res.data.name;
+        this.model = res.data.model;
         this.number = res.data.number;
         this.size = res.data.size;
         this.color = res.data.color;
         this.weight = res.data.weight;
+        this.heating = res.data.heating;
+        this.humidification = res.data.humidification;
+        this.fla = res.data.fla;
         this.bewrite = res.data.bewrite;
+        this.percent = res.data.percent;
       }).catch((err) => {
         console.log(err);
       })
@@ -288,22 +310,24 @@ export default {
 }
 
 .ed-title img{
-  padding-left: 40px;
+  padding-top: 6px;
+  height: 22px;
+  margin-left: 42px;
 }
 
  .ed-data{
   margin-left: 30px;
   float: left;
-  position: fixed;
-  bottom: 157px;
+  position: absolute;
+  bottom: 141px;
   border-radius: 4px;
   width: 263px;
   height: 36px;
 }
 
 .ed-select select{
-  border: 1px solid #2DA7E0;
-  background-color: #604C3F;
+  border: 1px solid #3D78DE;
+  background-color: #275E8D;
   padding-right: 50px;
   color: #ffffff;
   height: 25px;
@@ -323,7 +347,7 @@ export default {
   background-color: #0B4D95;
 }
 
-#ed-tab{
+#ed-precision{
   height: 500px;
   position: relative;
   overflow: hidden;
@@ -364,7 +388,7 @@ export default {
 
 .ed-lab > div > div {
 	background: #0B4D95;
-	z-index: -2;
+	z-index: 1;
 	top: 0;
 	padding: 20px;
 	outline-offset: -8px;
@@ -382,7 +406,7 @@ export default {
 
 .ed-lab > div:target > div {
 	position: absolute;
-	z-index: 3 !important;
+	z-index: 2 !important;
 }
 
 .ed-lab{
@@ -440,41 +464,38 @@ export default {
   color: #ffffff;
 }
 
-.ed-circle{
-  margin-left: 18px;
+/* .ed-circle{
   margin-top: 13px;
-}
+  margin-left: -25px;
+} */
 
 .ed-circle-1{
-  width:80px;
   height:80px;
-  margin-left: 30px;
+  padding-right:410px;
   margin-top: 10px;
 }
 
 .ed-circle-2{
   height:80px;
-  margin-left: 130px;
+  padding-right: 200px;
   margin-top: -81px;
 }
 
 .ed-circle-3{
   height:80px;
-  margin-left: 230px;
+  padding-left: 15px;
   margin-top: -79px;
 }
 
 .ed-circle-4{
-  width:80px;
   height:80px;
-  margin-left: 330px;
+  padding-left: 232px;
   margin-top: -81px;
 }
 
 .ed-circle-5{
-  width:80px;
   height:80px;
-  margin-left: 430px;
+  padding-left: 450px;
   margin-top: -79px;
 }
 
@@ -578,47 +599,6 @@ export default {
   font-size: 12pt;
 }
 
-.ed-tet2{
-  width: 169px;
-  height: 210px;
-  border: 1px solid #275E84;
-  margin-left: 387px;
-}
-
-.ed-out{
-  width: 81px;
-  height: 81px;
-  border: 1px solid #2CA6E0;
-  border-radius: 20px;
-  margin-top: 15px;
-  margin-left: 40px;
-  font-family: 黑体;
-  font-size: 12pt;
-}
-
-.ed-pue{
-  margin-top: 30px;
-}
-
-.ed-tet3{
-  width: 169px;
-  height: 170px;
-  border: 1px solid #275E84;
-  margin-left: 387px;
-  margin-top: 10px;
-}
-
-.ed-out1{
-  width: 133px;
-  height: 113px;
-  border: 1px solid #2CA6E0;
-  border-radius: 20px;
-  margin-top: 9px;
-  margin-left: 18px;
-  font-family: 黑体;
-  font-size: 12pt;
-}
-
 .ivu-chart-circle{
   position: relative;
   width: 65px;
@@ -652,4 +632,11 @@ export default {
   margin-left: 397px;
   margin-top: -85px;
 }
+
+/* .ivu-alert.ivu-alert-with-icon {
+  padding: 7px 24px 12px 27px;
+  margin-left: 258px;
+  width: 119px;
+  margin-top: -46px;
+} */
 </style>

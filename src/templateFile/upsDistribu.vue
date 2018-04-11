@@ -10,7 +10,7 @@
     <div class="ed-items">
       <ul>
         <li class="ed-title">
-          <a>UPS配电柜：</a>
+          <a>UPS配电柜</a>
           <img src="/src/assets/img/m4 (2).png" alt="">正常接入
           <a class="ed-red"><img src="/src/assets/img/m4 (1).png" alt="">未接入</a>
         </li>
@@ -32,11 +32,11 @@
       </li>
     </ul>
   </div>
-  <div id="ed-tab">
+  <div id="ed-upsDistribu">
     <div class="ed-tab">
     <div class="ed-lab">
-        <div id="c1">
-          <a href="#c1" title="First" class="ed-class">设</br>备</br>详</br>情</a>
+        <div id="upsDistribu">
+          <a href="#upsDistribu" title="First" class="ed-class">设</br>备</br>详</br>情</a>
             <div class="tab-content">
               <div class="ed-tet">
                 <div class="ed-time">
@@ -162,8 +162,8 @@
                 </div>
               </div>
             </div>
-        <div id="c2">
-          <a href="#c2" title="Second">设</br>备</br>基</br>础</br>信</br>息</a>
+        <div id="upsDistribu2">
+          <a href="#upsDistribu2" title="Second">设</br>备</br>基</br>础</br>信</br>息</a>
             <div class="tab-content">
               <div class="ed-upsimg">
                 <img src="../assets/img/UPS.png" alt="">
@@ -246,12 +246,12 @@ export default {
     }
   },
   computed: {},
-  mounted() {
+  mounted () {
     this.upsdataJson();
     this.dataLine();
   },
   methods: {
-    upsdataJson() {
+    upsdataJson () {
       // 获取数据
       server.upsJSON().then((res) => {
         this.user = res.data.user;
@@ -275,7 +275,7 @@ export default {
         console.log(err);
       })
     },
-    dataLine() {
+    dataLine () {
       let myChart = echarts.init(document.getElementById('myChart'));
       let myChart1 = echarts.init(document.getElementById('myChart-1'));
       let myChart2 = echarts.init(document.getElementById('myChart-2'));
@@ -287,70 +287,70 @@ export default {
       let myChart8 = echarts.init(document.getElementById('myChart-8'));
       let myChart9 = echarts.init(document.getElementById('myChart-9'));
       myChart.setOption({
-        tooltip : {
+        tooltip: {
         formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
-        series : [
-            {
-            name:'电压',
-            type:'gauge',
+        series: [
+          {
+            name: '电压',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length: 7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width : 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
             data: []
               }
             ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -364,19 +364,19 @@ export default {
       });
 
       myChart1.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+        tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压:',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
               lineStyle: {       // 属性lineStyle控制线条样式
@@ -386,7 +386,7 @@ export default {
             },
             axisTick: {            // 坐标轴小标记
               splitNumber: 5,   // 每份split细分多少段
-              length :5,        // 属性length控制线长
+              length: 5,        // 属性length控制线长
               lineStyle: {       // 属性lineStyle控制线条样式
                 color: 'auto',
                 length: 5
@@ -405,18 +405,18 @@ export default {
                 color: 'auto'
               }
             },
-            pointer : {  // 指针
-              width : 1.5,
+            pointer: {  // 指针
+              width: 1.5,
               length: 25
             },
-            title : {
-              show : true,
+            title: {
+              show: true,
               offsetCenter: [0, '-40%'],       // x, y，单位px
               textStyle: {       // 其余属性默认使用全局文本样式
                 fontWeight: 'bolder'
               }
             },
-            detail : {
+            detail: {
               textStyle: {       // 其余属性默认使用全局文本样式
                 color: 'auto',
                 fontSize: 12
@@ -427,7 +427,7 @@ export default {
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -441,70 +441,70 @@ export default {
       });
 
       myChart2.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
             data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -518,70 +518,70 @@ export default {
       });
 
       myChart3.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
             data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -595,70 +595,70 @@ export default {
       });
 
       myChart4.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
-            data:[{value: 100}]
+            data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -672,70 +672,70 @@ export default {
       });
 
       myChart5.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
             data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -749,70 +749,70 @@ export default {
       });
 
       myChart6.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
             data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -826,70 +826,70 @@ export default {
       });
 
       myChart7.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
             data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -903,70 +903,70 @@ export default {
       });
 
       myChart8.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 400,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
             data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -980,70 +980,70 @@ export default {
       });
 
       myChart9.setOption({
-        tooltip : {
-            formatter: "{a} {b} : {c}V"
+         tooltip: {
+          formatter: "{a} {b} : {c}V"
         },
         toolbox: {
-            show : true
+          show : true
         },
         series : [
-            {
-            name:'电压',
-            type:'gauge',
+          {
+            name: '电压:',
+            type: 'gauge',
             radius: '90%',
-            min:0,
-            max:400,
+            min: 0,
+            max: 4,
             splitNumber: 3,       // 分割段数，默认为5
             axisLine: {            // 坐标轴线
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
-                    width: 2
-                }
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
             },
             axisTick: {            // 坐标轴小标记
-                splitNumber: 5,   // 每份split细分多少段
-                length :5,        // 属性length控制线长
-                lineStyle: {       // 属性lineStyle控制线条样式
-                    color: 'auto',
-                    length: 5
-                }
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
             },
             axisLabel: {           // 坐标轴文本标签
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 3
-                }
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
             },
             splitLine: {           // 分隔线
-                show: true,        // 默认显示，属性show控制显示与否
-                length :7,         // 属性length控制线长
-                lineStyle: {       // 属性lineStyle 控制线条样式
-                    color: 'auto'
-                }
+              show: true,        // 默认显示，属性show控制显示与否
+              length :7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
             },
-            pointer : {  // 指针
-                width : 1.5,
-                length: 25
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
             },
-            title : {
-                show : true,
-                offsetCenter: [0, '-40%'],       // x, y，单位px
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    fontWeight: 'bolder'
-                }
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
             },
-            detail : {
-                textStyle: {       // 其余属性默认使用全局文本样式
-                    color: 'auto',
-                    fontSize: 12
-                }
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
             },
-            data:[{value: 100}]
+            data:[]
           }
         ]
       });
       $.ajax({
-        url: "/static/upsUser.json",
+        url: '/static/upsUser.json',
         async: false,
         cache: false,
         success: function(data){
@@ -1099,6 +1099,12 @@ export default {
   padding-top: 7px;
 }
 
+.ed-title img{
+  padding-top: 6px;
+  height: 22px;
+  margin-left: 33px;
+}
+
 .ed-img{
   width: 180px;
   height: 350px;
@@ -1113,16 +1119,16 @@ export default {
  .ed-data{
   margin-left: 30px;
   float: left;
-  position: fixed;
-  bottom: 139px;
+  position: absolute;
+  bottom: 141px;
   border-radius: 4px;
   width: 263px;
   height: 36px;
 }
 
 .ed-select select{
-  border: 1px solid #2DA7E0;
-  background-color: #604C3F;
+  border: 1px solid #3D78DE;
+  background-color: #275E8D;
   padding-right: 50px;
   color: #ffffff;
   height: 25px;
@@ -1142,7 +1148,7 @@ export default {
   background-color: #0B4D95;
 }
 
-#ed-tab{
+#ed-upsDistribu{
   height: 500px;
   position: relative;
   overflow: hidden;
@@ -1169,7 +1175,7 @@ export default {
 
 .ed-lab > div > div {
 	background: #0B4D95;
-	z-index: -2;
+	z-index: 1;
 	top: 0;
 	padding: 20px;
 	outline-offset: -8px;
@@ -1182,12 +1188,12 @@ export default {
 }
 
 .ed-lab > div:not(:target) > div {
-	display: none;
+	display: block;
 }
 
 .ed-lab > div:target > div {
-  display: block;
-	z-index: 1 !important;
+  position: absolute;
+	z-index: 2 !important;
 }
 
 .ed-lab{

@@ -8,6 +8,7 @@ import 'vue2-animate/dist/vue2-animate.min.css';
 // 导入iview的css样式和文件   之前安装npm install iview --save
 import 'iview/dist/styles/iview.css';
 import iView from 'iview';
+// 导入echarts的样式前安装npm install echarts --save
 import echarts from 'echarts';
 
 Vue.use(iView);
