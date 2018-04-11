@@ -81,6 +81,22 @@ function initHover() {
   // }
 }
 
+// 鼠标点击事件
+function initClick() {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  // update the picking ray with the camera and mouse position
+  raycaster.setFromCamera(mouse, camera);
+  // calculate objects intersecting the picking ray
+  let intersects = raycaster.intersectObjects(scene.children);
+  for (let i = 0; i < intersects.length; i++) {
+    console.log(intersects[i].object);
+    if (intersects[i].object.name === '门1') {
+      doorControls(intersects[i].object);
+    }
+  }
+}
+
 // 5.控制
 function initControls() {
   controls = new OrbitControls(camera, renderer.domElement);
@@ -114,6 +130,7 @@ function createFloor() {
     let floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -0.5;
     floor.rotation.x = Math.PI / 2;
+    floor.name = '地砖';
     scene.add(floor);
   });
 
@@ -184,7 +201,7 @@ function createCabinet(width, height, depth, x, z, y, num) {
   var materials = [];
   for (let i = 0; i < 6; i++) {
     materials.push(new THREE.MeshBasicMaterial({
-      map: THREE.ImageUtils.loadTexture('../../src/assets/logo.png', {}, function() {
+      map: THREE.ImageUtils.loadTexture('../../src/assets/3D/kt2.png', {}, function() {
         renderer.render(scene, camera);
       }),
       overdraw: true
@@ -192,11 +209,9 @@ function createCabinet(width, height, depth, x, z, y, num) {
   };
   let cubeMaterial = new THREE.MeshFaceMaterial(materials);
   let cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  // cube.position.x = x;
-  // cube.position.y = y;
-  // cube.position.z = z;
   cube.position.set(x, z, y);
-  console.log(1);
+  cube.name = '机柜1'; // 使用svgID
+  // console.log(1);
   scene.add(cube);
 }
 
@@ -216,16 +231,56 @@ function createHost(x, y, z) {
 // 创建门
 function createDoor(width, height, depth, x, z, y) {
   let loader = new THREE.TextureLoader();
-  loader.load('../../src/assets/img/j1.png', function(texture) {
+  loader.load('../../src/assets/3D/kt1.png', function(texture) {
     let doorgeometry = new THREE.BoxGeometry(width, height, 1);
     let doormaterial = new THREE.MeshBasicMaterial({map: texture, color: 0XECF1F3});
     doormaterial.opacity = 1.0;
     doormaterial.transparent = true;
     doorA = new THREE.Mesh(doorgeometry, doormaterial);
-    doorA.position.set(x, z, y + (width / 2));
-    console.log(2);
+    doorA.position.set(x, z, y + (width / 2) - 8.8);
+    console.log(doorA);
+    doorA.name = '门1'; // 真实项目当中使用svg的ID
+    // console.log(2);
+    // dummy.add(doorA);
+    // dummy.position.set(x, z, y + (width / 2) - 8.8);
     scene.add(doorA);
   });
+}
+
+// 控制门的开关
+let doorDefault = true;
+function doorControls(doorC) {
+  if (doorDefault) {
+    doorC.rotation.y += 0.5 * Math.PI;
+    doorC.position.x += 50;
+    doorC.position.z += 50;
+    doorDefault = false;
+  } else {
+    doorC.rotation.y -= 0.5 * Math.PI;
+    doorC.position.x -= 50;
+    doorC.position.z -= 50;
+    doorDefault = true;
+  }
+}
+
+let doorState = true;// 默认是门是关闭的
+// Enter=13,Space=32;
+function onkeyDown(event) {
+  switch (event.keyCode) {
+    case 13:
+      console.log(event.keyCode);
+      if (doorState) {
+        dummy.rotation.y += 0.5 * Math.PI;
+        doorState = false;
+      } else {
+        dummy.rotation.y -= 0.5 * Math.PI;
+        doorState = true;
+      }
+      break;
+    default:
+      console.log(event.keyCode);
+      break;
+  }
 }
 
 // 返回墙对象
@@ -348,26 +403,7 @@ function init(dt) {
   // 监听键盘按键
   document.addEventListener('keydown', onkeyDown, false);
   window.addEventListener('mousemove', initHover);// 页面绑定鼠标移动事件
-}
-
-let doorState = true;// 默认是门是关闭的
-// Enter=13,Space=32;
-function onkeyDown(event) {
-  switch (event.keyCode) {
-    case 13:
-      console.log(event.keyCode);
-      if (doorState) {
-        dummy.rotation.y += 0.5 * Math.PI;
-        doorState = false;
-      } else {
-        dummy.rotation.y -= 0.5 * Math.PI;
-        doorState = true;
-      }
-      break;
-    default:
-      console.log(event.keyCode);
-      break;
-  }
+  window.addEventListener('mousedown', initClick);// 页面绑定鼠标点击事件
 }
 
 function animate() {
