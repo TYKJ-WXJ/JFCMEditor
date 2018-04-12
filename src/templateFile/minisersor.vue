@@ -24,11 +24,11 @@
 <script>
 import server from '@/services/server';
 export default {
-  data() {
-    return{
+  data () {
+    return {
       miwhum: '',
       miwstate: '',
-      miwtem: '',
+      miwtem: ''
     }
   },
   mounted() {

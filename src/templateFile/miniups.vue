@@ -1,0 +1,570 @@
+<template>
+  <div class="ed-ups">
+    <div class="ed-titles">
+      <p>UPS</p>
+    </div>
+    <div class="ed-state">
+      <p>设备运行状态</p>
+      <div class="ed-state-1">
+        <img src="../assets/img/jf5.png" alt=""><span>正常接入</span>
+        <img src="../assets/img/jf6.png" alt="" style="display:none">
+      </div>
+    </div>
+    <div class="ed-infor">
+      <div class="ed-infor-1">
+        <div id="miniChart-a">
+
+        </div>
+        <div class="meth">
+          <p>{{ miupue }}</p>
+        </div>
+      </div>
+      <div class="ed-infor-2">
+        <p>PUE={{ miupue }}</p>
+      </div>
+    </div>
+    <div class="charts">
+      <div class="ed-charts">
+        <p>电压</p>
+        <div class="ed-chart-1">
+          <div id="miniChart-b">
+
+          </div>
+          <div class="meth">
+            <a>{{ miuvoltage }}V</a>
+          </div>
+        </div>
+      </div>
+      <div class="ed-charts-1">
+        <p>输出电压</p>
+        <div class="ed-chart-2">
+          <div id="miniChart-c">
+
+          </div>
+          <div class="meth">
+            <a>{{ miuoutvoltage }}A</a>
+          </div>
+        </div>
+      </div>
+      <div class="ed-charts-2">
+        <p>电流</p>
+        <div class="ed-chart-3">
+          <div id="miniChart-d">
+
+          </div>
+          <div class="meth">
+            <a>{{ miucurrent }}KW</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import server from '@/services/server';
+import echarts from 'echarts/dist/echarts.min';
+import $ from 'jquery';
+export default {
+  data() {
+    return {
+      miupue: '',
+      miuvoltage: '',
+      miuoutvoltage: '',
+      miucurrent: ''
+    }
+  },
+  mounted() {
+    this.upsLine();
+    this.upsJson();
+  },
+  methods: {
+    upsJson() {
+      // 获取数据
+      server.preJSON().then((res) => {
+        this.miupue = res.data.miupue;
+        this.miuvoltage = res.data.miuvoltage;
+        this.miuoutvoltage = res.data.miuoutvoltage;
+        this.miucurrent = res.data.miucurrent;
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    upsLine() {
+      let minimyCharta = echarts.init(document.getElementById('miniChart-a'));
+      let minimyChartb = echarts.init(document.getElementById('miniChart-b'));
+      let minimyChartc = echarts.init(document.getElementById('miniChart-c'));
+      let minimyChartd = echarts.init(document.getElementById('miniChart-d'));
+
+      minimyCharta.setOption({
+        tooltip: {
+          formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+          show: true
+        },
+        series: [
+          {
+            name: '电压',
+            type: 'gauge',
+            radius: '90%',
+            min: 0,
+            max: 4,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
+            },
+            axisTick: {            // 坐标轴小标记
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
+            },
+            axisLabel: {           // 坐标轴文本标签
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
+            },
+            splitLine: {           // 分隔线
+              show: true,        // 默认显示，属性show控制显示与否
+              length: 7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
+            },
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
+            },
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
+            },
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
+            },
+            data: []
+          }
+        ]
+      });
+      $.ajax({
+        url: '/static/preUser.json',
+        async: false,
+        cache: false,
+        success: function(data) {
+          minimyCharta.setOption({
+            series: [{data: data.upsdata}]
+          });
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+
+      minimyChartb.setOption({
+        tooltip: {
+          formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+          show: true
+        },
+        series: [
+          {
+            name: '电压',
+            type: 'gauge',
+            radius: '90%',
+            min: 0,
+            max: 400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
+            },
+            axisTick: {            // 坐标轴小标记
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
+            },
+            axisLabel: {           // 坐标轴文本标签
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
+            },
+            splitLine: {           // 分隔线
+              show: true,        // 默认显示，属性show控制显示与否
+              length: 7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
+            },
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
+            },
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
+            },
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
+            },
+            data: []
+          }
+        ]
+      });
+      $.ajax({
+        url: '/static/preUser.json',
+        async: false,
+        cache: false,
+        success: function(data) {
+          minimyChartb.setOption({
+            series: [{data: data.upsdata1}]
+          });
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+
+      minimyChartc.setOption({
+        tooltip: {
+          formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+          show: true
+        },
+        series: [
+          {
+            name: '电压',
+            type: 'gauge',
+            radius: '90%',
+            min: 0,
+            max: 400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
+            },
+            axisTick: {            // 坐标轴小标记
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
+            },
+            axisLabel: {           // 坐标轴文本标签
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
+            },
+            splitLine: {           // 分隔线
+              show: true,        // 默认显示，属性show控制显示与否
+              length: 7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
+            },
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
+            },
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
+            },
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
+            },
+            data: []
+          }
+        ]
+      });
+      $.ajax({
+        url: "/static/preUser.json",
+        async: false,
+        cache: false,
+        success: function(data) {
+          minimyChartc.setOption({
+            series: [{data: data.upsdata2}]
+          });
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+
+      minimyChartd.setOption({
+        tooltip: {
+          formatter: "{a} {b} : {c}V"
+        },
+        toolbox: {
+          show: true
+        },
+        series: [
+          {
+            name: '电压',
+            type: 'gauge',
+            radius: '90%',
+            min: 0,
+            max: 400,
+            splitNumber: 3,       // 分割段数，默认为5
+            axisLine: {            // 坐标轴线
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: [[0.2, '#228b22'],[0.8, '#FFD700'],[1, '#ff4500']],
+                width: 2
+              }
+            },
+            axisTick: {            // 坐标轴小标记
+              splitNumber: 5,   // 每份split细分多少段
+              length: 5,        // 属性length控制线长
+              lineStyle: {       // 属性lineStyle控制线条样式
+                color: 'auto',
+                length: 5
+              }
+            },
+            axisLabel: {           // 坐标轴文本标签
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 3
+              }
+            },
+            splitLine: {           // 分隔线
+              show: true,        // 默认显示，属性show控制显示与否
+              length: 7,         // 属性length控制线长
+              lineStyle: {       // 属性lineStyle 控制线条样式
+                color: 'auto'
+              }
+            },
+            pointer: {  // 指针
+              width: 1.5,
+              length: 25
+            },
+            title: {
+              show: true,
+              offsetCenter: [0, '-40%'],       // x, y，单位px
+              textStyle: {       // 其余属性默认使用全局文本样式
+                fontWeight: 'bolder'
+              }
+            },
+            detail: {
+              textStyle: {       // 其余属性默认使用全局文本样式
+                color: 'auto',
+                fontSize: 12
+              }
+            },
+            data: []
+          }
+        ]
+      });
+      $.ajax({
+        url: '/static/preUser.json',
+        async: false,
+        cache: false,
+        success: function(data) {
+          minimyChartd.setOption({
+            series: [{data: data.upsdata3}]
+          });
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+  }
+}
+</script>
+
+<style scoped>
+.ed-ups{
+  width: 284px;
+  height: 297px;
+  background-color: #29ABE2;
+  opacity: 0.2;
+  margin: 0 auto;
+  color: #ffffff;
+  font-family: 黑体;
+}
+
+.ed-titles{
+  padding-left: 10px;
+  font-size: 14pt;
+  display: flex;
+  background-color: #187FC3;
+  margin: 0 auto;
+}
+
+.ed-titles p{
+  padding-top: 7px;
+}
+
+a{
+  color: #ffffff;
+}
+
+.ed-state{
+  margin-top: 8px;
+  font-size: 14pt;
+  margin-left: 9px;
+}
+
+.ed-state p{
+  padding-right: 20px;
+  padding-right: 119px;
+}
+
+.ed-state-1{
+  padding-top: -22px;
+  margin: -26px;
+  margin-left: 107px;
+}
+
+.ed-infor{
+  font-size: 12pt;
+  margin-top: 6px;
+}
+
+.ed-infor-1{
+  width: 81px;
+  height: 81px;
+  border: 1px solid #2CA6E0;
+  border-radius: 20px;
+  float: left;
+  margin-left: 32px;
+  margin-top: 30px;
+}
+
+#miniChart-a{
+  width: 81px;
+  height: 60px;
+}
+
+.meth{
+  width: 81px;
+  height: 21px;
+  background-color: #036EB7;
+  border-bottom-left-radius: 21px;
+  border-bottom-right-radius: 23px;
+  margin-top: -2px;
+  font-size: 12pt;
+}
+
+.ed-infor-2 {
+  padding-top: 58px;
+}
+
+.charts {
+  margin-top: 12px;
+}
+
+.ed-charts{
+  font-size: 14pt;
+  margin-top: 27px;
+  float: left;
+  margin-left: -102px;
+}
+
+.ed-chart-1{
+  width: 81px;
+  height: 81px;
+  border: 1px solid #2CA6E0;
+  border-radius: 20px;
+  margin-top: 7px;
+}
+
+#miniChart-b{
+  width: 81px;
+  height: 60px;
+}
+
+.ed-chart-2{
+  width: 81px;
+  height: 81px;
+  border: 1px solid #2CA6E0;
+  border-radius: 20px;
+  margin-left: 32px;
+  margin-top: 67px;
+}
+
+#miniChart-c{
+  width: 81px;
+  height: 60px;
+}
+
+.ed-charts-1{
+  font-size: 14pt;
+  float: left;
+  margin-left: -13px;
+  margin-top: 17px;
+}
+
+.ed-charts-1 P{
+  padding-top: 10px;
+}
+
+.ed-chart-2{
+  width: 81px;
+  height: 81px;
+  border: 1px solid #2CA6E0;
+  border-radius: 20px;
+  margin-left: 2px;
+  margin-top: 6px;
+}
+
+#miniChart-d{
+  width: 81px;
+  height: 60px;
+}
+
+.ed-charts-2{
+  font-size: 14pt;
+  float: left;
+  margin-left: 7px;
+  margin-top: 17px;
+}
+
+.ed-charts-2 P{
+  padding-top: 10px;
+}
+
+.ed-chart-3{
+  width: 81px;
+  height: 81px;
+  border: 1px solid #2CA6E0;
+  border-radius: 20px;
+  margin-left: 2px;
+  margin-top: 6px;
+}
+</style>

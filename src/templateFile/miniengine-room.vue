@@ -7,22 +7,34 @@
       <div class="ed-state-1">
         <img src="../assets/img/jf7.png" alt="">
         <img src="../assets/img/jf11.png" alt="" style="display:none">
-        <p>配电系统：{{ mijfpower }}</p>
+        <div class="ed-sts">
+          <p>配电系统：</p>
+          <p>{{ mijfpower }}</p>
+        </div>
       </div>
       <div class="ed-state-2">
         <img src="../assets/img/jf8.png" alt="">
         <img src="../assets/img/jf12.png" alt="" style="display:none">
-        <p>环境监控系统：{{ mijfenviron }}</p>
+        <div class="ed-sts">
+          <p>环境监控系统：</p>
+          <p>{{ mijfenviron }}</p>
+        </div>
       </div>
       <div class="ed-state-3">
         <img src="../assets/img/jf9.png" alt="" style="display:none">
         <img src="../assets/img/jf13.png" alt="">
-        <p>消防系统：{{ mijffire }}</p>
+        <div class="ed-sts">
+          <p>消防系统：</p>
+          <p>{{ mijffire }}</p>
+        </div>
       </div>
       <div class="ed-state-4">
         <img src="../assets/img/jf10.png" alt="" style="display:none">
         <img src="../assets/img/jf14.png" alt="">
-        <p>安防系统：{{ mijfsecurity }}</p>
+        <div class="ed-sts-1">
+          <p>安防系统：</p>
+          <p>{{ mijfsecurity }}</p>
+        </div>
       </div>
     </div>
     <div class="ed-infor">
@@ -39,8 +51,8 @@
 <script>
 import server from '@/services/server';
 export default {
-  data() {
-    return{
+  data () {
+    return {
       mijfpower: '',
       mijfenviron: '',
       mijffire: '',
@@ -68,10 +80,10 @@ export default {
 
 <style scoped>
 .ed-engine{
-  width: 284px;
-  height: 297px;
-  background-color: #29ABE2;
-  opacity: 0.2;
+  width: 340px;
+  height: 170px;
+  /* background-color: #29ABE2; */
+  /* opacity: 0.2; */
   margin: 0 auto;
   color: #ffffff;
   font-family: 黑体;
@@ -81,21 +93,31 @@ export default {
   padding-left: 10px;
   font-size: 14pt;
   display: flex;
-  background-color: #187FC3;
+  background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
-}
-
-.ed-titles p{
-  padding-top: 7px;
+  height: 25px;
 }
 
 .ed-state{
-  margin-top: 10px;
+  margin-top: 2px;
   font-size: 12pt;
+  line-height: 17px;
+  margin-left: 12px;
 }
 
 .ed-state img{
-  width: 55px;
+  width: 50px;
+  height: 42px;
+}
+
+.ed-sts{
+  float: right;
+  margin-left: 5px;
+}
+
+.ed-sts-1{
+  float: right;
+  margin-left: 22px;
 }
 
 .ed-state-1{
@@ -111,31 +133,23 @@ export default {
 .ed-state-3{
   float: left;
   margin-left: 12px;
-  padding-top: 8px;
 }
 
 .ed-state-4{
   float: left;
-  padding-left: 27px;
-  padding-top: 8px;
-}
-
-.ed-infor{
-  margin-top: 3px;
+  margin-left: 11px;
 }
 
 .ed-infor-1 p{
-  padding-right: 146px;
-  font-size: 14pt;
-  padding-top: 177px;
+  padding-right: 185px;
+  font-size: 13pt;
 }
 
 .ed-infor-2{
-  width: 255px;
-  height: 39px;
-  border: 1px solid #2CA6E0;
+  width: 285px;
+  height: 25px;
+  border: 2px solid #2CA6E0;
   border-radius: 4px;
-  margin-left: 13px;
-  margin-top: 2px;
+  margin-left: 24px;
 }
 </style>

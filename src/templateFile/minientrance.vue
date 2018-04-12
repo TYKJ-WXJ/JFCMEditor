@@ -23,8 +23,8 @@
 <script>
 import server from '@/services/server';
 export default {
-  data() {
-    return{
+  data () {
+    return {
       mimstate: '',
       miminfor: ''
     }
@@ -49,7 +49,7 @@ export default {
   width: 284px;
   height: 297px;
   background-color: #29ABE2;
-  /* opacity: 0.2; */
+  opacity: 0.2;
   margin: 0 auto;
   color: #ffffff;
   font-family: 黑体;
