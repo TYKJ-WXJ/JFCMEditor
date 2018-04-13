@@ -164,9 +164,9 @@ export default {
 }
 
 .ed-img{
-  width: 180px;
+  width: 400px;
   height: 350px;
-  padding-left: 10px;
+  margin: 5px auto;
 }
 
 .ed-img img{
