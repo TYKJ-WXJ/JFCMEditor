@@ -1,7 +1,7 @@
 <template>
 <div class="tab-vertical">
   <div class="ed-titles">
-    <p>监控点详情</p>
+    <p>无人监控点</p>
   </div>
   <div class="tab-content">
     <div class="ed-img">

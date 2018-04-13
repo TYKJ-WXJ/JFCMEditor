@@ -7,43 +7,26 @@
       <div class="ed-state-1">
         <img src="../assets/img/jf7.png" alt="">
         <img src="../assets/img/jf11.png" alt="" style="display:none">
-        <div class="ed-sts">
-          <p>配电系统：</p>
-          <p>{{ mijfpower }}</p>
-        </div>
+        <p>配电{{ mijfpower }}</p>
       </div>
       <div class="ed-state-2">
         <img src="../assets/img/jf8.png" alt="">
         <img src="../assets/img/jf12.png" alt="" style="display:none">
-        <div class="ed-sts">
-          <p>环境监控系统：</p>
-          <p>{{ mijfenviron }}</p>
-        </div>
+        <p>环境监控{{ mijfenviron }}</p>
       </div>
       <div class="ed-state-3">
         <img src="../assets/img/jf9.png" alt="" style="display:none">
         <img src="../assets/img/jf13.png" alt="">
-        <div class="ed-sts">
-          <p>消防系统：</p>
-          <p>{{ mijffire }}</p>
-        </div>
+        <p>消防{{ mijffire }}</p>
       </div>
       <div class="ed-state-4">
         <img src="../assets/img/jf10.png" alt="" style="display:none">
         <img src="../assets/img/jf14.png" alt="">
-        <div class="ed-sts-1">
-          <p>安防系统：</p>
-          <p>{{ mijfsecurity }}</p>
-        </div>
+        <p>安防{{ mijfsecurity }}</p>
       </div>
     </div>
     <div class="ed-infor">
-      <div class="ed-infor-1">
-        <p>机房信息反馈</p>
-      </div>
-      <div class="ed-infor-2">
-        <p>{{ mijfinfor }}</p>
-      </div>
+      <p>反馈：{{ mijfinfor }}</p>
     </div>
   </div>
 </template>
@@ -80,18 +63,17 @@ export default {
 
 <style scoped>
 .ed-engine{
-  width: 340px;
-  height: 170px;
-  /* background-color: #29ABE2; */
-  /* opacity: 0.2; */
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
   background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
@@ -99,57 +81,43 @@ export default {
 }
 
 .ed-state{
-  margin-top: 2px;
-  font-size: 12pt;
-  line-height: 17px;
-  margin-left: 12px;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 14px;
+  margin-left: 68px;
 }
 
 .ed-state img{
-  width: 50px;
-  height: 42px;
+  width: 70px;
+  height: 65px;
 }
 
-.ed-sts{
-  float: right;
-  margin-left: 5px;
-}
-
-.ed-sts-1{
-  float: right;
-  margin-left: 22px;
-}
-
-.ed-state-1{
-  padding-right: 10px;
+.ed-state-1 {
   float: left;
-  margin-left: 12px;
+  padding-left: 6px;
 }
 
-.ed-state-2{
+.ed-state-2 {
   float: left;
+  padding-left: 96px;
 }
 
-.ed-state-3{
+.ed-state-3 {
   float: left;
-  margin-left: 12px;
+  padding-left: 6px;
+  padding-top: 3px;
 }
 
-.ed-state-4{
+.ed-state-4 {
   float: left;
-  margin-left: 11px;
+  padding-left: 97px;
+  padding-top: 3px;
 }
 
-.ed-infor-1 p{
-  padding-right: 185px;
-  font-size: 13pt;
+.ed-infor{
+  padding-top: 166px;
+  font-size: 16px;
+  padding-right: 282px;
 }
 
-.ed-infor-2{
-  width: 285px;
-  height: 25px;
-  border: 2px solid #2CA6E0;
-  border-radius: 4px;
-  margin-left: 24px;
-}
 </style>

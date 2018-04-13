@@ -46,39 +46,33 @@ export default {
 
 <style scoped>
 .ed-entrance{
-  width: 284px;
-  height: 297px;
-  background-color: #29ABE2;
-  opacity: 0.2;
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
-  font-size: 14pt;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
-  background-color: #187FC3;
+  background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
-}
-
-.ed-titles p{
-  padding-top: 7px;
+  height: 25px;
 }
 
 .ed-state {
   float: left;
-  padding-left: 24px;
+  padding-left: 30px;
   padding-top: 10px;
 }
 
 .ed-infor {
-  height: 100px;
-  width: 100px;
-  margin-top: 55px;
-  margin-left: 94px;
+  height: 92px;
+  width: 95px;
+  margin: 17px auto;
 }
 
 .ed-infor img{
@@ -91,17 +85,17 @@ export default {
 }
 
 .ed-true-1 p{
-  padding-right: 146px;
-  font-size: 14pt;
-  padding-top: 10px;
+  padding-right: 217px;
+  font-size: 12px;
+  padding-top: 7px;
 }
 
 .ed-true-2{
-  width: 255px;
+  width: 300px;
   height: 47px;
   border: 1px solid #2CA6E0;
   border-radius: 4px;
-  margin-left: 13px;
+  margin-left: 30px;
   margin-top: 4px;
 }
 

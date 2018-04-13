@@ -13,9 +13,9 @@
         </div>
       </div>
       <div class="ed-state">
-          <img src="../assets/img/jf5.png" alt=""><span>正常接入</span>
+          <img src="../assets/img/jf5.png" alt=""><p>正常接入</p>
           <img src="../assets/img/jf6.png" alt="" style="display:none">
-        </div>
+      </div>
       <div class="ed-infor-2">
         <p>PUE={{ mipue }}</p>
       </div>
@@ -403,18 +403,17 @@ export default {
 
 <style scoped>
 .ed-supply{
-  width: 340px;
-  height: 170px;
-  /* background-color: #29ABE2; */
-  /* opacity: 0.2; */
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
   background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
@@ -427,14 +426,20 @@ a{
 
 .ed-state{
   margin-top: 8px;
-  font-size: 12pt;
+  font-size: 12px;
   float: right;
   margin-right: 105px;
 }
 
+.ed-state p{
+  float: right;
+  margin-left: 7px;
+}
+
 .ed-infor{
-  font-size: 12pt;
-  margin-top: 1px;
+  font-size: 12px;
+  margin-top: 20px;
+  margin-left: 20px;
 }
 
 .ed-infor-1{
@@ -443,7 +448,7 @@ a{
   border: 1px solid #2CA6E0;
   border-radius: 20px;
   float: left;
-  margin-left: 27px;
+  margin-left: 20px;
 }
 
 #miniChart{
@@ -453,12 +458,12 @@ a{
 
 .meth{
   width: 80px;
-  height: 21px;
+  height: 20px;
   background-color: #036EB7;
   border-bottom-left-radius: 21px;
   border-bottom-right-radius: 23px;
   margin-top: -2px;
-  font-size: 12pt;
+  font-size: 12px;
 }
 
 .ed-infor-2 {
@@ -466,11 +471,15 @@ a{
   padding-right: 50px;
 }
 
+.charts {
+  float: left;
+  margin-top: 6px;
+  margin-left: 43px;
+}
+
 .ed-charts{
-  font-size: 14pt;
   margin-top: 7px;
   float: left;
-  margin-left: -79px;
 }
 
 .ed-chart-1{
@@ -492,13 +501,8 @@ a{
 }
 
 .ed-charts-1{
-  font-size: 14pt;
   float: left;
   margin-left: -11px;
-}
-
-.ed-charts-1 P{
-  padding-top: 10px;
 }
 
 .ed-chart-2{
@@ -516,13 +520,8 @@ a{
 }
 
 .ed-charts-2{
-  font-size: 14pt;
   float: left;
   margin-left: 20px;
-}
-
-.ed-charts-2 P{
-  padding-top: 10px;
 }
 
 .ed-chart-3{

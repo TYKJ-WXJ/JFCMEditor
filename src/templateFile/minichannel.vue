@@ -4,7 +4,12 @@
       <p>通道监控点设备</p>
     </div>
     <div class="ed-state">
-      <img src="" alt="">
+      <div class="ed-disk">
+        <img src="" alt="">
+      </div>
+      <div class="ed-disk-1">
+        <img src="../assets/img/jkd.png" alt="">
+      </div>
     </div>
     <div class="ed-infor">
       <p>监控实时信息</p>
@@ -40,42 +45,47 @@ export default {
 
 <style scoped>
 .ed-channel{
-  width: 284px;
-  height: 297px;
-  background-color: #29ABE2;
-  /* opacity: 0.2; */
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
-  font-size: 14pt;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
-  background-color: #187FC3;
+  background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
-}
-
-.ed-titles p{
-  padding-top: 7px;
+  height: 25px;
 }
 
 .ed-state{
   width: 240px;
-  height: 170px;
+  height: 150px;
   margin: 13px auto;
 }
 
-.ed-state img{
+.ed-disk{
+  width: 240px;
+  height: 150px;
+}
+
+.ed-disk img{
   width: 100%;
   height: 100%;
 }
 
-.ed-infor{
-  color: yellow;
-  margin-right: 130px;
+.ed-disk-1{
+  margin-top: -140px;
+  margin-left: 182px;
+  position: absolute;
 }
 
+.ed-infor{
+  color: yellow;
+  margin-right: 165px;
+}
 </style>

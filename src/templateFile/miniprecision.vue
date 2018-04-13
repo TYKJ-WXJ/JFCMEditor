@@ -69,13 +69,12 @@ export default {
 
 <style scoped>
 .ed-precision{
-  width: 340px;
-  height: 170px;
-  /* background-color: #29ABE2; */
-  /* opacity: 0.2; */
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 a{
@@ -84,22 +83,26 @@ a{
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
   background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
   height: 25px;
 }
 
+.ed-title{
+  font-size: 12px;
+}
+
 .ed-state{
   float: left;
-  margin-left: 17px;
-  margin-top: 5px;
+  margin-left: 35px;
+  margin-top: 32px;
 }
 
 .ed-state p{
   padding-right: 210px;
-  font-size: 14pt;
+  font-size: 12px;
   padding-top: 6px;
 }
 
@@ -110,10 +113,12 @@ a{
 
 .ed-infor {
   float: left;
+  margin-top: 3px;
+  margin-left: 20px;
 }
 
 .ed-infor p{
-  font-size: 14pt;
+  font-size: 12px;
 }
 
 .ed-infor-1{
@@ -123,17 +128,17 @@ a{
 }
 
 .ed-infor-1 p{
-  margin-top: -2px;
+  margin-top: 2px;
 }
 
 .ed-infor-2{
   display: flex;
   margin-left: 125px;
-  margin-top: 8px;
+  margin-top: 18px;
 }
 
 .ed-infor-2 p{
-  margin-top: -2px;
+  margin-top: 2px;
 }
 
 .ed-text{
@@ -141,18 +146,18 @@ a{
   height: 23px;
   border: 1px solid #2CA6E0;
   border-radius: 4px;
-  font-size: 12pt;
+  font-size: 12px;
   margin-left: 15px;
 }
 
 .ed-infor-3{
   display: flex;
   margin-left: 125px;
-  margin-top: 8px;
+  margin-top: 18px;
 }
 
 .ed-infor-3 p{
-  margin-top: -2px;
+  margin-top: 2px;
 }
 
 .ed-text-1{
@@ -160,7 +165,7 @@ a{
   height: 23px;
   border: 1px solid #2CA6E0;
   border-radius: 4px;
-  font-size: 12pt;
-  margin-left: 10px;
+  font-size: 12px;
+  margin-left: 14px;
 }
 </style>

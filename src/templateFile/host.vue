@@ -325,8 +325,7 @@ export default {
 .ed-img{
   width: 180px;
   height: 100px;
-  padding-left: 10px;
-  padding-top: 10px;
+  margin: 5px auto;
 }
 
 .ed-img img{
