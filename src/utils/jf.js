@@ -26,6 +26,8 @@ let dummy = new THREE.Object3D();// 仿制品
 let container;
 let moveDistance;
 let rotateAngle;
+let jmktImg = ['jmkt1', 'jmkt1', 'jmkt1', 'jmkt1', 'jmkt1', 'jmkt1'];
+let doorImg = ['m2', 'm2', 'm2', 'm2', 'm2', 'm1']; // 最后一个是正面
 // 1.场景
 function initScene() {
   scene = new THREE.Scene();
@@ -105,7 +107,6 @@ function initControls() {
 // 6.光源
 function initLight() {
   // 位置不同，方向光作用于物体的面也不同，看到的物体各个面的颜色也不同
-
   // A start, 第二个参数是光源强度
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1);// 模拟远处类似太阳的光源
   directionalLight.position.set(0, 100, 0).normalize();
@@ -114,15 +115,12 @@ function initLight() {
   let ambient = new THREE.AmbientLight(0xffffff, 1); // AmbientLight,影响整个场景的光源
   ambient.position.set(0, 0, 0);
   scene.add(ambient);
-
-  // let pointlight = new THREE.PointLight(0x000000,1.5,2000);
-  // scene.add(pointlight);
 }
 
 // 创建地板
 function createFloor() {
   let loader = new THREE.TextureLoader();
-  loader.load('../../src/assets/logo.png', function(texture) {
+  loader.load('../../src/assets/3D/cz.png', function(texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(10, 10);
     let floorGeometry = new THREE.BoxGeometry(1600, 1100, 1);
@@ -138,18 +136,7 @@ function createFloor() {
   let glassMaterial = new THREE.MeshBasicMaterial({color: 0XECF1F3});
   glassMaterial.opacity = 0.4;
   glassMaterial.transparent = true;
-
-  // let leftWall = returnWallObject(20, 200, 1100, 0, matArrayB, -801, 100, 0);
-  // let leftCube = returnWallObject(20, 110, 1100, 0, matArrayB, -801, 100, 0);
-
-  // createResultBsp(leftWall, leftCube, 1);
   createCubeWall(1, 110, 1100, 0, glassMaterial, -801, 100, 0);
-
-  // let rightWall = returnWallObject(20, 200, 1100, 1, matArrayB, 801, 100, 0);
-  // let rightCube = returnWallObject(20, 110, 1100, 0, matArrayB, 801, 100, 0);
-
-  // createResultBsp(rightWall, rightCube, 1);
-
   createCubeWall(1, 110, 1100, 0, glassMaterial, 801, 100, 0);
 }
 
@@ -229,22 +216,25 @@ function createHost(x, y, z) {
 }
 
 // 创建门
-function createDoor(width, height, depth, x, z, y) {
-  let loader = new THREE.TextureLoader();
-  loader.load('../../src/assets/3D/kt1.png', function(texture) {
-    let doorgeometry = new THREE.BoxGeometry(width, height, 1);
-    let doormaterial = new THREE.MeshBasicMaterial({map: texture, color: 0XECF1F3});
-    doormaterial.opacity = 1.0;
-    doormaterial.transparent = true;
-    doorA = new THREE.Mesh(doorgeometry, doormaterial);
-    doorA.position.set(x, z, y + (width / 2) - 8.8);
-    console.log(doorA);
-    doorA.name = '门1'; // 真实项目当中使用svg的ID
-    // console.log(2);
-    // dummy.add(doorA);
-    // dummy.position.set(x, z, y + (width / 2) - 8.8);
-    scene.add(doorA);
-  });
+function createDoor(width, height, depth, x, z, y, img) {
+  let doorGeometry = new THREE.BoxGeometry(width, height, 1);
+  let materials = [];
+  for (let i = 0; i < 6; i++) {
+    materials.push(new THREE.MeshBasicMaterial({
+      map: THREE.ImageUtils.loadTexture('../../src/assets/3D/' + img[i] + '.png', {}, function() {
+        renderer.render(scene, camera);
+      }),
+      overdraw: true
+    }));
+  };
+  let doorMaterial = new THREE.MeshFaceMaterial(materials);
+  doorMaterial.opacity = 1.0;
+  doorMaterial.transparent = true;
+  doorA = new THREE.Mesh(doorGeometry, doorMaterial);
+  doorA.position.set(x, z, y + (width / 2) - 8.8);
+  // console.log(doorA);
+  doorA.name = '门1'; // 真实项目当中使用svg的ID
+  scene.add(doorA);
 }
 
 // 控制门的开关
@@ -316,7 +306,7 @@ function conversionData(dt) {
   // console.log(dt);
   for (let i = 0; i < 1; i++) {
     createCabinet(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y, 5);
-    createDoor(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y);
+    createDoor(dt[i].size.width, 180, dt[i].size.height, dt[i].position.x, 90, dt[i].position.y, jmktImg);
   }
 }
 
@@ -336,22 +326,23 @@ function createLayout() {
   // createResultBsp(wall, doorCube, 1);
 
   // 为墙面安装门,右门
-  let loader = new THREE.TextureLoader();
-  loader.load('../../src/assets/logo.png', function(texture) {
-    let doorgeometry = new THREE.BoxGeometry(100, 180, 2);
-    let doormaterial = new THREE.MeshBasicMaterial({map: texture, color: 0xffffff});
-    doormaterial.opacity = 1.0;
-    doormaterial.transparent = true;
-    door = new THREE.Mesh(doorgeometry, doormaterial);
-    door.position.set(-50, 0, 0);
-    let door1 = door.clone();
-    door1.position.set(50, 0, 0);
-    door1.visible = false;
-    dummy.add(door);
-    dummy.add(door1);
-    dummy.position.set(50, 90, 451)
-    scene.add(dummy);
-  });
+  createDoor(100, 180, 2, 50, 90, 451, doorImg);
+  // let loader = new THREE.TextureLoader();
+  // loader.load('../../src/assets/3D/m2.png', function(texture) {
+  //   let doorgeometry = new THREE.BoxGeometry(100, 180, 2);
+  //   let doormaterial = new THREE.MeshBasicMaterial({map: texture, color: 0xffffff});
+  //   doormaterial.opacity = 1.0;
+  //   doormaterial.transparent = true;
+  //   door = new THREE.Mesh(doorgeometry, doormaterial);
+  //   door.position.set(-50, 0, 0);
+  //   let door1 = door.clone();
+  //   door1.position.set(50, 0, 0);
+  //   door1.visible = false;
+  //   dummy.add(door);
+  //   dummy.add(door1);
+  //   dummy.position.set(50, 90, 451)
+  //   scene.add(dummy);
+  // });
 
   // 房间A:隔墙1
   createCubeWall(10, 200, 250, 0, matArrayA, -151, 100, 325);
