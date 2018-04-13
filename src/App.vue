@@ -31,6 +31,10 @@
     <router-link to="miniCabinet">miniCabinet</router-link>
     <router-link to="miniSersor">miniSersor</router-link>
     <router-link to="miniEntrance">miniEntrance</router-link>
+    <router-link to="miniUps">miniUps</router-link>
+    <router-link to="miniCamera">miniCamera</router-link>
+    <router-link to="miniChannel">miniChannel</router-link>
+    <router-link to="miniNoone">miniNoone</router-link>
     <router-link to="/pageJF">pageJF</router-link>
     <router-view></router-view>
   </div>

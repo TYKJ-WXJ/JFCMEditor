@@ -3,11 +3,11 @@
   <div class="ed-titles">
     <p>摄像头模板</p>
   </div>
-  <div id="ed-cabinet">
+  <div id="ed-engine">
     <div class="ed-tab">
     <div class="ed-lab">
-        <div id="cabinet">
-          <a href="#cabinet" title="First">设</br>备</br>详</br>情</a>
+        <div id="engine">
+          <a href="#engine" title="First">设</br>备</br>详</br>情</a>
             <div class="tab-content">
               <div class="ed-tet">
                 <div class="ed-switch">
@@ -286,8 +286,8 @@
                 </div>
               </div>
             </div>
-        <div id="cabinet2">
-          <a href="#cabinet2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
+        <div id="engine2">
+          <a href="#engine2" title="Second" class="ed-class">设</br>备</br>基</br>础</br>信</br>息</a>
             <div class="tab-content">
               <div class="ed-mod">
                 <ul>
@@ -602,7 +602,7 @@ export default {
   background-color: #0B4D95;
 }
 
-#ed-cabinet{
+#ed-engine{
   height: 500px;
   position: relative;
   overflow: hidden;
@@ -743,7 +743,7 @@ export default {
 
 .ed-fire-2 p{
   margin-top: -29px;
-  margin-left: 72px;
+  margin-left: 84px;
 }
 
 .ed-fireimg{

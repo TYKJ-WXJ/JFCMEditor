@@ -238,6 +238,34 @@ export default new Router({
       component (resolve) {
         require(['@/views/miniEntrance'], resolve);
       }
+    },
+    {
+      path: '/miniUps',
+      name: 'miniUps',
+      component (resolve) {
+        require(['@/views/miniUps'], resolve);
+      }
+    },
+    {
+      path: '/miniCamera',
+      name: 'miniCamera',
+      component (resolve) {
+        require(['@/views/miniCamera'], resolve);
+      }
+    },
+    {
+      path: '/miniChannel',
+      name: 'miniChannel',
+      component (resolve) {
+        require(['@/views/miniChannel'], resolve);
+      }
+    },
+    {
+      path: '/miniNoone',
+      name: 'miniNoone',
+      component (resolve) {
+        require(['@/views/miniNoone'], resolve);
+      }
     }
   ]
 });

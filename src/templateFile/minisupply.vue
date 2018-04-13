@@ -1,14 +1,7 @@
 <template>
   <div class="ed-supply">
     <div class="ed-titles">
-      <p>供电设备</p>
-    </div>
-    <div class="ed-state">
-      <p>设备运行状态</p>
-      <div class="ed-state-1">
-        <img src="../assets/img/jf5.png" alt=""><span>正常接入</span>
-        <img src="../assets/img/jf6.png" alt="" style="display:none">
-      </div>
+      <p>配电柜</p>
     </div>
     <div class="ed-infor">
       <div class="ed-infor-1">
@@ -19,13 +12,16 @@
           <p>{{ mipue }}</p>
         </div>
       </div>
+      <div class="ed-state">
+          <img src="../assets/img/jf5.png" alt=""><p>正常接入</p>
+          <img src="../assets/img/jf6.png" alt="" style="display:none">
+      </div>
       <div class="ed-infor-2">
         <p>PUE={{ mipue }}</p>
       </div>
     </div>
     <div class="charts">
       <div class="ed-charts">
-        <p>电压</p>
         <div class="ed-chart-1">
           <div id="miniChart-1">
 
@@ -36,24 +32,22 @@
         </div>
       </div>
       <div class="ed-charts-1">
-        <p>输出电压</p>
         <div class="ed-chart-2">
           <div id="miniChart-2">
 
           </div>
           <div class="meth">
-            <a>{{ mioutvoltage }}V</a>
+            <a>{{ mioutvoltage }}A</a>
           </div>
         </div>
       </div>
       <div class="ed-charts-2">
-        <p>电流</p>
         <div class="ed-chart-3">
           <div id="miniChart-3">
 
           </div>
           <div class="meth">
-            <a>{{ micurrent }}V</a>
+            <a>{{ micurrent }}KW</a>
           </div>
         </div>
       </div>
@@ -65,8 +59,8 @@ import server from '@/services/server';
 import echarts from 'echarts/dist/echarts.min';
 import $ from 'jquery';
 export default {
-  data() {
-    return{
+  data () {
+    return {
       mipue: '',
       mivoltage: '',
       mioutvoltage: '',
@@ -409,25 +403,21 @@ export default {
 
 <style scoped>
 .ed-supply{
-  width: 284px;
-  height: 297px;
-  background-color: #29ABE2;
-  opacity: 0.2;
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
-  background-color: #187FC3;
+  background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
-}
-
-.ed-titles p{
-  padding-top: 7px;
+  height: 25px;
 }
 
 a{
@@ -436,135 +426,109 @@ a{
 
 .ed-state{
   margin-top: 8px;
-  font-size: 14pt;
-  margin-left: 9px;
+  font-size: 12px;
+  float: right;
+  margin-right: 105px;
 }
 
 .ed-state p{
-  padding-right: 20px;
-  padding-right: 119px;
-}
-
-.ed-state-1{
-  padding-top: -22px;
-  margin: -26px;
-  margin-left: 107px;
+  float: right;
+  margin-left: 7px;
 }
 
 .ed-infor{
-  font-size: 12pt;
-  margin-top: 6px;
+  font-size: 12px;
+  margin-top: 20px;
+  margin-left: 20px;
 }
 
 .ed-infor-1{
-  width: 81px;
-  height: 81px;
+  width: 80px;
+  height: 70px;
   border: 1px solid #2CA6E0;
   border-radius: 20px;
   float: left;
-  margin-left: 32px;
-  margin-top: 30px;
+  margin-left: 20px;
 }
 
 #miniChart{
-  width: 81px;
-  height: 60px;
+  width: 80px;
+  height: 50px;
 }
 
 .meth{
-  width: 81px;
-  height: 21px;
+  width: 80px;
+  height: 20px;
   background-color: #036EB7;
   border-bottom-left-radius: 21px;
   border-bottom-right-radius: 23px;
   margin-top: -2px;
-  font-size: 12pt;
+  font-size: 12px;
 }
 
 .ed-infor-2 {
-  padding-top: 58px;
+  padding-top: 35px;
+  padding-right: 50px;
 }
 
 .charts {
-  margin-top: 12px;
+  float: left;
+  margin-top: 6px;
+  margin-left: 43px;
 }
 
 .ed-charts{
-  font-size: 14pt;
-  margin-top: 27px;
+  margin-top: 7px;
   float: left;
-  margin-left: -102px;
 }
 
 .ed-chart-1{
-  width: 81px;
-  height: 81px;
+  width: 80px;
+  height: 70px;
   border: 1px solid #2CA6E0;
   border-radius: 20px;
-  margin-top: 7px;
+  margin-top: 6px;
 }
 
 #miniChart-1{
-  width: 81px;
-  height: 60px;
-}
-
-.ed-chart-2{
-  width: 81px;
-  height: 81px;
-  border: 1px solid #2CA6E0;
-  border-radius: 20px;
-  margin-left: 32px;
-  margin-top: 67px;
+  width: 80px;
+  height: 50px;
 }
 
 #miniChart-2{
-  width: 81px;
-  height: 60px;
+  width: 80px;
+  height: 50px;
 }
 
 .ed-charts-1{
-  font-size: 14pt;
   float: left;
-  margin-left: -13px;
-  margin-top: 17px;
-}
-
-.ed-charts-1 P{
-  padding-top: 10px;
+  margin-left: -11px;
 }
 
 .ed-chart-2{
-  width: 81px;
-  height: 81px;
+  width: 80px;
+  height: 70px;
   border: 1px solid #2CA6E0;
   border-radius: 20px;
-  margin-left: 2px;
-  margin-top: 6px;
+  margin-top: 13px;
+  margin-left: 32px;
 }
 
 #miniChart-3{
-  width: 81px;
-  height: 60px;
+  width: 80px;
+  height: 50px;
 }
 
 .ed-charts-2{
-  font-size: 14pt;
   float: left;
-  margin-left: 7px;
-  margin-top: 17px;
-}
-
-.ed-charts-2 P{
-  padding-top: 10px;
+  margin-left: 20px;
 }
 
 .ed-chart-3{
-  width: 81px;
-  height: 81px;
+  width: 80px;
+  height: 70px;
   border: 1px solid #2CA6E0;
   border-radius: 20px;
-  margin-left: 2px;
-  margin-top: 6px;
+  margin-top: 13px;
 }
 </style>

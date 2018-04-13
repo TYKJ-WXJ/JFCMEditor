@@ -107,5 +107,15 @@
   "miwtem": "20℃",
   "miwstate": "正常",
   "mini门禁设备": "",
-  "mimstate": "正常"
+  "mimstate": "正常",
+
+  "miniUPS": "",
+  "miupue": "1",
+  "miuvoltage": "200",
+  "miuoutvoltage": "210",
+  "miucurrent": "300",
+  "upsdata": [1],
+  "upsdata1": [200],
+  "upsdata2": [210],
+  "upsdata3": [300]
 }

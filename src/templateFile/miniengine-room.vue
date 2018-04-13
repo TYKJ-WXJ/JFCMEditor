@@ -7,31 +7,26 @@
       <div class="ed-state-1">
         <img src="../assets/img/jf7.png" alt="">
         <img src="../assets/img/jf11.png" alt="" style="display:none">
-        <p>配电系统：{{ mijfpower }}</p>
+        <p>配电{{ mijfpower }}</p>
       </div>
       <div class="ed-state-2">
         <img src="../assets/img/jf8.png" alt="">
         <img src="../assets/img/jf12.png" alt="" style="display:none">
-        <p>环境监控系统：{{ mijfenviron }}</p>
+        <p>环境监控{{ mijfenviron }}</p>
       </div>
       <div class="ed-state-3">
         <img src="../assets/img/jf9.png" alt="" style="display:none">
         <img src="../assets/img/jf13.png" alt="">
-        <p>消防系统：{{ mijffire }}</p>
+        <p>消防{{ mijffire }}</p>
       </div>
       <div class="ed-state-4">
         <img src="../assets/img/jf10.png" alt="" style="display:none">
         <img src="../assets/img/jf14.png" alt="">
-        <p>安防系统：{{ mijfsecurity }}</p>
+        <p>安防{{ mijfsecurity }}</p>
       </div>
     </div>
     <div class="ed-infor">
-      <div class="ed-infor-1">
-        <p>机房信息反馈</p>
-      </div>
-      <div class="ed-infor-2">
-        <p>{{ mijfinfor }}</p>
-      </div>
+      <p>反馈：{{ mijfinfor }}</p>
     </div>
   </div>
 </template>
@@ -39,8 +34,8 @@
 <script>
 import server from '@/services/server';
 export default {
-  data() {
-    return{
+  data () {
+    return {
       mijfpower: '',
       mijfenviron: '',
       mijffire: '',
@@ -68,74 +63,61 @@ export default {
 
 <style scoped>
 .ed-engine{
-  width: 284px;
-  height: 297px;
-  background-color: #29ABE2;
-  opacity: 0.2;
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
-  background-color: #187FC3;
+  background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
-}
-
-.ed-titles p{
-  padding-top: 7px;
+  height: 25px;
 }
 
 .ed-state{
-  margin-top: 10px;
-  font-size: 12pt;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 14px;
+  margin-left: 68px;
 }
 
 .ed-state img{
-  width: 55px;
+  width: 70px;
+  height: 65px;
 }
 
-.ed-state-1{
-  padding-right: 10px;
+.ed-state-1 {
   float: left;
-  margin-left: 12px;
+  padding-left: 6px;
 }
 
-.ed-state-2{
+.ed-state-2 {
   float: left;
+  padding-left: 96px;
 }
 
-.ed-state-3{
+.ed-state-3 {
   float: left;
-  margin-left: 12px;
-  padding-top: 8px;
+  padding-left: 6px;
+  padding-top: 3px;
 }
 
-.ed-state-4{
+.ed-state-4 {
   float: left;
-  padding-left: 27px;
-  padding-top: 8px;
+  padding-left: 97px;
+  padding-top: 3px;
 }
 
 .ed-infor{
-  margin-top: 3px;
+  padding-top: 166px;
+  font-size: 16px;
+  padding-right: 282px;
 }
 
-.ed-infor-1 p{
-  padding-right: 146px;
-  font-size: 14pt;
-  padding-top: 177px;
-}
-
-.ed-infor-2{
-  width: 255px;
-  height: 39px;
-  border: 1px solid #2CA6E0;
-  border-radius: 4px;
-  margin-left: 13px;
-  margin-top: 2px;
-}
 </style>

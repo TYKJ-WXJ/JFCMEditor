@@ -7,31 +7,26 @@
       <div class="ed-state-1">
         <img src="../assets/img/zj5.png" alt="">
         <img src="../assets/img/zj9.png" alt="" style="display:none">
-        <p>硬盘容量：{{ micapacity }}</p>
+        <p>已用{{ micapacity }}</p>
       </div>
       <div class="ed-state-2">
         <img src="../assets/img/zj6.png" alt="">
         <img src="../assets/img/zj10.png" alt="" style="display:none">
-        <p>主板状态：{{ miboard }}</p>
+        <p>主板{{ miboard }}</p>
       </div>
       <div class="ed-state-3">
         <img src="../assets/img/zj7.png" alt="" style="display:none">
         <img src="../assets/img/zj11.png" alt="">
-        <p>CPU状态：{{ miCPUstate }}</p>
+        <p>CPU{{ miCPUstate }}</p>
       </div>
       <div class="ed-state-4">
         <img src="../assets/img/zj8.png" alt="" style="display:none">
         <img src="../assets/img/zj12.png" alt="">
-        <p>风扇状态：{{ mifanstate }}</p>
+        <p>风扇{{ mifanstate }}</p>
       </div>
     </div>
     <div class="ed-infor">
-      <div class="ed-infor-1">
-        <p>主机反馈信息</p>
-      </div>
-      <div class="ed-infor-2">
-        <p>{{ miinfor }}</p>
-      </div>
+      <p>反馈：{{ miinfor }}</p>
     </div>
   </div>
 </template>
@@ -40,7 +35,7 @@
 import server from '@/services/server';
 export default {
   data () {
-    return{
+    return {
       micapacity: '',
       miboard: '',
       miCPUstate: '',
@@ -61,76 +56,68 @@ export default {
       }).catch((err) => {
         console.log(err);
       })
-    },
+    }
   }
 }
 </script>
 
 <style scoped>
 .ed-host{
-  width: 284px;
-  height: 297px;
-  background-color: #29ABE2;
-  opacity: 0.2;
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
-  background-color: #187FC3;
+  background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
-}
-
-.ed-titles p{
-  padding-top: 7px;
+  height: 25px;
 }
 
 .ed-state{
-  margin-top: 10px;
-  font-size: 12pt;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 14px;
+  margin-left: 68px;
 }
 
 .ed-state img{
-  width: 55px;
+  width: 70px;
+  height: 65px;
 }
 
-.ed-state-1{
-  padding-right: 25px;
+.ed-state-1 {
   float: left;
-  margin-left: 24px;
+  padding-left: 6px;
 }
 
-.ed-state-2{
+.ed-state-2 {
   float: left;
+  padding-left: 96px;
 }
 
-.ed-state-3{
+.ed-state-3 {
   float: left;
-  margin-left: 24px;
-  padding-top: 8px;
+  padding-left: 6px;
+  padding-top: 3px;
 }
 
-.ed-state-4{
+.ed-state-4 {
   float: left;
-  padding-left: 27px;
-  padding-top: 8px;
+  padding-left: 97px;
+  padding-top: 3px;
 }
 
-.ed-infor-1 p{
-  padding-right: 146px;
-  font-size: 14pt;
+.ed-infor{
+  padding-top: 166px;
+  font-size: 16px;
+  padding-right: 282px;
 }
 
-.ed-infor-2{
-  width: 255px;
-  height: 39px;
-  border: 1px solid #2CA6E0;
-  border-radius: 4px;
-  margin-left: 13px;
-  margin-top: 2px;
-}
 </style>

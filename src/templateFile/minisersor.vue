@@ -24,11 +24,11 @@
 <script>
 import server from '@/services/server';
 export default {
-  data() {
-    return{
+  data () {
+    return {
       miwhum: '',
       miwstate: '',
-      miwtem: '',
+      miwtem: ''
     }
   },
   mounted() {
@@ -50,51 +50,45 @@ export default {
 
 <style scoped>
 .ed-sersor{
-  width: 284px;
-  height: 297px;
-  background-color: #29ABE2;
-  opacity: 0.2;
+  width: 360px;
+  height: 235px;
   margin: 0 auto;
   color: #ffffff;
-  font-family: 黑体;
-  font-size: 14pt;
+  box-shadow: 0px 0px 20px 4px rgba(9, 74, 115, 0.4) inset;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
 }
 
 .ed-titles{
   padding-left: 10px;
-  font-size: 14pt;
+  font-size: 16px;
   display: flex;
-  background-color: #187FC3;
+  background: linear-gradient(to right, #142657, transparent);
   margin: 0 auto;
-}
-
-.ed-titles p{
-  padding-top: 7px;
+  height: 25px;
 }
 
 .ed-state {
-  padding-top: 40px;
+  padding-top: 30px;
 }
 
 .ed-state-1 {
   float: left;
-  margin-left: 12px;
+  margin-left: 48px;
 }
 
 .ed-infor {
-  padding-top: 39px;
+  padding-top: 25px;
 }
 
 .ed-infor p{
-  padding-top: 12px;
   float: left;
   padding-left: 65px;
 }
 
 .ed-infor a{
-  font-size: 24pt;
+  font-size: 16px;
   color: #ffffff;
-  font-family: 黑体;
-  padding-right: 36px;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
+  padding-right: 2px;
 }
 </style>

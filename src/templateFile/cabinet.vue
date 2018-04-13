@@ -435,9 +435,12 @@ export default {
 .ed-state-2{
   height: 150px;
   width: 200px;
-  background-color: #ffff;
-  margin-left: 95px;
-  margin-top: 10px;
+  margin: 10px auto;
+}
+
+.ed-state-2 img{
+  width: 100%;
+  height: 100%;
 }
 
 .ed-state-3{
