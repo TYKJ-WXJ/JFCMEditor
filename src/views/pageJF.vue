@@ -19,11 +19,11 @@ export default{
     svgData() {
       // 获取JSON数据
       server.getAreas().then((res) => {
-//        console.log(res.data.data);
+        console.log(res.data.data);
         // 将字符串转成对象
         let svgData = JSON.parse(res.data.data[0].svg);
-//        console.log(svgData);
-        JF(svgData);
+        console.log(svgData[0].svgs[0].svg);
+        JF(svgData[0].svgs[0].svg);
       }).catch((err) => {
         console.log(err);
       })

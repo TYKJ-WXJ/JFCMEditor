@@ -55,7 +55,7 @@ const server = {
     });
   },
   getAreas() {
-    return axios('http://192.168.1.2:8010/areas', {
+    return axios('http://192.168.1.3:8010/areas', {
       method: 'get'
     });
   }

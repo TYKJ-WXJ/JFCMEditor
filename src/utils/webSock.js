@@ -14,7 +14,7 @@ let sju;
 const webSock = {
   connectZDY(st) {
     // let socket = new SockJS('http://192.168.1.149:8080/test-info1'); // 这里是sockjs-client
-    let socket = new SockJS('ws://192.168.1.149:8080/test-info1'); // 这里是reconnectingwebsocket
+    let socket = new SockJS('ws://192.168.1.149:8080/test-sockJs'); // 这里是reconnectingwebsocket
     // console.log(socket.onerror);
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {

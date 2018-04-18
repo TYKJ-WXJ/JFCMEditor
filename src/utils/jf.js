@@ -66,27 +66,21 @@ function initRender() {
 let raycaster = new THREE.Raycaster();// 光线投射，用于确定鼠标点击位置
 let mouse = new THREE.Vector2();// 创建二维平面
 function initHover() {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  mouse.x = (event.clientX / (window.innerWidth - 100)) * 2 - 1;
+  mouse.y = -(event.clientY / (window.innerHeight - 200)) * 2 + 1;
   // update the picking ray with the camera and mouse position
   raycaster.setFromCamera(mouse, camera);
   // calculate objects intersecting the picking ray
   let intersects = raycaster.intersectObjects(scene.children);
-
-  // for (let i = 0; i < intersects.length; i++) {
-  //   intersects[i].object.material.color = {
-  //     r: 0,
-  //     g: 0,
-  //     b: 0
-  //   };
-  //   console.log(intersects);
-  // }
+  for (let i = 0; i < intersects.length; i++) {
+    console.log(intersects);
+  }
 }
 
 // 鼠标点击事件
 function initClick() {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  mouse.x = (event.clientX / (window.innerWidth - 100)) * 2 - 1;
+  mouse.y = -(event.clientY / (window.innerHeight - 200)) * 2 + 1;
   // update the picking ray with the camera and mouse position
   raycaster.setFromCamera(mouse, camera);
   // calculate objects intersecting the picking ray
@@ -133,11 +127,11 @@ function createFloor() {
   });
 
   // 茶色：0x58ACFA   透明玻璃色：0XECF1F3
-  let glassMaterial = new THREE.MeshBasicMaterial({color: 0XECF1F3});
-  glassMaterial.opacity = 0.4;
-  glassMaterial.transparent = true;
-  createCubeWall(1, 110, 1100, 0, glassMaterial, -801, 100, 0);
-  createCubeWall(1, 110, 1100, 0, glassMaterial, 801, 100, 0);
+  // let glassMaterial = new THREE.MeshBasicMaterial({color: 0XECF1F3});
+  // glassMaterial.opacity = 0.4;
+  // glassMaterial.transparent = true;
+  // createCubeWall(1, 110, 1100, 0, glassMaterial, -801, 100, 0);
+  // createCubeWall(1, 110, 1100, 0, glassMaterial, 801, 100, 0);
 }
 
 // 墙上挖门，通过两个几何体生成BSP对象
@@ -301,7 +295,7 @@ function createWallMaterail() {
   matArrayB.push(new THREE.MeshPhongMaterial({color: 0xafc0ca}));  // 右
 }
 
-// 数据转化函数
+// 数据转化函数,进行数据分类
 function conversionData(dt) {
   // console.log(dt);
   for (let i = 0; i < 1; i++) {
@@ -311,74 +305,58 @@ function conversionData(dt) {
 }
 
 // 创建房间布局
-function createLayout() {
-  // 墙面1 立方体比较长的面  左一
-  createCubeWall(10, 200, 900, 0, matArrayB, -651, 100, 0);
-  // 墙面2  立方体比较长的面   右一
-  createCubeWall(10, 200, 900, 1, matArrayB, 651, 100, 0);
-  // 墙面3 门对面的墙 立方体比较短的面
-  createCubeWall(10, 200, 1310, 1.5, matArrayB, 0, 100, -451);
-
-  // 墙面4   带门的面
-  // let wall = returnWallObject(1310, 200, 10, 0, matArrayB, 0, 100, 455);
-  // 门框
-  // let doorCube = returnWallObject(100, 180, 10, 0, matArrayB, 0, 90, 455);
-  // createResultBsp(wall, doorCube, 1);
-
-  // 为墙面安装门,右门
-  createDoor(100, 180, 2, 50, 90, 451, doorImg);
-  // let loader = new THREE.TextureLoader();
-  // loader.load('../../src/assets/3D/m2.png', function(texture) {
-  //   let doorgeometry = new THREE.BoxGeometry(100, 180, 2);
-  //   let doormaterial = new THREE.MeshBasicMaterial({map: texture, color: 0xffffff});
-  //   doormaterial.opacity = 1.0;
-  //   doormaterial.transparent = true;
-  //   door = new THREE.Mesh(doorgeometry, doormaterial);
-  //   door.position.set(-50, 0, 0);
-  //   let door1 = door.clone();
-  //   door1.position.set(50, 0, 0);
-  //   door1.visible = false;
-  //   dummy.add(door);
-  //   dummy.add(door1);
-  //   dummy.position.set(50, 90, 451)
-  //   scene.add(dummy);
-  // });
-
-  // 房间A:隔墙1
-  createCubeWall(10, 200, 250, 0, matArrayA, -151, 100, 325);
-  // 房间A:隔墙2  无门
-  createCubeWall(10, 200, 220, 0.5, matArrayA, -256, 100, 201);
-  // 厨房：隔墙3
-  createCubeWall(350, 200, 10, 0, matArrayA, 481, 100, 131);
-  // 厨房：隔墙4 无门
-  createCubeWall(10, 200, 200, 0, matArrayA, 301, 100, 225);
-  // 房间B
-  createCubeWall(350, 200, 10, 0, matArrayA, -471, 100, -50);
-  // 房间B  无门
-  createCubeWall(200, 200, 10, 0.5, matArrayA, 0, 100, -350);
-  // 房间C
-  createCubeWall(220, 200, 10, 0, matArrayA, 540, 100, -50);
-  // 房间C 无门
-  createCubeWall(200, 200, 10, 0.5, matArrayA, 250, 100, -350);
-  // 厕所
-  // let cube = returnWallObject(10, 200, 260, 0.5, matArrayA, 125, 100, -250);
-  // 厕所门框
-  // let doorCube1 = returnWallObject(10, 160, 80, 0.5, matArrayA, 155, 90, -250);
-  // createResultBsp(cube, doorCube1, 2);
-
-  // 茶色：0x58ACFA   透明玻璃色：0XECF1F3
-  let glassMaterial = new THREE.MeshBasicMaterial({ color: 0x58ACFA });
-  glassMaterial.opacity = 0.6;
-  glassMaterial.transparent = true;
-  createCubeWall(1, 180, 80, 0.5, glassMaterial, 155, 90, -250);
-}
+// function createLayout() {
+//   // 墙面1 立方体比较长的面  左一
+//   createCubeWall(10, 200, 900, 0, matArrayB, -651, 100, 0);
+//   // 墙面2  立方体比较长的面   右一
+//   createCubeWall(10, 200, 900, 1, matArrayB, 651, 100, 0);
+//   // 墙面3 门对面的墙 立方体比较短的面
+//   createCubeWall(10, 200, 1310, 1.5, matArrayB, 0, 100, -451);
+//
+//   // 墙面4   带门的面
+//   // let wall = returnWallObject(1310, 200, 10, 0, matArrayB, 0, 100, 455);
+//   // 门框
+//   // let doorCube = returnWallObject(100, 180, 10, 0, matArrayB, 0, 90, 455);
+//   // createResultBsp(wall, doorCube, 1);
+//
+//   // 为墙面安装门,右门
+//   createDoor(100, 180, 2, 50, 90, 451, doorImg);
+//
+//   // 房间A:隔墙1
+//   createCubeWall(10, 200, 250, 0, matArrayA, -151, 100, 325);
+//   // 房间A:隔墙2  无门
+//   createCubeWall(10, 200, 220, 0.5, matArrayA, -256, 100, 201);
+//   // 厨房：隔墙3
+//   createCubeWall(350, 200, 10, 0, matArrayA, 481, 100, 131);
+//   // 厨房：隔墙4 无门
+//   createCubeWall(10, 200, 200, 0, matArrayA, 301, 100, 225);
+//   // 房间B
+//   createCubeWall(350, 200, 10, 0, matArrayA, -471, 100, -50);
+//   // 房间B  无门
+//   createCubeWall(200, 200, 10, 0.5, matArrayA, 0, 100, -350);
+//   // 房间C
+//   createCubeWall(220, 200, 10, 0, matArrayA, 540, 100, -50);
+//   // 房间C 无门
+//   createCubeWall(200, 200, 10, 0.5, matArrayA, 250, 100, -350);
+//   // 厕所
+//   // let cube = returnWallObject(10, 200, 260, 0.5, matArrayA, 125, 100, -250);
+//   // 厕所门框
+//   // let doorCube1 = returnWallObject(10, 160, 80, 0.5, matArrayA, 155, 90, -250);
+//   // createResultBsp(cube, doorCube1, 2);
+//
+//   // 茶色：0x58ACFA   透明玻璃色：0XECF1F3
+//   let glassMaterial = new THREE.MeshBasicMaterial({ color: 0x58ACFA });
+//   glassMaterial.opacity = 0.6;
+//   glassMaterial.transparent = true;
+//   createCubeWall(1, 180, 80, 0.5, glassMaterial, 155, 90, -250);
+// }
 
 // 7.初始化OBJ对象
 function initObject() {
   // 墙纹理
   createWallMaterail();
   createFloor();
-  createLayout();
+  // createLayout();
 }
 
 // 初始化函数
