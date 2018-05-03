@@ -36,6 +36,7 @@
     <router-link to="miniChannel">miniChannel</router-link>
     <router-link to="miniNoone">miniNoone</router-link>
     <router-link to="/pageJF">pageJF</router-link>
+    <router-link to="/play">play</router-link>
     <router-view></router-view>
   </div>
 </template>

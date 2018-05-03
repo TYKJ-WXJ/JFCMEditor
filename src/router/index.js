@@ -266,6 +266,13 @@ export default new Router({
       component (resolve) {
         require(['@/views/miniNoone'], resolve);
       }
+    },
+    {
+      path: '/play',
+      name: 'play',
+      component (resolve) {
+        require(['@/views/play'], resolve);
+      }
     }
   ]
 });

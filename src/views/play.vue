@@ -1,11 +1,11 @@
 <template>
     <div>
-      <play></play>
+      <video-w></video-w>
     </div>
 </template>
 
 <script>
-  import Play from '@/components/play.vue';
+  import videoW from '../components/videoW.vue'
   export default{
     data() {
       return {
@@ -13,7 +13,7 @@
       }
     },
     components: {
-      Play
+      videoW
     }
   }
 </script>

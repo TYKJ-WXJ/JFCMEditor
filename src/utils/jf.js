@@ -305,58 +305,58 @@ function conversionData(dt) {
 }
 
 // 创建房间布局
-// function createLayout() {
-//   // 墙面1 立方体比较长的面  左一
-//   createCubeWall(10, 200, 900, 0, matArrayB, -651, 100, 0);
-//   // 墙面2  立方体比较长的面   右一
-//   createCubeWall(10, 200, 900, 1, matArrayB, 651, 100, 0);
-//   // 墙面3 门对面的墙 立方体比较短的面
-//   createCubeWall(10, 200, 1310, 1.5, matArrayB, 0, 100, -451);
-//
-//   // 墙面4   带门的面
-//   // let wall = returnWallObject(1310, 200, 10, 0, matArrayB, 0, 100, 455);
-//   // 门框
-//   // let doorCube = returnWallObject(100, 180, 10, 0, matArrayB, 0, 90, 455);
-//   // createResultBsp(wall, doorCube, 1);
-//
-//   // 为墙面安装门,右门
-//   createDoor(100, 180, 2, 50, 90, 451, doorImg);
-//
-//   // 房间A:隔墙1
-//   createCubeWall(10, 200, 250, 0, matArrayA, -151, 100, 325);
-//   // 房间A:隔墙2  无门
-//   createCubeWall(10, 200, 220, 0.5, matArrayA, -256, 100, 201);
-//   // 厨房：隔墙3
-//   createCubeWall(350, 200, 10, 0, matArrayA, 481, 100, 131);
-//   // 厨房：隔墙4 无门
-//   createCubeWall(10, 200, 200, 0, matArrayA, 301, 100, 225);
-//   // 房间B
-//   createCubeWall(350, 200, 10, 0, matArrayA, -471, 100, -50);
-//   // 房间B  无门
-//   createCubeWall(200, 200, 10, 0.5, matArrayA, 0, 100, -350);
-//   // 房间C
-//   createCubeWall(220, 200, 10, 0, matArrayA, 540, 100, -50);
-//   // 房间C 无门
-//   createCubeWall(200, 200, 10, 0.5, matArrayA, 250, 100, -350);
-//   // 厕所
-//   // let cube = returnWallObject(10, 200, 260, 0.5, matArrayA, 125, 100, -250);
-//   // 厕所门框
-//   // let doorCube1 = returnWallObject(10, 160, 80, 0.5, matArrayA, 155, 90, -250);
-//   // createResultBsp(cube, doorCube1, 2);
+function createLayout() {
+  // 墙面1 立方体比较长的面  左一
+  createCubeWall(10, 200, 900, 0, matArrayB, -651, 100, 0);
+  // 墙面2  立方体比较长的面   右一
+  createCubeWall(10, 200, 900, 1, matArrayB, 651, 100, 0);
+  // 墙面3 门对面的墙 立方体比较短的面
+  createCubeWall(10, 200, 1310, 1.5, matArrayB, 0, 100, -451);
+
+  // 墙面4   带门的面
+  // let wall = returnWallObject(1310, 200, 10, 0, matArrayB, 0, 100, 455);
+  // 门框
+  // let doorCube = returnWallObject(100, 180, 10, 0, matArrayB, 0, 90, 455);
+  // createResultBsp(wall, doorCube, 1);
+
+  // 为墙面安装门,右门
+  createDoor(100, 180, 2, 50, 90, 451, doorImg);
+
+  // 房间A:隔墙1
+  createCubeWall(10, 200, 250, 0, matArrayA, -151, 100, 325);
+  // 房间A:隔墙2  无门
+  createCubeWall(10, 200, 220, 0.5, matArrayA, -256, 100, 201);
+  // 厨房：隔墙3
+  createCubeWall(350, 200, 10, 0, matArrayA, 481, 100, 131);
+  // 厨房：隔墙4 无门
+  createCubeWall(10, 200, 200, 0, matArrayA, 301, 100, 225);
+  // 房间B
+  createCubeWall(350, 200, 10, 0, matArrayA, -471, 100, -50);
+  // 房间B  无门
+  createCubeWall(200, 200, 10, 0.5, matArrayA, 0, 100, -350);
+  // 房间C
+  createCubeWall(220, 200, 10, 0, matArrayA, 540, 100, -50);
+  // 房间C 无门
+  createCubeWall(200, 200, 10, 0.5, matArrayA, 250, 100, -350);
+  // 厕所
+  // let cube = returnWallObject(10, 200, 260, 0.5, matArrayA, 125, 100, -250);
+  // 厕所门框
+  // let doorCube1 = returnWallObject(10, 160, 80, 0.5, matArrayA, 155, 90, -250);
+  // createResultBsp(cube, doorCube1, 2);
 //
 //   // 茶色：0x58ACFA   透明玻璃色：0XECF1F3
 //   let glassMaterial = new THREE.MeshBasicMaterial({ color: 0x58ACFA });
 //   glassMaterial.opacity = 0.6;
 //   glassMaterial.transparent = true;
 //   createCubeWall(1, 180, 80, 0.5, glassMaterial, 155, 90, -250);
-// }
+}
 
 // 7.初始化OBJ对象
 function initObject() {
   // 墙纹理
   createWallMaterail();
   createFloor();
-  // createLayout();
+  createLayout();
 }
 
 // 初始化函数

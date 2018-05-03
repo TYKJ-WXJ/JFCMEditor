@@ -58,6 +58,11 @@ const server = {
     return axios('http://192.168.1.3:8010/areas', {
       method: 'get'
     });
+  },
+  getTodata() {
+    return axios('http://192.168.1.3:8010/areas', {
+      method: 'get'
+    });
   }
 };
 
