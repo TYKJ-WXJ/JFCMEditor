@@ -3,86 +3,138 @@ import '../css/joint.css';
 import $ from 'jquery';
 import joint from 'jointjs';
 import Draggabilly from 'draggabilly';
-// import Uuid from '../../uuid';
-// import 'jquery.fancytree/dist/skin-lion/ui.fancytree.min.css'
-// import {createTree} from 'jquery.fancytree'
-// import 'jquery.fancytree/dist/modules/jquery.fancytree.edit';
-// import 'jquery.fancytree/dist/modules/jquery.fancytree.filter';
 /**
  * Created by 吴旭健 on 2017/11/29.
  */
-let lineArr = [];// 存放线段和点的数据
+let thatW;
 const jointD = {
-  centerGraph: null,
-  centerPaper: null,
-  leftGraph: null,
-  leftPaper: null,
-  view: null,
-  idUp: '',
-  idDown: '',
-  hover: null,
-  angle: {},
-  initialAngle: {},
-  cells: [],
-  options: {},
-  currentLayer: 0,
-  // highlightedCellViews: [],
-  groups: [],
-  store: null,
-  svg: [],
-  svgView: [],
-  // allCellsId: [],
-  initPaper(param) {
-    let that = this;
-    this.options = param.options;
-    this.store = param.store;
-    $('.tool_wrap').css({
-      'width': this.options.width - 5,
-      'height': this.options.height - 10
-    });
-    // 设备基本属性
-    if (this.options.basic_attributes) {
-      $('.tool_panel').css({
-        'height': this.options.height - $('.basic_attributes').outerHeight() - 10
-      });
-    } else {
-      $('.tool_panel').css({
-        'height': this.options.height - 10
-      });
-    }
-    // 图库
-    if (this.options.basic_figure) {
-      $('.tool_panel').prepend(`
-        <div class="basic_figure">
-          <h3>图库</h3>
-          <div id="component_box">
-            <div>
-              <div id="component"></div>
-              <div id="link"></div>
-              <div id="line"></div>
-            </div>
-          </div>
-        </div>
-        <div class="tool_canvas"></div>
-      `);
-      // 设置图库高度
-      if (this.options.gallery.length === 0) {
-        $('#component_box').css({
-          'height': $('.tool_panel').outerHeight() - 55
-        });
-      } else {
-        $('#component_box').css({
+  init: function () {
+    let obj = {
+      svgZoom: '', // 缩放画布
+      maxZoom: 1,
+      paperZoom: '', // 实例区域画布比例
+      centerGraph: null, // 中间画布
+      centerPaper: null,
+      leftGraph: null,
+      leftPaper: null, // 左边图库
+      view: null, // 当前点击的图形
+      contextMenu: null, // 右击图形
+      cells: [], // 矩形选中框的图形
+      embedCells: [], // 要解除组合的图形
+      options: { // 配置参数
+        'width': 1100,
+        'height': 660, // 整个模块高度
+        'basic_attributes': true, // 设备基本属性
+        'basic_figure': true, // 图库
+        'action_buttons': true, // 清除，组合等按钮
+        'add_attributes': true, // 增加设备属性
+        'style_operation': true, // 样式面板
+        'layer': false, // 图层
+        'thumbnail': true, // 缩略图
+        'figure_buttons': true, // 图形操作按钮
+        'single_click': true, // 单击图形
+        'double_click': true, // 双击图形
+        'label': true, // 图形名称和基本属性
+        'move_figure': true, // 是否可移动图形
+        'gallery': [], // 所有设备数据
+        'refer_line': true, // 参考线
+        'isArea': false, // 是否是区域管理页面
+        'scale': false
+      },
+      currentLayer: 0, // 当前图层
+      svg: [], // 有图层的svg数据
+      store: null, // 数据池
+      z: 0, // 0表示toBack, 1表示toFront
+      path: {value: false, count: 0, type: 'L'}, // 划线用
+      drag: {value: false, index: 0}, // 曲线控制点
+      currentEquip: null, // 当前点击的设备
+      editorLink: {}, // 是否显示链接编辑
+      equipList: {}, // 实例化设备列表
+      initPaper(param) {
+        // 参数错误判断
+        for (let key in param.options) {
+          if (this.options.hasOwnProperty(key)) { // 参数值错误检查
+            if (key === 'height' && typeof this.options['height'] !== 'number') {
+              alert('参数值错误');
+              return;
+            }
+            if (key === 'width' && typeof this.options['width'] !== 'number') {
+              alert('参数值错误');
+              return;
+            }
+            if (key === 'gallery' && !(this.options['gallery'] instanceof Array)) {
+              alert('参数值错误');
+              return;
+            }
+            if (key !== 'height' && key !== 'width' && key !== 'gallery' && typeof this.options[key] !== 'boolean') {
+              alert('参数值错误');
+              return;
+            }
+            this.options[key] = param.options[key];
+          }
+        }
+        let height = {h1: 0, h2: 0};
+        $('.tool_wrap').css({
+          'width': this.options.width - 5,
           'height': this.options.height - 10
         });
-        $('.basic_figure h3').remove();
-      }
-    } else {
-      $('.tool_panel').prepend(`
+        // 设备基本属性
+        if (this.options.basic_attributes) {
+          height.h1 = this.options.height - $('.basic_attributes').outerHeight() - 10;
+        } else {
+          height.h1 = this.options.height - 10;
+        }
+        $('.tool_panel').css({
+          'height': height.h1
+        });
+        // 判断是否有图库
+        if (this.options.basic_figure) {
+          $('.tool_panel').prepend(`
+            <div class="basic_figure">
+              <h3>图库</h3>
+              <div id="component_box">
+                <div>
+                  <div id="component"></div>
+                  <div id="link"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tool_canvas"></div>
+          `);
+          if (!this.options.isArea) {
+            $('.tool_canvas').css('overflow', 'hidden');
+          }
+          // 是区域不画线
+          // if (!this.options.isArea) {
+          $('#component_box > div').append('<div id="line"></div>');
+          // }
+          // 设置图库高度
+          if (this.options.gallery.length === 0) { // 画设备
+            height.h2 = $('.tool_panel').outerHeight() - 55;
+          } else { // 画区
+            height.h2 = this.options.height - 10;
+            $('.basic_figure h3').remove();
+          }
+          $('#component_box').css({
+            'height': height.h2
+          });
+        } else {
+          $('.tool_panel').prepend(`
         <div class="tool_canvas"></div>`);
-    }
-    // 清除组合等操作
-    if (this.options.action_buttons) {
-      $('.tool_canvas').append(`<div class="action_buttons">
+        }
+        // 清除组合等操作
+        if (this.options.action_buttons) {
+          if (this.options.isArea) {
+            $('.tool_canvas').append(`<div class="action_buttons">
+        <div class="change_drawType" title="切换为鼠标"></div>
+        <div class="change_drawSize" title="放大">放大</div>
+        <div class="front_disabled" title="置于顶层"></div>
+        <div class="back_disabled" title="置于底层"></div>
+      </div>
+      <div id="display_box"></div>`);
+          } else {
+            $('.tool_canvas').append(`<div class="action_buttons">
+        <div class="change_drawType" title="切换为鼠标"></div>
         <div class="clear_disabled" title="清除画布"></div>
         <div class="group_disabled" title="合并图形"></div>
         <div class="ungroup_disabled" title="解除合并"></div>
@@ -90,274 +142,669 @@ const jointD = {
         <div class="back_disabled" title="置于底层"></div>
       </div>
       <div id="display_box"></div>`);
-    } else {
-      $('.tool_canvas').append(`
+          }
+      //     $('.tool_canvas').append(`<div class="action_buttons">
+      //   <div class="change_drawType" title="切换为鼠标"></div>
+      //   <div class="clear_disabled" title="清除画布"></div>
+      //   <div class="group_disabled" title="合并图形"></div>
+      //   <div class="ungroup_disabled" title="解除合并"></div>
+      //   <div class="front_disabled" title="置于顶层"></div>
+      //   <div class="back_disabled" title="置于底层"></div>
+      // </div>
+      // <div id="display_box"></div>`);
+        } else {
+          $('.tool_canvas').append(`
         <div id="display_box"></div>
       `);
-    }
-    // 样式面板和缩略图
-    if (this.options.thumbnail || this.options.style_operation || this.options.layer) {
-      $('.tool_wrap').append('<div class="tool_map_right"><i class="drag" title="点我拖动"></i></div>');
-      if (this.options.style_operation) {
-        $('.tool_map_right').append('<div class="style_operation"></div>');
-      }
-      if (this.options.thumbnail) {
-        $('.tool_map_right').append('<div class="thumbnail"></div>');
-      }
-      if (this.options.layer) {
-        $('.tool_map_right').append(`<div class="layer">
+        }
+        // 设备比例尺
+        if (this.options.scale) {
+          $('.tool_canvas').append(`<div id="plottingScale">
+        <!--<input type="range" id="scaleBtn" value="0.1" step="9.9" min="0.1" max="100">-->
+        <input type="number" value="0.1" id="scaleBtn">
+        <output id="scaleValue" name="x" for="scaleBtn">100px:0.1m</output>
+        </div>`);
+          $('#scaleBtn').on('input propertychange', {param: this}, this.changeScale);
+        }
+        // 画线时候的鼠标位置
+        let dom = `<div id="position"style="position:absolute;left:0;bottom:92px;display:none">x: <span id="position_x"></span><br/>y: <span id="position_y"></span></div>`
+        $('.tool_canvas').append(dom)
+        // 样式面板和缩略图
+        if (this.options.thumbnail || this.options.style_operation || this.options.layer) {
+          $('.tool_wrap').append('<div class="tool_map_right"><i class="up_tool">收起</i><i class="drag" title="点我拖动"></i></div>');
+          if (this.options.style_operation) {
+            $('.tool_map_right').append('<div class="style_operation"></div>');
+          }
+          if (this.options.thumbnail) {
+            $('.tool_map_right').append('<div class="thumbnail"></div>');
+          }
+          if (this.options.layer) {
+            $('.tool_map_right').append(`<div class="layer">
           <h4>图层<i class="iconfont addLayer" style="cursor:pointer;">&#xe60d;</i></h4>
             <ul class="layerTree">
               <li>
                 <span class="highlight" data-layer = '0'>第0层</span>
-                <ul class="secondaryLayer"></ul>
+                <!--<ul class="secondaryLayer"></ul>-->
               </li>
             </ul>
         </div>`);
+            this.dealWithLayer();
+          }
+          // 收起样式面板
+          $('.up_tool').on('click', function() {
+            console.log(222)
+            if ($('.inspector-container').css('display') === 'none') {
+              $('.inspector-container').css('display', 'block')
+            } else {
+              $('.inspector-container').css('display', 'none')
+            }
+          })
+        }
+        this.initLeftPaper().initCenterPaper().loadPropertyPane();
+      },
+      changeScale(event) {
+        let that = event.data.param;
+        let scale = $('#scaleBtn').val();
+        $('#scaleValue').val('100px:' + scale + 'm');
+        that.svgZoom = '100px:' + scale + 'm';
+      },
+      dealWithLayer() {
+        let that = this;
         // 添加图层
         $('.addLayer').on('click', function () {
-          if ($('.secondaryLayer').length >= 5) {
+          if ($('.layerTree li').length >= 5) {
             alert('最多只有5层');
             return false;
           } else {
-            $('.layerTree > li > span').removeClass('highlight');
-            $('.layerTree').append(`<li>
-            <span class="highlight" data-layer = ` + $('.secondaryLayer').length + `>第` + $('.secondaryLayer').length + `层<i class="iconfont deleteLayer" style="float: right;">&#xe61e;</i></span>
-            <ul class="secondaryLayer"></ul>
+            if (that.centerGraph.getCells().length > 0) {
+              console.log($('.layerTree li').length)
+              that.currentLayer = $('.layerTree li').length;
+              if (that.getZeroLayerCell()) {
+                $('.layerTree > li > span').removeClass('highlight');
+                $('.layerTree').append(`<li>
+            <span class="highlight" data-layer = ` + $('.layerTree li').length + `>第` + that.currentLayer + `层<i class="iconfont deleteLayer" style="float: right;">&#xe61e;</i></span>
+            <!--<ul class="secondaryLayer"></ul>-->
           </li>`);
-            that.currentLayer = $('.secondaryLayer').length - 1;
-            that.setSvgView();
+                that.setSvgView();
+              } else {
+                alert('第0层必须是单个图形或者组合图形');
+                that.currentLayer -= 1;
+              }
+            } else {
+              alert('请先绘制第0层的图形');
+            }
           }
         });
         // 选中某个图层
         $('.layer').on('click', '.layerTree > li > span', function () {
-          $('.layerTree > li > span').removeClass('highlight');
-          $(this).addClass('highlight');
-          that.currentLayer = parseInt($(this).attr('data-layer'));
-          that.setSvgView();
-          // if ($(this).next().hasClass('hidden')) {
-          //   $(this).next().removeClass('hidden');
-          //   that.setSvgView();
-          // } else {
-          //   $(this).next().addClass('hidden');
-          // }
+          // console.log(that.currentLayer) // 上一层
+          // console.log($(this).attr('data-layer'));// 当前层
+          if (that.currentLayer !== parseInt($(this).attr('data-layer'))) {
+            that.hideBtn(); // 隐藏选中按钮
+            $('.layerTree > li > span').removeClass('highlight');
+            that.currentLayer = parseInt($(this).attr('data-layer'));
+            if (that.currentLayer !== 0) {
+              if (that.getZeroLayerCell()) { // 是否为组合图形，是
+                $(this).addClass('highlight');
+                that.setSvgView();
+              } else {
+                alert('第0层必须是单个图形或者组合图形');
+                $('span[data-layer="0"]').addClass('highlight');
+                that.currentLayer = 0;
+              }
+            } else {
+              $(this).addClass('highlight');
+              that.setSvgView();
+            }
+          }
         });
         // 删除图层
-        $('.layer').on('click', '.deleteLayer', function () {
+        $('.layer').on('click', '.deleteLayer', function (event) {
+          console.log('jinlaile')
           let layer = parseInt($(this).parent().attr('data-layer'));
           if (layer !== 0) {
-            $('.layerTree').children().eq(layer).remove();
-            for (let i = 0; i < that.svg.length; i++) {
-              if (parseInt(that.svg[i].layer) === layer) {
-                // console.log(that.centerGraph.getCell(that.svg[i].id));
-                that.centerGraph.getCell(that.svg[i].id).remove();
-                that.delSvg(that.svg[i].id);
+            let nowLayer = joint.V(that.centerPaper.viewport).find('.layerNum' + that.currentLayer)[0];
+            let [zeroLayer, otherLayer] = [[], []];
+            if (nowLayer.children()) {
+              for (let i = 0; i < nowLayer.children().length; i++) {
+                let cell = that.centerGraph.getCell(nowLayer.children()[i].attr('model-id'));
+                if (cell.attributes.layer === 0) {
+                  zeroLayer.push(cell);
+                } else {
+                  otherLayer.push(cell);
+                }
               }
             }
+            if (zeroLayer.length !== 0) {
+              let zeroParent = that.getParent(zeroLayer[0]);
+              if (zeroParent) {
+                zeroParent.remove();
+              }
+            }
+            if (otherLayer.length !== 0) {
+              let otherParent = that.getParent(otherLayer[0]);
+              if (otherParent) {
+                otherParent.remove();
+              }
+            }
+            nowLayer.remove();
             that.currentLayer = layer - 1;
+            $('span[data-layer="' + that.currentLayer + '"]').addClass('highlight');
+            $(this).parent().parent().remove();
+            that.setSvgView();
+            event.stopPropagation();
           }
         });
-      }
-    }
-    this.initLeftPaper().initCenterPaper().loadPropertyPane();
-  },
-  setSvgView() {
-    let that = this;
-    console.log(this.svg);
-    this.svgView = [];
-    this.centerPaper.setInteractivity(true);
-    if ($('#functionBtn')[0]) {
-      this.hideBtn();
-    }
-    // 删除画布上不是第0层的图形
-    /* let deleteId = [];
-    for (let i = 0; i < this.centerGraph.getCells().length; i++) {
-      if (parseInt(this.centerGraph.getCells()[i].attributes.layer) !== 0) {
-        deleteId.push(this.centerGraph.getCells()[i].id);
-        console.log(this.centerGraph.getCells()[i]);
-        this.centerGraph.getCells()[i].remove();
-      }
-    }
-    for (let i = 0; i < this.groups.length; i++) {
-      if (deleteId.includes(this.groups[i].parent)) {
-        this.groups.splice(deleteId.indexOf(this.groups[i].parent), 1);
-      }
-    } */
-    // console.log(this.groups);
-    // 如果当前图层上已经有图形的名字就不再生成
-    for (let i = 0; i < this.svg.length; i++) {
-      if (parseInt(this.svg[i].layer) === 0) {
-        let flag = true;
-        $('.secondaryLayer').eq(this.currentLayer).find('.cell').each(function () {
-          if ($(this).attr('data-id') === that.svg[i].id) {
-            flag = false;
+      },
+      // 判断第0层的图形是否组合在一起了
+      getZeroLayerCell() {
+        if (this.currentLayer !== 0) {
+          let layerNum0 = joint.V(this.centerPaper.viewport).find('.layerNum0')[0];
+          let cells = [];
+          for (let i = 0; i < layerNum0.children().length; i++) {
+            cells.push(this.centerGraph.getCell(layerNum0.children()[i].attr('model-id')));
           }
+          if (cells.length === 1) {
+            return true;
+          } else {
+            let count = 0;
+            for (let i = 0; i < cells.length; i++) {
+              if (cells[i].attributes.hasOwnProperty('parent') || cells[i].attributes.hasOwnProperty('embeds')) {
+                count++;
+              }
+            }
+            if (count === cells.length) {
+              return true;
+            }
+          }
+        }
+      },
+      // 切换图层， 添加，选中，删除中有用
+      setSvgView() {
+        // 添加图层
+        if (this.currentLayer !== 0 && joint.V(this.centerPaper.viewport).find('.layerNum' + this.currentLayer).length === 0) {
+          let vel = joint.V('<g class="layerNum layerNum' + this.currentLayer + '"></g>');
+          joint.V(this.centerPaper.viewport).append(vel);
+        }
+        let layers = joint.V(this.centerPaper.viewport).find('.layerNum');
+        for (let i = 0; i < layers.length; i++) {
+          layers[i].addClass('hidden');
+        }
+        // 显示当前图层
+        // 显示当前图层
+        let nowLayer = joint.V(this.centerPaper.viewport).find('.layerNum' + this.currentLayer)[0];
+        let layerNum0 = joint.V(this.centerPaper.viewport).find('.layerNum0')[0];
+        nowLayer.removeClass('hidden');
+        if (this.currentLayer !== 0) {
+          let parent;
+          // 删除第0层的数据
+          for (let j = 0; j < nowLayer.children().length; j++) {
+            let id = nowLayer.children()[j].attr('model-id');
+            let cell = this.centerGraph.getCell(id);
+            if (cell.attributes.layer === 0) {
+              if (this.getParent(cell).attributes.embeds) {
+                let embeds = this.getParent(cell).attributes.embeds;
+                for (let k = 0; k < embeds.length; k++) {
+                  if (this.centerGraph.getCell(embeds[k]).attributes.layer !== 0) {
+                    this.getParent(cell).unembed(this.centerGraph.getCell(embeds[k]));
+                  }
+                }
+              }
+              this.getParent(cell).remove();
+              break;
+            }
+          }
+          // 加上第0层的数据
+          for (let i = 0; i < layerNum0.children().length; i++) {
+            let id = layerNum0.children()[0].attr('model-id');
+            parent = this.getParent(this.centerGraph.getCell(id));
+          }
+          let clone = parent.clone({deep: true});
+          this.centerGraph.addCells(clone); // 这是给谁jia?
+          // let children = nowLayer.children();
+          // 因为<g model-id>不是直接在总标签下了，顺序没法改变
+          for (let j = clone.length - 1; j >= 0; j--) {
+            nowLayer.prepend(this.centerPaper.findViewByModel(clone[j]).vel);
+          }
+        }
+        // let nowLayer = joint.V(this.centerPaper.viewport).find('.layerNum' + this.currentLayer)[0];
+        // console.log(nowLayer);
+        // let layerNum0 = joint.V(this.centerPaper.viewport).find('.layerNum0')[0];
+        // nowLayer.removeClass('hidden');
+        // if (this.currentLayer !== 0) {
+        //   let parent;
+        //   // 删除第0层的数据
+        //   for (let j = 0; j < nowLayer.children().length; j++) {
+        //     let id = nowLayer.children()[j].attr('model-id');
+        //     let cell = this.centerGraph.getCell(id);
+        //     if (cell.attributes.layer === 0) {
+        //       console.log('删除其他图层中0层数据');
+        //       console.log(this.getParent(cell))
+        //       this.getParent(cell).remove();
+        //       break;
+        //     }
+        //   }
+        //   // 加上第0层的数据
+        //   for (let i = 0; i < layerNum0.children().length; i++) {
+        //     let id = layerNum0.children()[0].attr('model-id');
+        //     parent = this.getParent(this.centerGraph.getCell(id));
+        //   }
+        //   let clone = parent.clone({deep: true});
+        //   this.centerGraph.addCells(clone); // 这是给谁jia?
+        //   let children = nowLayer.children();
+        //   // 因为<g model-id>不是直接在总标签下了，顺序没法改变
+        //   for (let j = 0; j < children.length; j++) {
+        //     let id = children[j].attr('model-id');
+        //     let cell = this.centerGraph.getCell(id);
+        //     if (cell.attributes.layer !== 0) {
+        //       console.log('这不是0层，在加东西');
+        //       nowLayer.append(this.centerPaper.findViewByModel(cell).vel);
+        //     }
+        //   }
+        // }
+        // 权限控制，其他层不能对第0层的图形进行操作
+        for (let i = 1; i < layers.length; i++) {
+          for (let j = 0; j < layers[i].children().length; j++) {
+            let cell = this.centerGraph.getCell(layers[i].children()[j].attr('model-id'));
+            if (cell.attributes.layer === 0) {
+              this.centerPaper.findViewByModel(cell).vel.addClass('forbidden');
+            }
+          }
+        }
+      },
+      getSvgData() {
+        // 导出有图层的设备数据
+        if (this.options.layer) {
+          $('.layerTree > li > span').trigger('click');
+          let svgs = [];
+          // 将其他层的图形和第0层的图形组合在一起
+          let layers = joint.V(this.centerPaper.viewport).find('.layerNum');
+          for (let i = 0; i < layers.length; i++) {
+            let layer = parseInt(layers[i].attr('class').match(/\d/g).join(''));
+            let node = layers[i].children();
+            svgs.push({layer: layer, svg: []});
+            for (let j = 0; j < node.length; j++) {
+              svgs[svgs.length - 1].svg.push(this.centerGraph.getCell(node[j].attr('model-id')));
+            }
+            console.log(svgs[svgs.length - 1].svg)
+            // 找到当前图层的第0层的图形，然后embed另外层的数据
+            if (svgs[svgs.length - 1].layer !== 0) { // 不是第0层，把0层和别的层分开
+              let [zeroLayer, otherLayer] = [[], []];
+              for (let k = 0; k < svgs[svgs.length - 1].svg.length; k++) {
+                let cell = svgs[svgs.length - 1].svg[k];
+                if (cell.attributes.layer === 0) {
+                 // 其他图层中第0层数据
+                  zeroLayer.push(cell);
+                } else {
+                  otherLayer.push(cell);
+                }
+              }
+              let parent = this.getParent(zeroLayer[0]); // 父
+              if (otherLayer.length !== 0) {
+                console.log(otherLayer)
+                console.log(otherLayer[0].getAncestors());
+                if (otherLayer[0].getAncestors().length !== 0) { // 其他层组合过
+                  let ancestors = otherLayer[0].getAncestors()[otherLayer[0].getAncestors().length - 1];
+                  if (ancestors.attributes.layer !== 0) {
+                    parent.embed(ancestors);
+                  }
+                } else { // 其他层没有组合
+                  for (let i = 0; i < otherLayer.length; i++) {
+                    parent.embed(otherLayer[i]); // 应该是给他加了一个属性吧,是组合！!!!SHENJIUER!
+                  }
+                }
+              }
+            }
+          }
+          console.log(svgs);
+          return svgs;
+        }
+        // 导出区域数据
+        if (this.options.isArea) {
+          // console.log(this.centerGraph.getCells())
+          let links = [];
+          let walls = [];
+          for (let i = 0; i < this.centerGraph.getCells().length; i++) {
+            let attributes = this.centerGraph.getCells()[i].attributes;
+            if (attributes.hasOwnProperty('link') && !attributes.hasOwnProperty('parent') && !attributes.hasOwnProperty('embeds') && !attributes.hasOwnProperty('uuid')) {
+              // 是区域链接图形
+              links.push(this.centerGraph.getCells()[i]);
+            }
+            if (!attributes.hasOwnProperty('link') && !attributes.hasOwnProperty('parent') && !attributes.hasOwnProperty('embeds') && !attributes.hasOwnProperty('uuid')) {
+              // 是区域链接图形
+              walls.push(this.centerGraph.getCells()[i]);
+            }
+          }
+          let device = joint.V(this.centerPaper.viewport).find('.dg');
+          // console.log(device)
+          for (let i = 0; i < device.length; i++) {
+            let layer1 = device[i].find('.deviceLayer1')[0];
+            let now = [];
+            for (let j = 0; j < layer1.children().length; j++) {
+              let cell = this.centerGraph.getCell(layer1.children()[j].attr('model-id'));
+              if (cell.attributes.layer === 0) {
+                now.push({width: cell.getBBox().width, height: cell.getBBox().height, x: cell.getBBox().origin().x, y: cell.getBBox().origin().y});
+              }
+            }
+            // 对不是第一层的数据进行处理
+            for (let k = 0; k < device[i].children().length; k++) {
+              if (parseInt(device[i].children()[k].attr('class').match(/\d/g).join('')) !== 1) {
+                let cells = device[i].children()[k].children();
+                let first = this.centerGraph.getCell(cells[0].attr('model-id'));
+                let rW = now[0].width / first.getBBox().width; // 宽高比
+                let rH = now[0].height / first.getBBox().height;
+                let px = first.getBBox().x; // 第一个原始位置
+                let py = first.getBBox().y;
+                let rX = now[0].x - first.getBBox().x; // 第一个要移动的距离
+                let rY = now[0].y - first.getBBox().y;
+                first.resize(now[0].width, now[0].height);
+                first.position(rX + first.getBBox().x, rY + first.getBBox().y);
+                for (let m = 1; m < cells.length; m++) {
+                  let cell = this.centerGraph.getCell(cells[m].attr('model-id'));
+                  cell.resize(cell.getBBox().width * rW, cell.getBBox().height * rH);
+                  cell.position((cell.getBBox().x - px) * rW + now[0].x, (cell.getBBox().y - py) * rH + now[0].y);
+                }
+              }
+            }
+          }
+          let equips = [];
+          for (let i = 0; i < device.length; i++) {
+            equips.push({equipId: device[i].attr('id'), svgs: []});
+            for (let j = 0; j < device[i].children().length; j++) {
+              let layer = parseInt(device[i].children()[j].attr('class').match(/\d/g).join(''));
+              let node = device[i].children()[j].children();
+              equips[equips.length - 1].svgs.push({layer: layer, svg: []});
+              for (let k = 0; k < node.length; k++) {
+                equips[equips.length - 1].svgs[equips[equips.length - 1].svgs.length - 1].svg.push(this.centerGraph.getCell(node[k].attr('model-id')));
+              }
+            }
+          }
+          equips.push({'link': true, svg: links});
+          equips.push({'wall': true, svg: walls});
+          // console.log('isgetArea:')
+          // console.log(equips);
+          return equips;
+        }
+        return this.centerGraph.getCells().length !== 0 && this.centerGraph.getCells();
+      },
+      setHighlightCell(uuid) {
+        // 高亮某个图形
+        for (let i = 0; i < this.centerGraph.getCells().length; i++) {
+          if (this.centerGraph.getCells()[i].attributes.uuid === uuid) {
+            this.creatWrapper(this.centerPaper.findViewByModel(this.centerGraph.getCells()[i]), this.centerPaper);
+          }
+        }
+        this.currentEquip = uuid;
+      },
+      setScale(scale) {
+        // 设置比例尺
+        if (scale) {
+          let s = scale.split(':')[1].replace(/m/, '');
+          $('#scaleBtn').val(s);
+          $('#scaleValue').val('100px:' + s + 'm');
+        }
+      },
+      setPaperBackground(color) {
+        // 设置画布背景
+        this.centerPaper.drawBackground({
+          color: color
         });
-        if (flag) {
-          $('.secondaryLayer').eq(this.currentLayer).append('<li><span class="cell" data-id="' + this.svg[i].id + '">' + this.svg[i].defaultName + '</span></li>');
+      },
+      setPaperScale(scale1, oldVal) {
+        console.log(`scale1:${scale1}`);
+        if (scale1 > 1) {
+          $('.tool_wrap').css({
+            'width': 'auto',
+            'height': 'auto'
+          });
         }
-      }
-      // 将画布上不是第0层的图形添加到画布上
-      if (parseInt(this.svg[i].layer) === this.currentLayer && this.currentLayer !== 0) {
-        this.svgView.push(this.svg[i]);
-      }
-    }
-    this.centerGraph.addCells(this.svgView);
-    // 权限控制，其他层不能对第0层的图形进行操作
-    if (this.currentLayer !== 0) {
-      this.centerPaper.setInteractivity(function (cellView) {
-        if (parseInt(cellView.model.attributes.layer) !== 0) {
-          return cellView;
+        // 画布比例尺
+        if (scale1 < 1) {
+          this.centerPaper.scale(parseFloat(scale1), parseFloat(scale1));
         }
-      });
-    }
-  },
-  getSvgData() { // 导出svg数据
-    /* let svg = {'link': [], 'figure': []};
-    for (let i = 0; i < this.svg.length; i++) {
-      if (this.svg[i].hasOwnProperty('link') && this.svg[i].link) {
-        svg['link'].push(this.svg[i]);
-      } else {
-        svg['figure'].push(this.svg[i]);
-      }
-    } */
-    if (this.options.layer) {
-      return this.svg;
-    } else {
-      return this.centerGraph.getCells().length !== 0 && this.centerGraph.getCells();
-    }
-  },
-  setPaperBackground(color) {
-    this.centerPaper.drawBackground({
-      color: color
-    });
-  },
-  setSvgData(svg, status) { // 导入svg数据
-    if ($('#functionBtn')[0]) {
-      this.hideBtn();
-    }
-    if (status === 'TEMP' || status === 'RESET') {
-      this.view = null;
-      this.hover = null;
-      this.idUp = '';
-      this.idDown = '';
-      this.angle = {};
-      this.initialAngle = {};
-      this.currentLayer = 0;
-      this.cells = [];
-      this.groups = [];
-      this.store = null;
-      this.svg = [];
-      this.svgView = [];
-      for (let i = 0; i < svg.length; i++) {
-        if (svg[i].hasOwnProperty('embeds') && svg[i].embeds.length !== 0) {
-          this.groups.push({parent: svg[i].id, childs: []});
+        // 放大 0.1(g) -200（px）
+        if (scale1 > 1) { // 这里是oldval
+          // console.log(oldVal)
+          // let num = (scale1 - oldVal) * 10;
+          // let bigger = 200 * num;
+          // let width = $('#display_box').width() + bigger
+          // let height = width / 1.61 // 宽高比例设为1.61
+          // $('#display_box').css({'width': width + 'px', 'height': height + 'px'})
+          $('#display_box').css({'width': '1450px', 'height': '900px'})
+        } else {
+          $('#display_box').css({'width': '702px', 'height': '435px'})
         }
-        this.angle[svg[i].id] = svg[i].angle;
-        // 组合后的初始角度未保存
-      }
-      for (let i = 0; i < svg.length; i++) {
-        for (let j = 0; j < this.groups.length; j++) {
-          if (svg[i].parent === this.groups[j].parent) {
-            this.groups[j].childs.push(svg[i]);
+        // if (scale1 < oldVal) {
+        //   let num = (oldVal - scale1) * 10;
+        //   let bigger = 200 * num;
+        //   let width = $('#display_box').width() - bigger
+        //   let height = $('#display_box').height() - bigger
+        //   if (width > 600) {
+        //     $('#display_box').css({'width': width + 'px', 'height': height + 'px'})
+        //   }
+        // }
+        // 画布变大
+        // console.log($('#display_box').width())
+        this.hideBtn();
+      },
+      // 外部删除链接图形（未解决）
+      deleteLink(id) {
+        if (id.length !== 0) {
+          this.centerGraph.getCell(id).remove();
+          if ($('#functionBtn').length) {
+            this.hideBtn();
           }
         }
-      }
-    }
-    this.centerGraph.clear();
-    this.centerGraph.addCells(svg);
-  },
-  setSvgStyle(svg, attr, style) { // 为设备设置属性时同时改变svg图形的一些样式
-    this.centerGraph.getCell(svg.id).attr(attr, style);
-  },
-  delSvgWithAttributes() { // 删除设备属性的同时也要删除
-    return this.allCellsId;
-    // console.log(id);
-    // for (let i = 0; i < this.groups.length; i++) {
-    //   let parent = this.centerGraph.getCell(this.groups[i].parent);
-    //   for (let j = 0; j < this.groups[i].childs.length; j++) {
-    //     parent.unembed(this.centerGraph.getCell(this.groups[i].childs[j].id));
-    //   }
-    // }
-    // this.groups = [];
-  },
-  // 加载周围按钮，删除，旋转，复制，拉伸
-  loadBtn(cellView) {
-    let that = this;
-    if (this.options.figure_buttons) {
-      $('#display_box').append(`
+      },
+      setSvgData(svg, status) { // 导入svg数据
+        if ($('#functionBtn')[0]) {
+          this.hideBtn();
+        }
+        if (status === 'TEMP' || status === 'RESET') {
+          // console.log(this.svg);
+          this.view = null;
+          this.contextMenu = null;
+          this.currentLayer = 0;
+          this.cells = [];
+          this.svg = [];
+          this.z = 0;
+          this.embedCells = [];
+          this.path = {value: false, count: 0, type: 'L'};
+          this.drag = {value: false, index: 0};
+          this.currentEquip = null;
+          this.editorLink = {};
+          this.equipList = {};
+          this.svgZoom = '';
+        }
+        this.centerGraph.clear();
+        if (typeof svg === 'string') {
+          if (svg.length === 0) {
+            svg = [];
+          } else {
+            svg = JSON.parse(svg);
+          }
+        }
+        if (this.options.layer) {
+          $('span[data-layer="0"]').addClass('highlight');
+          $('.layerTree li').each(function () {
+            if (parseInt($(this).find('span').attr('data-layer')) !== 0) {
+              $(this).remove();
+            }
+          });
+          let layerNum = joint.V(this.centerPaper.viewport).find('.layerNum');
+          if (layerNum.length !== 0) {
+            layerNum[0].removeClass('hidden');
+          }
+          for (let i = 1; i < layerNum.length; i++) {
+            layerNum[i].remove();
+          }
+          this.svg = svg;
+          // console.log(svg);
+          let _svg = [];
+          for (let i = 0; i < svg.length; i++) {
+            if (joint.V(this.centerPaper.viewport).find('.layerNum' + svg[i].layer).length === 0) {
+              let vel = joint.V('<g class="layerNum layerNum' + svg[i].layer + '"></g>');
+              joint.V(this.centerPaper.viewport).append(vel);
+            }
+            _svg.push(svg[i].svg);
+          }
+          // 显示最后一层
+          let layers = joint.V(this.centerPaper.viewport).find('.layerNum');
+          for (let i = 0; i < layers.length; i++) {
+            layers[i].addClass('hidden');
+          }
+          if (layers.length !== 0) {
+            layers[layers.length - 1].removeClass('hidden');
+          }
+          this.centerGraph.addCells(_svg);
+          // 其他层不能移动第0层的图形
+          for (let i = 1; i < layers.length; i++) {
+            for (let j = 0; j < layers[i].children().length; j++) {
+              let cell = this.centerGraph.getCell(layers[i].children()[j].attr('model-id'));
+              if (cell.attributes.layer === 0) {
+                this.centerPaper.findViewByModel(cell).vel.addClass('forbidden');
+              }
+            }
+          }
+          for (let i = 1; i < layers.length; i++) {
+            // 解除除了第0层之外的层的跨层的组合关系
+            let childs = layers[i].children();
+            let parent;
+            for (let j = 0; j < childs.length; j++) {
+              let singleCell = this.centerGraph.getCell(childs[j].attr('model-id'));
+              if (singleCell.attributes.layer !== 0) {
+                parent = this.getParent(singleCell);
+                break;
+              }
+            }
+            if (parent) {
+              let children = parent.attributes.embeds;
+              for (let k = 0; k < children.length; k++) {
+                if (this.centerGraph.getCell(children[k]).attributes.layer !== 0) {
+                  parent.unembed(this.centerGraph.getCell(children[k]));
+                  break;
+                }
+              }
+            }
+          }
+        } else if (this.options.isArea) {
+          // console.log(svg);
+          let [equips, links, walls] = [[], [], []];
+          for (let i = 0; i < svg.length; i++) {
+            if (svg[i].hasOwnProperty('equipId')) {
+              equips.push(svg[i]);
+            } else if (svg[i].link) {
+              links.push(svg[i]);
+            } else if (svg[i].wall) {
+              walls.push(svg[i]);
+            }
+          }
+          let dg = joint.V(this.centerPaper.viewport).find('.dg');// 在干嘛
+          for (let i = 0; i < dg.length; i++) {
+            dg[i].remove();
+          }
+          for (let i = 0; i < equips.length; i++) {
+            let g, g1;
+            if (joint.V(this.centerPaper.viewport).find('#' + equips[i].equipId).length === 0) {
+              g = joint.V('<g class="dg" id="' + equips[i].equipId + '"></g>');
+              joint.V(this.centerPaper.viewport).append(g);
+            }
+            for (let j = 0; j < equips[i].svgs.length; j++) {
+              if (equips[i].svgs[j].layer !== 1) {
+                g1 = joint.V('<g class="hidden deviceLayer' + equips[i].svgs[j].layer + '"></g>');
+              } else {
+                g1 = joint.V('<g class="deviceLayer' + equips[i].svgs[j].layer + '"></g>');
+              }
+              g.append(g1);
+              for (let k = 0; k < equips[i].svgs[j].svg.length; k++) {
+                this.centerGraph.addCell(equips[i].svgs[j].svg[k]);
+                g1.append(this.centerPaper.findViewByModel(this.centerGraph.getCell(equips[i].svgs[j].svg[k].id)).vel);
+              }
+            }
+          }
+          for (let i = 0; i < links.length; i++) {
+            this.centerGraph.addCells(links[i].svg);
+          }
+          for (let i = 0; i < walls.length; i++) {
+            this.centerGraph.addCells(walls[i].svg);
+          }
+        } else {
+          console.log('setSvgData.非区非模型设备')
+          this.centerGraph.addCells(svg);
+        }
+        for (let item of this.centerGraph.getCells(svg)) {
+          if (item.attributes.link === true) { // 查看svg图像是否为虚线
+            let type = item.attributes.type.split('.')[1].toLowerCase();
+            item.attr('' + type + '/stroke', 'transparent');  // 带有虚线的svg图形显示透明边框
+          }
+        }
+      },
+      // setSvgStyle(svg, attr, style) { // 为设备设置属性时同时改变svg图形的一些样式
+      //   this.centerGraph.getCell(svg.id).attr(attr, style);
+      // },
+      // 加载周围按钮，删除，旋转，复制，拉伸
+      loadBtn(cellView) {
+        let that = this;
+        if (this.options.figure_buttons) {
+          $('#display_box').append(`
           <div id="functionBtn">
             <div id="delSelf" class="left_top"><i class="iconfont" style="font-size: 18px;">&#xe6a7;</i></div>
-            <div id="rotateSelf" class="left_bottom"><i class="iconfont">&#xe61d;</i></div>
+            <!--<div id="rotateSelf" class="left_bottom"><i class="iconfont">&#xe61d;</i></div>-->
             <div id="copySelf" class="right_top"><i class="iconfont">&#xe772;</i></div>
           </div>
         `);
-      for (let i = 0; i < 8; i++) {
-        $('#functionBtn').append('<div id="stretchSelf' + i + '" class="stretch-icon"></div>');
-      }
-      $('.tool_wrap').on('click', '#delSelf', function () {
-        that.delSelf();
-      });
-      $('.tool_wrap').on('click', '#copySelf', function () {
-        that.copySelf();
-      });
-      $('.tool_wrap').on('mousedown', '#rotateSelf', function () {
-        that.rotateSelf(this);
-      });
-      $('.tool_wrap').on('mousedown', '.stretch-icon', function () {
-        that.stretchSelf(this);
-      });
-      // 改变外加按钮的位置，使之跟随当前元素移动
-      this.creatWrapper(cellView, this.centerPaper);
-    }
-    if (this.options.label) {
-      $('#display_box').append(`
+          for (let i = 0; i < 8; i++) {
+            $('#functionBtn').append('<div id="stretchSelf' + i + '" class="stretch-icon"></div>');
+          }
+          $('.tool_wrap').on('click', '#delSelf', function () {
+            that.delSelf();
+          });
+          $('.tool_wrap').on('click', '#copySelf', function () {
+            that.copySelf();
+          });
+          // $('.tool_wrap').on('mousedown', '#rotateSelf', function () {
+          //   that.rotateSelf(this);
+          // });
+          $('.tool_wrap').on('mousedown', '.stretch-icon', function () {
+            that.stretchSelf(this);
+          });
+          that.creatWrapper(cellView, that.centerPaper);
+        }
+      },
+      loadToolTip(cellView) {
+        let that = this;
+        if (this.options.label) {
+          $('#display_box').append(`
           <div id="labelBox"></div>
           <div id="toolTip"></div>
         `);
-      $('#display_box').on('dblclick', '#toolTip', function () {
-        $('#toolTip p').addClass('hidden').next().removeClass('hidden').focus();
-      });
-      $('#display_box').on('blur', '#toolTip input', function () {
-        let _that = $(this);
-        if ($(this).val().trim()) {
-          that.hover.model.attributes.defaultName = $(this).val().trim();
-          $(this).addClass('hidden').prev().text($(this).val().trim()).attr('title', $(this).val().trim()).removeClass('hidden');
-          that.getCenterGraphCells();
-          $('.cell').each(function () {
-            if ($(this).attr('data-id') === that.hover.model.attributes.id) {
-              $(this).text(_that.val().trim());
+          $('#toolTip').css({
+            'left': cellView.getBBox().origin().x + 'px',
+            'top': (cellView.model.getBBox().origin().y - 50) + 'px'
+          });
+          $('#display_box').on('dblclick', '#toolTip', function () {
+            $('#toolTip p').addClass('hidden').next().removeClass('hidden').focus();
+          });
+          $('#display_box').on('blur', '#toolTip input', function () {
+            let _this = this;
+            if ($(this).val().trim()) {
+              that.contextMenu.model.attributes.defaultName = $(this).val().trim();
+              $(this).addClass('hidden').prev().text($(this).val().trim()).attr('title', $(this).val().trim()).removeClass('hidden');
+              // that.getCenterGraphCells();
+              $('.cell').each(function () {
+                if ($(this).attr('data-id') === that.contextMenu.model.attributes.id) {
+                  $(this).text(_this.val().trim());
+                }
+              });
             }
           });
         }
-      });
-      // 改变外加按钮的位置，使之跟随当前元素移动
-      this.creatWrapper(cellView, this.centerPaper);
-    }
-  },
-  saveEquip() {
-    return [1, 2, 3];
-  },
-  // 将localStorage中的数据显示出来，以id和对应的cell存储
-  // 不用for in遍历的理由：localStorage中还有其他属性如length
-  // loadStorage() {
-  //   for (let i = 0; i < localStorage.length; i++) {
-  //     let key = localStorage.key(i);
-  //  // 跳过groups属性
-  //     if (key === 'groups' || key === 'loglevel:webpack-dev-server') {
-  //       continue;
-  //     }
-  //     // this.angle[key] = JSON.parse(localStorage.getItem(key)).angle;
-  //  // this.size[key] = {'width': JSON.parse(localStorage.getItem(key)).size.width, 'height': JSON.parse(localStorage.getItem(key)).size.height};
-  //     this.centerGraph.addCells([JSON.parse(localStorage.getItem(key))]);
-  //   }
-  //   return this;
-  // },
-  loadPropertyPane() {
-    if (!this.options.figure_buttons) {
-      return;
-    }
-    let styleOperation = this.options.style_operation ? `<div class="inspector-container">
+      },
+      loadPropertyPane() {
+        if (!this.options.figure_buttons) {
+          return;
+        }
+        let styleOperation = this.options.style_operation ? `<div class="inspector-container">
       <div class="presentation">
         <h4>外观</h4>
         <!-- 背景和边框颜色 -->
@@ -368,7 +815,7 @@ const jointD = {
         <!-- 边框粗细 -->
         <div class="thickness outline-thickness">
           <input type="button" class="plus-size fnBtn" value="-">
-          <input type="number" id="outline-thickness" min="0" max="30" value="" readonly>
+          <input type="number" id="outline-thickness" min="0" max="30" value="">
           <input type="button" class="add-size fnBtn" value="+">
         </div>
         <div class="styles">
@@ -391,7 +838,7 @@ const jointD = {
         <!-- 字体大小 -->
         <div class="thickness font-size">
           <input type="button" class="plus-size fnBtn" value="-">
-          <input type="number" id="font-size" value="" min="5" max="80" readonly>
+          <input type="number" id="font-size" value="" min="5" max="80">
           <input type="button" class="add-size fnBtn" value="+">
         </div>
         <!-- 字体粗细 -->
@@ -416,8 +863,8 @@ const jointD = {
         <span style="background: rgb(143, 143, 143);"></span>
         <span style="background: rgb(198, 199, 226);"></span>
         <span style="background: rgb(254, 182, 99);"></span>
-        <span style="background: rgb(254, 133, 79);"></span>
-        <span style="background: rgb(183, 93, 50);"></span>
+        <span style="background: rgb(255, 255, 0);"></span>
+        <span style="background: rgb(255, 0, 0);"></span>
         <span style="background: rgb(49, 208, 198);"></span>
         <span style="background: rgb(124, 104, 252);"></span>
         <span style="background: rgb(97, 84, 156);"></span>
@@ -425,594 +872,822 @@ const jointD = {
         <span style="background: rgb(75, 74, 103);"></span>
         <span style="background: rgb(60, 66, 96);"></span>
         <span style="background: rgb(51, 51, 78);"></span>
-        <span style="background: rgb(34, 33, 56);"></span>
+        <span style="background: rgb(0, 0, 0);"></span>
       </div>
     </div>` : ``;
-    let that = this;
-    $('.style_operation').prepend(styleOperation);
-    $('.tool_wrap').on('click', '.clear_paper', function () {
-      that.clearPaper();
-    });
-    $('.tool_wrap').on('click', '.group_figure', function () {
-      that.embed();
-    });
-    $('.tool_wrap').on('click', '.ungroup_figure', function () {
-      that.unembed();
-    });
-    $('.tool_wrap').on('click', '.front_figure', function () {
-      that.frontAndBack(this);
-    });
-    $('.tool_wrap').on('click', '.back_figure', function () {
-      that.frontAndBack(this);
-    });
-    if ($('.tool_wrap .tool_map_right').length !== 0) {
-      /* eslint-disable no-new */
-      new Draggabilly('.tool_map_right', {
-        containment: 'body',
-        handle: '.drag'
-      });
-    }
-    return this;
-  },
-  /* 加off()防止多次绑定
-   *obj  操作的input
-   * min, max 值区间
-   * type 形状类型 rect, circle, ellipse
-   * data_obj 改变颜色的类型 fill, outline, fill */
-  propertyPane(cellView) {
-    if (!this.options.style_operation) {
-      return;
-    }
-    // 如果当前没有选中任何view,则返回
-    if (arguments.length === 0) {
-      return;
-    }
-    let obj, min, max;
-    let type = cellView.model.get('type').split('.')[1].toLowerCase();
-    // 减
-    $('.plus-size').off('click').on('click', function() {
-      let parent = $(this).parent();
-      obj = $(this).next();
-      min = parseInt(obj.attr('min'));
-      max = parseInt(obj.attr('max'));
-      if (obj.val()) {
-        if (parseInt(obj.val()) <= min) {
-          obj.val(min);
-        } else {
-          obj.val(parseInt(obj.val()) - 1);
-        }
-      }
-      // 改变字体
-      if (parent.hasClass('font-size')) {
-        cellView.model.attr('text/font-size', $('#font-size').val());
-      } else {
-        // 改变边框宽度
-        cellView.model.attr('' + type + '/stroke-width', parseInt($('#outline-thickness').val()));
-      }
-    });
-    // 加
-    $('.add-size').off('click').on('click', function() {
-      console.log('加一');
-      let parent = $(this).parent();
-      obj = $(this).prev();
-      min = parseInt(obj.attr('min'));
-      max = parseInt(obj.attr('max'));
-      if (obj.val()) {
-        if (parseInt(obj.val()) >= max) {
-          obj.val(max);
-        } else {
-          obj.val(parseInt(obj.val()) + 1);
-        }
-      }
-      if (parent.hasClass('font-size')) {
-        cellView.model.attr('text/font-size', $('#font-size').val());
-      } else {
-        cellView.model.attr('' + type + '/stroke-width', parseInt($('#outline-thickness').val()));
-      }
-    });
-    // 边框样式
-    $('#outline-styles').off('change').on('change', function () {
-      cellView.model.attr('' + type + '/stroke-dasharray', $('#outline-styles').find('option:selected').attr('data-style'));
-    });
-    // 字体粗细
-    $('#font-sickness').off('change').on('change', function () {
-      cellView.model.attr('text/font-weight', $('#font-sickness').find('option:selected').attr('data-style'));
-    });
-    // 内容
-    $('#text-content').off('keyup').on('keyup', function () {
-      cellView.model.attr('text/text', $('#text-content').val());
-    });
-    let dataObj;
-    // 出现取色板
-    $('.color-btn').each(function() {
-      $(this).off('click').on('click', function(e) {
-        dataObj = $(this).attr('data-obj');
-        let pos = $(this).attr('data-pos');
-        let left = pos.split(',')[0];
-        let top = pos.split(',')[1];
-        $('.color-picker').css({
-          'left': left + 'px',
-          'top': top + 'px',
-          'display': 'block'
+        let that = this;
+        $('.style_operation').prepend(styleOperation);
+        $('.tool_wrap').on('click', function (e) {
+          let target = e.target;
+          let className = $(target).attr('class');
+          if (className === 'clear_paper') {
+            that.clearPaper();
+          } else if (className === 'change_drawType') {
+            $('#display_box').removeClass('crosshair');
+            that.path = {'value': false, 'count': 0, 'type': 'L'};
+            that.drag = {'value': false, 'index': 0};
+          } else if (className === 'change_drawSize') {
+            console.log(111)
+          } else if (className === 'group_figure') {
+            that.embed();
+          } else if (className === 'ungroup_figure') {
+            that.unembed();
+          } else if (className === 'front_figure') {
+            that.frontAndBack($(target));
+          } else if (className === 'back_figure') {
+            that.frontAndBack($(target));
+          }
         });
-        e.stopPropagation();
-      });
-    });
-    // 选择颜色
-    $('.color-picker span').each(function() {
-      $(this).off('click').on('click', function () {
-        let color = $(this).css('background-color')
-        if ($(this).hasClass('transparent_color')) {
-          color = 'transparent';
+        if ($('.tool_wrap .tool_map_right').length !== 0) {
+          /* eslint-disable no-new */
+          new Draggabilly('.tool_map_right', {
+            containment: 'body',
+            handle: '.drag'
+          });
         }
-        if (dataObj === 'fill') {
-          cellView.model.attr('' + type + '/fill', color);
-        } else if (dataObj === 'stroke') {
-          cellView.model.attr('' + type + '/stroke', color);
-        } else {
-          cellView.model.attr('text/fill', color);
+        return this;
+      },
+      /* 加off()防止多次绑定
+       *obj  操作的input
+       * min, max 值区间
+       * type 形状类型 rect, circle, ellipse
+       * data_obj 改变颜色的类型 fill, outline, fill */
+      propertyPane(cellView) {
+        if (!this.options.style_operation) {
+          return;
         }
-      });
-    });
-    // 点击其他地方隐藏画板
-    $(document).off('click').on('click', function(e) {
-      $('.color-picker').hide();
-    });
-  },
-  initLeftPaper() {
-    if (!this.options.basic_figure) {
-      return this;
-    }
-    let ElementView = this.getLeftElementView();     // 初始化元素样式
-    let LinkView = this.getLeftLinkView();           // 初始化线段样式
-    this.leftGraph = new joint.dia.Graph();        // 生成画板
-    this.leftPaper = new joint.dia.Paper({       // 生成画布
-      el: $('#component'),
-      width: 120,
-      height: $('.tool_panel').outerHeight() - 55 > 410 ? 410 : $('.tool_panel').outerHeight() - 55,
-      model: this.leftGraph,
-      gridSize: 1,
-      elementView: ElementView
-    });
-    if (this.options.gallery.length === 0) { // 如果没有设备数据则用默认图形
-      this.leftGraph.addCells([this.getShape(1), this.getShape(2), this.getShape(3), this.getShape(4), this.getShape(5)]);
-    } else {
-      console.log(this.options.gallery);
-      for (let i = 0; i < this.options.gallery.length; i++) {
-        let svgs = JSON.parse(this.options.gallery[i].svg);
-        // 单个图形的情况
-        if (svgs.length === 1) {
-          svgs[0].equipId = this.options.gallery[i].equipment.id;
-          this.leftGraph.addCells(svgs);
-          continue;
+        // 如果当前没有选中任何view,则返回
+        if (arguments.length === 0) {
+          return;
         }
-        // 图形没有组合但是是多个图形（未解决）
-        for (let j = 0; j < svgs.length; j++) {
-          if (svgs[j].hasOwnProperty('embeds') && svgs[j].hasOwnProperty('embeds').length !== 0 && svgs[j].hasOwnProperty('parent') === false) {
-            // 判断是每个设备的终极父级图形
-            svgs[j].equipId = this.options.gallery[i].equipment.id;
-          }
-        }
-        this.leftGraph.addCells(svgs);
-      }
-      this.generateShapes();
-    }
-    this.addLeftPaperEvent(this.leftPaper);  // 添加paper事件
-    // 区域
-    let graph = new joint.dia.Graph();        // 生成画板
-    let paper = new joint.dia.Paper({       // 生成画布
-      el: $('#link'),
-      width: 120,
-      height: 180,
-      model: graph,
-      gridSize: 1,
-      elementView: ElementView
-    });
-    graph.addCells([this.getShape(6), this.getShape(7)]);
-    let allCells = graph.getCells();
-    for (let i = 0; i < allCells.length; i++) {
-      allCells[i].attributes.link = true;
-    }
-    this.addLeftPaperEvent(paper);  // 添加paper事件
-    // 线
-    let graph1 = new joint.dia.Graph();        // 生成画板
-    let paper1 = new joint.dia.Paper({       // 生成画布
-      el: $('#line'),
-      width: 120,
-      height: 60,
-      model: graph1,
-      gridSize: 1,
-      linkView: LinkView
-    });
-    // this.getLine(paper1);
-    // console.log(paper1);
-    // console.log(this.getLine(paper1));
-    graph1.addCells([this.getShape(8)]);
-    // console.log(graph1.getCells());
-    this.addLeftPaperEvent(paper1);  // 添加paper事件
-    return this;
-  },
-  initCenterPaper() {
-    let width = $('.tool_wrap').width();
-    if (this.options.basic_figure) {
-      width -= 125;
-    }
-    if (this.options.add_attributes) {
-      width -= 275;
-    }
-    if (this.options.gallery.length !== 0) {
-      width -= 8;
-    }
-    let that = this;
-    // let ElementView = this.getLeftElementView();     // 初始化元素样式
-    this.centerGraph = new joint.dia.Graph();        // 生成画板
-    this.centerGraph.on('change', function (cell) {
-      let id = cell.id;
-      that.angle[id] = cell.attributes.angle;
-      // if (parseInt(cell.attributes.layer) === 0) {
-      //   for (let i = 0; i < that.svg.length; i++) {
-      //     if (that.svg[i].id === cell.id) {
-      //       that.svg.splice(i, 1, cell.attributes);
-      //     }
-      //   }
-      // }
-    });
-    this.centerGraph.on('add', function (cell) {
-      that.angle[cell.id] = cell.attributes.angle;
-      that.getCenterGraphCells();
-      if (that.options.layer) {
-        cell.attributes.layer = that.currentLayer;
-        let svg = [];
-        for (let j = 0; j < that.svg.length; j++) {
-          svg.push(that.svg[j].id);
-        }
-        if (!svg.includes(cell.id)) {
-          that.svg.push(cell.attributes);
-        }
-        let flag = true;
-        for (let i = 0; i < $('.cell').length; i++) {
-          if ($('.cell').eq(i).attr('data-id') === cell.id && parseInt($('.cell').eq(i).parent().parent().prev().attr('data-layer')) === that.currentLayer) {
-            flag = false;
-          }
-        }
-        if (flag) {
-          $('.secondaryLayer').eq(that.currentLayer).append('<li><span class="cell" data-id="' + cell.id + '">' + cell.attributes.defaultName + '</span></li>');
-        }
-        // console.log(that.svg);
-      }
-      if (that.options.action_buttons) {
-        that.changeClassName([{new: 'clear_paper', old: 'clear_disabled'}]);
-      }
-    });
-    this.centerGraph.on('remove', function (cell) {
-      let id = cell.id;
-      delete that.angle[id];
-      that.getCenterGraphCells();
-    });
-    this.centerPaper = new joint.dia.Paper({       // 生成画布
-      el: $('#display_box'),
-      width: width,
-      height: this.options.action_buttons ? $('.tool_panel').outerHeight() - 55 : $('.tool_panel').outerHeight(),
-      model: this.centerGraph,
-      gridSize: 1,
-      restrictTranslate: true, // 不超出paper边框
-      padding: 5,
-      highlighting: {
-        'default': {
-          name: 'stroke',
-          options: {
-            attrs: {
-              'stroke-width': 1,
-              stroke: '#1ABC9C',
-              'stroke-dasharray': '2, 5'
+        let obj, min, max;
+        let type = cellView.model.get('type').split('.')[1].toLowerCase();
+        // 减
+        $('.plus-size').off('click').on('click', function() {
+          let parent = $(this).parent();
+          obj = $(this).next();
+          min = parseInt(obj.attr('min'));
+          max = parseInt(obj.attr('max'));
+          if (obj.val()) {
+            if (parseInt(obj.val()) <= min) {
+              obj.val(min);
+            } else {
+              obj.val(parseInt(obj.val()) - 1);
             }
           }
+          // 改变字体
+          if (parent.hasClass('font-size')) {
+            cellView.model.attr('text/font-size', $('#font-size').val());
+          } else {
+            // 改变边框宽度
+            cellView.model.attr('' + type + '/stroke-width', parseInt($('#outline-thickness').val()));
+          }
+        });
+        // 加
+        $('.add-size').off('click').on('click', function() {
+          console.log('加一');
+          let parent = $(this).parent();
+          obj = $(this).prev();
+          min = parseInt(obj.attr('min'));
+          max = parseInt(obj.attr('max'));
+          if (obj.val()) {
+            if (parseInt(obj.val()) >= max) {
+              obj.val(max);
+            } else {
+              obj.val(parseInt(obj.val()) + 1);
+            }
+          }
+          if (parent.hasClass('font-size')) {
+            cellView.model.attr('text/font-size', $('#font-size').val());
+          } else {
+            cellView.model.attr('' + type + '/stroke-width', parseInt($('#outline-thickness').val()));
+          }
+        });
+        $('#outline-thickness').on('change', function() {
+          cellView.model.attr('' + type + '/stroke-width', parseInt($(this).val()));
+        });
+        $('#font-size').on('change', function() {
+          cellView.model.attr('text/font-size', $('#font-size').val());
+        });
+        // 边框样式
+        $('#outline-styles').off('change').on('change', function () {
+          cellView.model.attr('' + type + '/stroke-dasharray', $('#outline-styles').find('option:selected').attr('data-style'));
+        });
+        // 字体粗细
+        $('#font-sickness').off('change').on('change', function () {
+          cellView.model.attr('text/font-weight', $('#font-sickness').find('option:selected').attr('data-style'));
+        });
+        // 内容
+        $('#text-content').off('keyup').on('keyup', function () {
+          cellView.model.attr('text/text', $('#text-content').val());
+        });
+        let dataObj;
+        // 出现取色板
+        $('.color-btn').each(function() {
+          $(this).off('click').on('click', function(e) {
+            dataObj = $(this).attr('data-obj');
+            let pos = $(this).attr('data-pos');
+            let left = pos.split(',')[0];
+            let top = pos.split(',')[1];
+            $('.color-picker').css({
+              'left': left + 'px',
+              'top': top + 'px',
+              'display': 'block'
+            });
+            e.stopPropagation();
+          });
+        });
+        // 选择颜色
+        $('.color-picker').off('click').on('click', function (e) {
+          let target = e.target;
+          if (target.nodeName.toLowerCase() === 'span') {
+            let color = $(target).css('background-color');
+            if ($(target).hasClass('transparent_color')) {
+              color = 'transparent';
+            }
+            if (dataObj === 'fill') {
+              cellView.model.attr('' + type + '/fill', color);
+            } else if (dataObj === 'stroke') {
+              cellView.model.attr('' + type + '/stroke', color);
+            } else {
+              cellView.model.attr('text/fill', color);
+            }
+          }
+        });
+        // 点击其他地方隐藏画板
+        $(document).off('click').on('click', function(e) {
+          $('.color-picker').hide();
+        });
+      },
+      initLeftPaper() {
+        if (!this.options.basic_figure) {
+          return this;
+        }
+        let that = this;
+        let ElementView = this.getLeftElementView();     // 初始化元素样式
+        this.leftGraph = new joint.dia.Graph();        // 生成画板
+        this.leftPaper = new joint.dia.Paper({       // 生成画布
+          el: $('#component'),
+          width: 120,
+          height: $('.tool_panel').outerHeight() - 55 > 410 ? 410 : $('.tool_panel').outerHeight() - 55,
+          model: this.leftGraph,
+          gridSize: 1,
+          elementView: ElementView
+        });
+        if (!this.options.isArea) { // 如果没有设备数据则用默认图形
+          this.leftGraph.addCells([this.getShape(1), this.getShape(2), this.getShape(3), this.getShape(4), this.getShape(5)]);
+        } else {
+          let cells = [];
+          // 基础设备列表
+          for (let k = 0; k < this.options.gallery.length; k++) {
+            if (this.options.gallery[k].scale.split(':')[1].replace(/m/, '') > this.maxZoom) {
+              this.maxZoom = this.options.gallery[k].scale.split(':')[1].replace(/m/, '');
+            }
+            let svgs = JSON.parse(this.options.gallery[k].svg); // 单个设备svg
+            // console.log(svgs)
+            // 设备mei有图层
+            if (!svgs[0].hasOwnProperty('svg')) {
+              continue;
+            }
+            for (let i = 0; i < svgs.length; i++) {
+              if (svgs[i].layer === 1) {
+                // 单个图形的情况
+                if (svgs[i].svg.length === 1) {
+                  svgs[i].svg[0].equipId = this.options.gallery[k].id;
+                  cells.push(svgs[i].svg[0]);
+                } else {
+                  for (let j = 0; j < svgs[i].svg.length; j++) {
+                    if (svgs[i].svg[j].hasOwnProperty('embeds') && svgs[i].svg[j].hasOwnProperty('embeds').length !== 0 && svgs[i].svg[j].hasOwnProperty('parent') === false) {
+                      // 判断是每个设备的终极父级图形
+                      // console.log('进来一次，找到终极父元素')
+                      svgs[i].svg[j].equipId = this.options.gallery[k].id;
+                    }
+                    cells.push(svgs[i].svg[j]);
+                  }
+                }
+              }
+            }
+          }
+          this.leftGraph.addCells(cells);
+          this.generateShapes();
+        }
+        this.addLeftPaperEvent(this.leftPaper);  // 添加paper事件
+        // 区域
+        let graph = new joint.dia.Graph();        // 生成画板
+        let paper = new joint.dia.Paper({       // 生成画布
+          el: $('#link'),
+          width: 120,
+          height: 180,
+          model: graph,
+          gridSize: 1,
+          elementView: ElementView
+        });
+        graph.addCells([this.getShape(6), this.getShape(7)]);
+        let allCells = graph.getCells();
+        for (let i = 0; i < allCells.length; i++) {
+          allCells[i].attributes.link = true;
+        }
+        this.addLeftPaperEvent(paper);  // 添加paper事件
+        // 线
+        // if (!this.options.isArea) {
+        let graph1 = new joint.dia.Graph();        // 生成画板
+        let paper1 = new joint.dia.Paper({       // 生成画布
+          el: $('#line'),
+          width: 120,
+          height: 120,
+          model: graph1,
+          gridSize: 1
+        });
+        this.getLine(paper1);
+        this.getCurve(paper1);
+        $('#line').on('click', function (e) {
+          let target = e.target;
+          if ($(target).attr('class') === 'drawLine') {
+            that.path.type = 'L';
+          } else {
+            that.path.type = 'Q';
+          }
+          $('#display_box').addClass('crosshair');
+          that.path.value = true;
+        });
+        // }
+        return this;
+      },
+      initCenterPaper() {
+        let width = $('.tool_wrap').width();
+        if (this.options.basic_figure) {
+          width -= 125;
+        }
+        if (this.options.add_attributes) {
+          width -= 275;
+        }
+        if (this.options.gallery.length !== 0) {
+          width -= 8;
+        }
+        let that = this;
+        this.centerGraph = new joint.dia.Graph();        // 生成画板
+        this.centerPaper = new joint.dia.Paper({       // 生成画布
+          el: $('#display_box'),
+          width: width,
+          height: this.options.action_buttons ? $('.tool_panel').outerHeight() - 55 : $('.tool_panel').outerHeight(),
+          model: this.centerGraph,
+          restrictTranslate: false, // 不超出paper边框,还原就没有了
+          padding: 5,
+          gridSize: 10,
+          drawGrid: false,
+          highlighting: {
+            'default': {
+              name: 'stroke',
+              options: {
+                attrs: {
+                  'stroke-width': 1,
+                  stroke: '#1ABC9C',
+                  'stroke-dasharray': '5, 5'
+                }
+              }
+            }
+          },
+          interactive: !this.options.move_figure ? {elementMove: false} : true // false不可移动
+        });
+        this.centerGraph.on('change:z', function (cell) {
+          if (that.options.layer) {
+            console.log('change:z')
+            // 因为<g model-id>不是直接在总标签下了，顺序没法改变
+            let nowLayer = joint.V(that.centerPaper.viewport).find('.layerNum' + that.currentLayer)[0];
+            let vel = that.centerPaper.findViewByModel(cell).vel;
+            if (that.z) {
+              nowLayer.append(vel);
+            } else {
+              nowLayer.prepend(vel);
+            }
+          } else if (that.options.isArea) {
+            if (cell.attributes.hasOwnProperty('equipId')) {
+              // let uuid = cell.attributes.uuid;
+              // console.log(joint.V(that.centerPaper.viewport).find('.joint-viewport'));
+              // let dg = joint.V(that.centerPaper.viewport).find('#' + uuid)[0];
+              // if (that.z) {
+              //   joint.V(that.centerPaper.viewport).find('.joint-viewport')[0].append(dg);
+              // } else {
+              //   joint.V(that.centerPaper.viewport).find('.joint-viewport')[0].prepend(dg);
+              // }
+              // joint-viewport
+            }
+          }
+        });
+        this.centerGraph.on('add', function (cell) {
+          if (that.options.layer) {
+            if (!cell.attributes.hasOwnProperty('layer')) {
+              cell.attributes.layer = that.currentLayer;
+            } else {
+              for (let i = 0; i < that.svg.length; i++) {
+                for (let j = 0; j < that.svg[i].svg.length; j++) {
+                  if (that.svg[i].svg[j].id === cell.id) {
+                    that.currentLayer = that.svg[i].layer;
+                  }
+                }
+              }
+            }
+            let vel; // 外层容器
+            if (joint.V(that.centerPaper.viewport).find('.layerNum' + that.currentLayer).length === 0) {
+              vel = joint.V('<g class="layerNum layerNum' + that.currentLayer + '"></g>');
+              joint.V(that.centerPaper.viewport).append(vel);
+            } else {
+              vel = joint.V(that.centerPaper.viewport).find('.layerNum' + that.currentLayer)[0];
+            }
+            vel.append(that.centerPaper.findViewByModel(cell).vel);
+            if ($('.layerTree li').length - 1 < that.currentLayer) {
+              $('.layerTree').append(`<li>
+            <span data-layer = ` + $('.layerTree li').length + `>第` + that.currentLayer + `层<i class="iconfont deleteLayer" style="float: right;">&#xe61e;</i></span>
+            <!--<ul class="secondaryLayer"></ul>-->
+          </li>`);
+            }
+            // if (that.currentLayer === 0) {
+            //   $('.secondaryLayer').each(function () {
+            //     if ($('span[data-id="' + cell.id + '"]').length === 0) {
+            //       $(this).append('<li><span class="cell" data-id="' + cell.id + '">' + cell.attributes.defaultName + '</span></li>');
+            //     }
+            //   });
+            // } else {
+            //   $('.secondaryLayer').eq(that.currentLayer).append('<li><span class="cell" data-id="' + cell.id + '">' + cell.attributes.defaultName + '</span></li>');
+            // }
+            $('.layerTree > li > span').removeClass('highlight');
+            $('span[data-layer="' + that.currentLayer + '"]').addClass('highlight');
+          }
+          if (that.options.action_buttons) {
+            that.changeClassName([{new: 'clear_paper', old: 'clear_disabled'}]);
+          }
+        });
+        this.centerGraph.on('remove', function (cell) {
+        });
+        if (this.options.thumbnail) {
+          let paperSmall = new joint.dia.Paper({
+            el: $('.thumbnail'),
+            width: 320,
+            height: 155,
+            model: this.centerGraph,
+            gridSize: 1
+          });
+          paperSmall.scale(0.5);
+          paperSmall.$el.css('pointer-events', 'none');
+        }
+        this.addCenterPaperEvent(this.centerPaper);
+        return this;
+      },
+      getCenterGraphCells() {
+        if (!this.options.add_attributes) {
+          return false;
+        }
+        let options = [];
+        for (let i = 0; i < this.centerGraph.getCells().length; i++) {
+          options.push(this.centerGraph.getCells()[i].attributes.defaultName);
+        }
+        $('.choose_figure').empty();
+        for (let j = 0; j < options.length; j++) {
+          $('.choose_figure').append(`<option>` + options[j] + `</option>`);
         }
       },
-      interactive: !this.options.move_figure ? {elementMove: false} : true // false不可移动
-    });
-    if (this.options.thumbnail) {
-      let paperSmall = new joint.dia.Paper({
-        el: $('.thumbnail'),
-        width: 320,
-        height: 155,
-        model: this.centerGraph,
-        gridSize: 1
-      });
-      paperSmall.scale(0.5);
-      paperSmall.$el.css('pointer-events', 'none');
-    }
-    this.addCenterPaperEvent(this.centerPaper);
-    // this.centerPaper.drawBackground({
-    //   color: 'red'
-    // });
-    return this;
-  },
-  getCenterGraphCells() {
-    if (!this.options.add_attributes) {
-      return false;
-    }
-    let options = [];
-    for (let i = 0; i < this.centerGraph.getCells().length; i++) {
-      options.push(this.centerGraph.getCells()[i].attributes.defaultName);
-    }
-    $('.choose_figure').empty();
-    for (let j = 0; j < options.length; j++) {
-      $('.choose_figure').append(`<option>` + options[j] + `</option>`);
-    }
-  },
-  /**
-   *根据序号获取图形
-   *index   序号
-   *addnew   true 用于右侧新增样式
-   *
-   */
-  getShape(index) {
-    let cell;
-    if (index === 1) {
-      cell = this.getPolygon(...[25, 30, '', '', 70, 60, 3]);
-    } else if (index === 2) {
-      cell = this.getPolygon(...[25, 100, '', '', 70, 60, 5]);
-    } else if (index === 3) {
-      cell = this.getPolygon(...[25, 180, '', '', 70, 60, 6]);
-    } else if (index === 4) {
-      cell = this.getRect(...[30, 255, '', '', 60, 60, 0]);
-    } else if (index === 5) {
-      cell = this.getCircle(...[30, 325, '', '', 60, 60, 0]);
-    } else if (index === 6) {
-      cell = this.getCircle(...[25, 30, '', '', 60, 60, '2,5']);
-    } else if (index === 7) {
-      cell = this.getRect(...[25, 100, '', '', 60, 60, '2,5']);
-    } else if (index === 8) {
-      cell = this.getLink(10, 25, 110, 25, '#31d0c6', 'M 10 0 L 0 5 L 10 10 z', '#fe854f', 'M 10 0 L 0 5 L 10 10 z', '#222138', 1, '', '#7c68fc', '');
-    }
-    return cell;
-  },
-  addLeftPaperEvent(paper) {
-    // 给所有左侧元素添加点击事件
-    let that = this;
-    paper.on('cell:click', function (cellView, evt, x, y) {
-      // console.log(cellView);
-      // 判断是否为线段
-      // let linkP = cellView.model.clone();
-      if (cellView.model.attributes.type === 'link') {
-        // console.log(linkP);
-        that.centerGraph.addCells(that.setState(10, 10));
-      } else {
-        // 添加中间画图板内容通过clone()
-        let role = that.judgeRole(cellView);
-        if (JSON.stringify(role) === '{}') {
-          let clone = cellView.model.clone();
-          // console.log(clone);
-          // 复制时z也是一样，要重新修复
-          if (clone.attributes.hasOwnProperty('link') && clone.attributes.link) {
-            clone.attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
-          } else {
-            clone.attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
-          }
-          clone.set('z', that.centerGraph.getCells().length + 1);
-          // 判断是否被线段
-          if (clone.attributes.type !== 'link') {
-            clone.position(10, 10);
-          }
-          that.centerGraph.addCells(clone);
-          if (clone.attributes.hasOwnProperty('equipId')) {
-            // 判断是每个设备的终极父级图形
-            let uuid = that.snUuid('device');
-            clone.attributes.uuid = uuid;
-            that.store.commit('changeEquipments', {
-              'id': clone.attributes.equipId,
-              'uuid': uuid,
-              'add': true
-            });
-          }
-          // if (that.options.layer) {
-          //   that.addSvg(clone);
-          // }
-        } else {
-          let clone = role.parent.clone({deep: true});
-          that.centerGraph.addCells(clone);
-          // let allCells = that.getAllCells(cellView);
-          // let size = [];
-          let getBorderXY = that.getBorder(that.centerPaper.findViewByModel(clone[0]), that.centerPaper);
-          let minX = getBorderXY.min_x;
-          let minY = getBorderXY.min_y;
-          // for (let i = 0; i < allCells.length; i++) {
-          //   size.push(that.size[allCells[i].id]);
-          // }
-          // clone[0].resize(size[0].width, size[0].height);
-          for (let i = 0; i < clone.length; i++) {
-            clone[i].set('z', that.centerGraph.getCells().length + i + 1);
-            if (clone[i].attributes.hasOwnProperty('link') && clone[i].attributes.link) {
-              clone[i].attributes['defaultName'] = '链接' + (that.centerGraph.getCells().length + 1);
-            } else {
-              clone[i].attributes['defaultName'] = '图形' + (that.centerGraph.getCells().length + 1);
-            }
-            if (clone[i].attributes.hasOwnProperty('equipId')) {
-              console.log(11111111111111);
-              // 判断是每个设备的终极父级图形
-              let uuid = that.snUuid('device');
-              clone[i].attributes.uuid = uuid;
-              that.store.commit('changeEquipments', {
-                'id': clone[i].attributes.equipId,
-                'uuid': uuid,
-                'add': true
-              });
-            }
-            // clone[i].resize(size[i].width, size[i].height);
-            // clone[i].position(size[i].disX + clone[0].position().x, size[i].disY + clone[0].position().y);
-          }
-          clone[0].position(clone[0].position().x - minX + 10, clone[0].position().y - minY + 10, {deep: true});
+      /**
+       *根据序号获取图形
+       *index   序号
+       *addnew   true 用于右侧新增样式
+       *
+       */
+      getShape(index) {
+        let cell;
+        if (index === 1) {
+          cell = this.getPolygon(...[25, 30, 'transparent', '', 70, 60, 3]);
+        } else if (index === 2) {
+          cell = this.getPolygon(...[25, 100, 'transparent', '', 70, 60, 5]);
+        } else if (index === 3) {
+          cell = this.getPolygon(...[25, 180, 'transparent', '', 70, 60, 6]);
+        } else if (index === 4) {
+          cell = this.getRect(...[30, 255, 'transparent', '', 60, 60, 0]);
+        } else if (index === 5) {
+          cell = this.getCircle(...[30, 325, 'transparent', '', 60, 60, 0]);
+        } else if (index === 6) {
+          cell = this.getCircle(...[25, 30, 'transparent', '', 60, 60, '2,5']);
+        } else if (index === 7) {
+          cell = this.getRect(...[25, 100, 'transparent', '', 60, 60, '2,5']);
         }
-      }
-    });
-  },
-  // 中间画板元素事件
-  addCenterPaperEvent(paper) {
-    // 组合时选中框的起始点和终点坐标
-    let [that, intervalTimer, sx, sy, ex, ey] = [this];
-    // 单击画布空白部分时
-    paper.on('blank:pointerdown', function(evt, x, y) {
-      if (that.options.gallery.length !== 0) {
-        that.store.commit('changeEquipmentId', '');
-      }
-      // Unhighlight all cells.
-      that.unHighLight();
-      // 隐藏外加按钮
-      that.hideBtn();
-      // $('#display_box').on('blur', '#toolTip input', function () {
-      //   if ($(this).val().trim()) {
-      //     that.hover.model.attributes.defaultName = $(this).val().trim();
-      //     $(this).addClass('hidden').prev().text($(this).val().trim()).attr('title', $(this).val().trim()).removeClass('hidden');
-      //     that.getCenterGraphCells();
-      //   }
-      // });
-      sx = x;
-      sy = y;
-      // 生成选中框
-      $(document).off('mousemove').on('mousemove', function (event) {
-        // 控制坐标在画布范围内
-        let pageXY = that.paperRange(event.pageX, event.pageY);
-        let minX = $('#display_box').offset().left;
-        let minY = $('#display_box').offset().top;
-        if ($('.moving_box')[0]) {
-          $('.moving_box').css({
-            'left': Math.min(pageXY.px - minX, sx) + 'px',
-            'top': Math.min(pageXY.py - minY, sy) + 'px',
-            'width': Math.abs(pageXY.px - minX - sx) + 'px',
-            'height': Math.abs(pageXY.py - minY - sy) + 'px',
-            'display': 'block'
-          });
+        return cell;
+      },
+      // 给所有左侧元素添加点击事件
+      addLeftPaperEvent(paper) {
+        let that = this;
+        paper.on('cell:click', function (cellView) {
+          $('#display_box').removeClass('crosshair');
+          that.path = {'value': false, 'count': 0, 'type': 'L'};
+          that.drag = {'value': false, 'index': 0};
+          // 添加中间画图板内容通过clone()
+          let cell = that.generateCell(cellView);
+          // 区域管理设备分层次
+          if (that.options.isArea && cell) {
+            let parent = that.getParent(cell);
+            if (parent.attributes.hasOwnProperty('equipId')) {
+              let allCells = that.getAllCells(that.centerPaper.findViewByModel(parent));
+              that.sortDevice(parent, allCells);
+            }
+          }
+        });
+      },
+      // 点击左边画布的图形在中间画布生成相应的图形
+      generateCell(cellView) {
+        let parent = this.getParent(cellView.model);
+        let returnCell;
+        if (parent.attributes.hasOwnProperty('equipId')) {
+          // 是设备图形
+          if (this.options.isArea) {
+            if (this.paperZoom === '') {
+              alert('请确认区域实际大小');
+              return;
+            }
+            let equipId = parent.attributes.equipId;
+            for (let i = 0; i < this.options.gallery.length; i++) {
+              if (this.options.gallery[i].id === equipId) {
+                let svgs = JSON.parse(this.options.gallery[i].svg);
+                let parentId = '';
+                if (svgs[1].svg.length === 1) {
+                  parentId = svgs[1].svg[0].id;
+                } else {
+                  for (let j = 0; j < svgs[1].svg.length; j++) {
+                    if (svgs[1].svg[j].hasOwnProperty('embeds') && !svgs[1].svg[j].hasOwnProperty('parent')) {
+                      // 终极父元素
+                      parentId = svgs[1].svg[j].id;
+                      break;
+                    }
+                  }
+                }
+                this.centerGraph.addCells(svgs[1].svg);
+                let cloneCells = this.centerGraph.getCell(parentId).clone({deep: true});
+                cloneCells[0].attributes.equipId = equipId;
+                this.centerGraph.addCells(cloneCells);
+                for (let i = 0; i < cloneCells.length; i++) {
+                  cloneCells[i].set('z', this.centerGraph.getCells().length + i + 1);
+                  this.changeDefaultName(cloneCells[i]);
+                }
+                this.centerGraph.getCell(parentId).remove();
+                // 根据最大的比例尺缩放图形
+                let scale = this.options.gallery[i].scale.split(':')[1].replace(/m/, '');
+                // console.log(scale)
+                // console.log(this.maxZoom) // 最大的scale
+                // console.log(cloneCells) // 图形，以图层分开[child,child]
+                this.resizeDevice(scale / this.paperZoom, cloneCells);
+                returnCell = cloneCells[0];
+                break;
+              }
+            }
+          }
+          return returnCell;
         } else {
-          $('#display_box').append('<div class="moving_box"></div>');
-          $('.moving_box').css({
-            'left': sx + 'px',
-            'top': sy + 'px',
-            'display': 'block'
-          });
+          // 是链接图形或者是基础图库
+          let clone = parent.clone();
+          this.changeDefaultName(clone);
+          clone.set('z', this.centerGraph.getCells().length + 1);
+          clone.position(10, 10);
+          this.centerGraph.addCells(clone);
         }
-      });
-    });
-    paper.on('blank:pointerup', function(evt, x, y) {
-      $(document).off('mousemove');
-      $('.moving_box').hide();
-      ex = x;
-      ey = y;
-      // 排除一开始不是点击在画布的空白地方的情况, sx,sy是undefined
-      if (typeof sx === 'undefined' || typeof sy === 'undefined') {
-        return;
-      }
-      // 获得最大最小x,y
-      let maxX = ex > sx ? ex : sx;
-      let maxY = ey > sy ? ey : sy;
-      let minX = ex > sx ? sx : ex;
-      let minY = ey > sy ? sy : ey;
-      that.cells = [];
-      // 将在鼠标范围内的cell push进数组中，必须包含整个cell
-      for (let i = 0, len = that.centerGraph.getCells().length; i < len; i++) {
-        let width = that.centerGraph.getCells()[i].getBBox().width;
-        let height = that.centerGraph.getCells()[i].getBBox().height;
-        let x = that.centerGraph.getCells()[i].getBBox().x;
-        let y = that.centerGraph.getCells()[i].getBBox().y;
-        if ((x >= minX) && (x + width <= maxX) && (y >= minY) && (y + height <= maxY)) {
-          // 判断这个cell是否为父cell or 子cell,或者只是单个cell
-          let role = that.judgeRole(that.centerPaper.findViewByModel(that.centerGraph.getCells()[i]));
-          if (JSON.stringify(role) === '{}') {
-            if (!that.cells.includes(that.centerGraph.getCells()[i])) {
-              that.cells.push(that.centerGraph.getCells()[i]);
-              // that.highlightedCellViews.push(that.centerPaper.findViewByModel(that.centerGraph.getCells()[i]));
-              // that.centerPaper.findViewByModel(that.centerGraph.getCells()[i]).highlight();
+      },
+      // 根据模板设备最大的比例尺缩放图形
+      resizeDevice(scale, cells) {
+        let [disX, disY] = [[], []];
+        for (let i = 0; i < cells.length; i++) {
+          cells[i].resize(cells[i].getBBox().width * scale, cells[i].getBBox().height * scale);
+          if (i === 0) {
+            continue;
+          }
+          disX.push(cells[i].getBBox().origin().x - cells[0].getBBox().origin().x);
+          disY.push(cells[i].getBBox().origin().y - cells[0].getBBox().origin().y);
+        }
+        for (let i = 1; i < cells.length; i++) {
+          cells[i].position(disX[i - 1] * scale + cells[0].getBBox().origin().x, disY[i - 1] * scale + cells[0].getBBox().origin().y);
+        }
+      },
+      // 区域设备图形分开
+      sortDevice(parent, allCells) {
+        if (parent.attributes.hasOwnProperty('equipId')) {
+          // 实例化设备生成uuid，唯一标识
+          let uuid = this.snUuid('device');
+          parent.attributes.uuid = uuid;
+          this.equipList = {id: parent.attributes.equipId, uuid: uuid, add: true};
+          let svg;
+          for (let i = 0; i < this.options.gallery.length; i++) {
+            if (this.options.gallery[i].id === parent.attributes.equipId) {
+              svg = JSON.parse(this.options.gallery[i].svg);
             }
-          } else {
-            // 不是单个cell的话找到该cell的终极祖先元素，然后把祖先元素本身和祖先元素的所有子元素全部push
-            if (!that.cells.includes(role.parent)) {
-              that.cells.push(role.parent);
-              // that.highlightedCellViews.push(that.centerPaper.findViewByModel(role.parent));
-              // that.centerPaper.findViewByModel(role.parent).highlight();
+          }
+          if (joint.V(this.centerPaper.viewport).find('#' + uuid).length === 0) {
+            let g = joint.V('<g class="dg" id="' + uuid + '" equip-id="' + parent.attributes.equipId + '"></g>');
+            joint.V(this.centerPaper.viewport).append(g);
+            for (let j = 0; j < svg.length; j++) {
+              let g1;
+              if (j === 1) {
+                g1 = joint.V('<g class="deviceLayer' + svg[j].layer + '"></g>');
+              } else {
+                g1 = joint.V('<g class="hidden deviceLayer' + svg[j].layer + '"></g>');
+              }
+              joint.V(this.centerPaper.viewport).find('#' + uuid)[0].append(g1);
             }
-            let allChilds = role.parent.getEmbeddedCells({deep: true});
-            for (let j = 0; j < allChilds.length; j++) {
-              if (!that.cells.includes(allChilds[j])) {
-                that.cells.push(allChilds[j]);
-                // that.highlightedCellViews.push(that.centerPaper.findViewByModel(allChilds[j]));
-                // that.centerPaper.findViewByModel(allChilds[j]).highlight();
+            // 第1层
+            for (let k = 0; k < allCells.length; k++) {
+              g.find('.deviceLayer1')[0].append(this.centerPaper.findViewByModel(allCells[k]).vel);
+            }
+            // 其他层
+            for (let i = 0; i < svg.length; i++) {
+              if (svg[i].layer !== 1) {
+                let parentId;
+                if (svg[i].svg.length === 1) {
+                  svg[i].svg[0].equipId = parent.attributes.equipId;
+                  svg[i].svg[0].uuid = uuid;
+                  parentId = svg[i].svg[0].id;
+                } else {
+                  for (let j = 0; j < svg[i].svg.length; j++) {
+                    if (svg[i].svg[j].hasOwnProperty('embeds') && svg[i].svg[j].hasOwnProperty('embeds').length !== 0 && svg[i].svg[j].hasOwnProperty('parent') === false) {
+                      svg[i].svg[j].equipId = parent.attributes.equipId;
+                      svg[i].svg[j].uuid = uuid;
+                      parentId = svg[i].svg[j].id;
+                    }
+                  }
+                }
+                this.centerGraph.addCells(svg[i].svg);
+                let cloneCells = this.centerGraph.getCell(parentId).clone({deep: true});
+                this.centerGraph.addCells(cloneCells);
+                for (let k = 0; k < cloneCells.length; k++) {
+                  g.find('.deviceLayer' + svg[i].layer)[0].append(this.centerPaper.findViewByModel(cloneCells[k]).vel);
+                }
+                this.centerGraph.getCell(parentId).remove();
               }
             }
           }
         }
-      }
-      // console.log(cells);
-      if (that.cells.length !== 0) {
-        for (let i = 0; i < that.cells.length; i++) {
-          that.centerPaper.findViewByModel(that.cells[i]).highlight();
-        }
-        that.changeClassName([{new: 'group_figure', old: 'group_disabled'}, {new: 'ungroup_figure', old: 'ungroup_disabled'}]);
-      }
-      [ex, ey, sy, sx] = [];
-    });
-    // 双击事件
-    paper.on('cell:pointerdblclick', function (cellView) {
-      if (cellView.model.attributes.hasOwnProperty('link') && cellView.model.attributes.link) {
-        clearTimeout(intervalTimer);
-        if (that.options.double_click === true) {
-          that.doubleClick();
-        }
-      }
-    });
-    paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-      // console.log(cellView);
-      // 判断是否为线段
-      // let linkP = cellView.model.clone();
-      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
-        // console.log(linkP);
-        if (cellView.model.attributes.type === 'fsa.State') {
-          that.loadLinkBtn(cellView);
-        }
-      } else {
-        // 权限控制，其他层不能对第0层的图形进行操作
-        if (that.options.layer && that.currentLayer !== 0) {
-          if (cellView.model.attributes.layer === 0) {
-            return false;
-          }
-        }
-        clearTimeout(intervalTimer); // 取消上次延时未执行的方法
-        intervalTimer = setTimeout(function () {
-          if (that.options.single_click === true) {
-            that.singleClick(cellView);
-          }
-        }, 300);
-        // 判断元素是否为同一个
-        // that.idDown = cellView.id;
-        $('#toolTip').hide();
-        // if (that.idUp !== that.idDown) { // 判断点击的是否为当前view
-        //   if ($('#functionBtn').length === 0 && that.options.move_figure) {
-        //     that.loadBtn(cellView);
-        //   } else {
-        //     that.creatWrapper(cellView, that.centerPaper);
-        //   }
-        // }
-        if ($('#functionBtn').length === 0 && that.options.move_figure) {
-          that.loadBtn(cellView);
+      },
+      changeDefaultName(cell) { // 改变图形默认名字
+        if (cell.attributes.hasOwnProperty('link') && cell.attributes.link) {
+          cell.attributes['defaultName'] = '链接' + (this.centerGraph.getCells().length + 1);
         } else {
-          that.creatWrapper(cellView, that.centerPaper);
+          cell.attributes['defaultName'] = '图形' + (this.centerGraph.getCells().length + 1);
         }
-        that.changeClassName([{new: 'front_figure', old: 'front_disabled'}, {new: 'back_figure', old: 'back_disabled'}]);
-        // 改变当前点击的设备的id
-        if (cellView.model.attributes.hasOwnProperty('equipId')) {
-          that.store.commit('changeEquipmentId', cellView.model.attributes.uuid);
-        }
-        that.unHighLight();
+      },
+      // 中间画板元素事件
+      addCenterPaperEvent(paper) {
+        // 组合时选中框的起始点和终点坐标
+        let [that, startPoint, path, sx, sy, ex, ey] = [this];
+        // paper.on('blank:pointerdblclick', function (evt, x, y) {
+        //   if (that.path.value) {
+        //     // 双击空白处停止画线
+        //     that.endPath(startPoint, path);
+        //   }
+        // });
+        paper.on('blank:contextmenu', function (evt, x, y) {
+          if (that.path.value) {
+            // 双击空白处停止画线
+            that.endPath(startPoint, path);
+          }
+        });
+        // 单击画布空白部分时
+        paper.on('blank:pointerdown', function(evt, x, y) {
+          if (that.options.gallery.length !== 0) {
+            // 取消单个图形高亮
+            // that.store.commit('changeEquipmentId', '');
+            that.currentEquip = '';
+          }
+          that.unHighLight();
+          if (!that.path.value) { // 在不画线的时候才可以生成矩形选中框
+            sx = x;
+            sy = y;
+            that.generateBox(sx, sy);
+          }
+          // 值为true并且没有曲线的控制点的时候开始划线
+          if (that.path.value && joint.V(paper.viewport).find('.control-point').length === 0) {
+            if (that.path.count === 0) { // 第一次点击生成开始的圆点
+              startPoint = joint.V('circle', { r: 8, fill: '#dc143c', cx: x, cy: y, class: 'startPoint' });
+              // 先生成path路径，在结束画线的时候将路径转化为真正的图形
+              path = joint.V('path', { d: 'M ' + x + ' ' + y, stroke: '#dc143c', fill: 'transparent', 'stroke-width': 2 });
+              joint.V(paper.viewport).append(startPoint);
+              joint.V(paper.viewport).append(path);
+              that.path.count = 1;
+              // 点击开始的圆点生成闭合路径
+              $('.startPoint').on('mousedown', function (event) {
+                path.attr('d', path.attr('d') + ' Z');
+                that.endPath(startPoint, path);
+                // $('#display_box').off('mousemove');
+                event.stopPropagation();
+              });
+            } else {
+              if (that.path.type === 'L') { // 直线
+                path.attr('d', path.attr('d') + ' L ' + x + ' ' + y);
+              } else {
+                let last = path.attr('d').substring(path.attr('d').lastIndexOf('Q')).split(' ');
+                let [lastX, lastY] = [];
+                if (last.length === 3) {
+                  lastX = parseInt(last[1]);
+                  lastY = parseInt(last[2]);
+                } else {
+                  lastX = parseInt(last[3]);
+                  lastY = parseInt(last[4]);
+                }
+                let point = x + ' ' + y;
+                let centerPoint = ((x - lastX) / 2 + lastX) + ' ' + ((y - lastY) / 2 + lastY);
+                path.attr('d', path.attr('d') + ' Q ' + centerPoint + ' ' + point);
+              }
+            }
+            $('#display_box').off('mousemove').on('mousemove', function (event) {
+              let minX = $('#display_box').offset().left;
+              let minY = $('#display_box').offset().top;
+              // 获得其他图形的边界
+              let otherPos = that.getOtherCellsPos();
+              $('.refer_line_h').hide();
+              $('.refer_line_v').hide();
+              let px = event.pageX - minX;
+              let py = event.pageY - minY;
+              if (px || py) {
+                $('#position_x').html(parseInt(px))
+                $('#position_y').html(parseInt(py));
+                $('#position').css('display', 'block')
+              } else {
+                $('#position').css('display', 'none')
+              }
+              for (let i = 0; i < otherPos.length; i++) {
+                // 竖线
+                if (Math.abs(parseInt(otherPos[i].min_x - px)) < 2 || Math.abs(parseInt(otherPos[i].max_x - px)) < 2 || Math.abs(parseInt(otherPos[i].center_x - px)) < 2) {
+                  that.generateLine('v', $('#display_box').height(), px);
+                }
+                // 横线
+                if (Math.abs(parseInt(otherPos[i].min_y - py)) < 2 || Math.abs(parseInt(otherPos[i].max_y - py)) < 2 || Math.abs(parseInt(otherPos[i].center_y - py)) < 2) {
+                  that.generateLine('h', $('#display_box').width(), py);
+                }
+              }
+            });
+          }
+          // 删除所有控制点
+          if (!that.drag.value) {
+            that.deleteController();
+          }
+          // 隐藏外加按钮
+          that.hideBtn();
+        });
+        paper.on('blank:pointerup', function(evt, x, y) {
+          if (!that.path.value) {
+            [ex, ey] = [x, y];
+            that.getCellsFromGraph(sx, sy, ex, ey); // 获取在矩形选中框范围内的cell
+            [ex, ey, sy, sx] = [];
+          }
+        });
+        paper.on('cell:pointerdblclick', function (cellView, evt) {
+          // 链接图形双击出现弹框
+          if (cellView.model.attributes.hasOwnProperty('link') && cellView.model.attributes.link) {
+            that.doubleClick(cellView.model);
+          }
+          that.deleteController();
+          if ($('#functionBtn').length === 0 && that.options.move_figure) {
+            that.loadBtn(cellView);
+          } else {
+            that.creatWrapper(cellView, that.centerPaper);
+          }
+          that.changeClassName([{new: 'front_figure', old: 'front_disabled'}, {new: 'back_figure', old: 'back_disabled'}]);
+          // 改变当前点击的设备的id
+          let parent = that.getParent(cellView.model);
+          if (parent.attributes.hasOwnProperty('equipId')) {
+            // that.store.commit('changeEquipmentId', parent.attributes.uuid);
+            that.currentEquip = parent.attributes.uuid;
+          }
+          that.unHighLight();
+          // 改变图形样式
+          that.changeCellAttr(cellView);
+        });
+        paper.on('cell:pointerdown', function(cellView, evt, x, y) {
+          if (that.options.single_click === true) {
+            setTimeout(function () {
+              that.singleClick(cellView)
+            }, 1000);
+          }
+          if (cellView.model.attributes.type === 'basic.Path' && cellView.model.attr('path/d').includes('Q')) {
+            if (joint.V(paper.viewport).find('.control-point').length !== 0 && joint.V(paper.viewport).find('.control-point')[0].attr('svgId') !== cellView.model.id) {
+              let circle = joint.V(paper.viewport).find('.control-point');
+              let line = joint.V(paper.viewport).find('.control-line');
+              for (let i = 0; i < circle.length; i++) {
+                if (circle[i].attr('svgId') !== cellView.model.id) {
+                  circle[i].remove();
+                  line[i].remove();
+                }
+              }
+              if (joint.V(paper.viewport).find('.control-point').length === 0) {
+                that.drawController(cellView.model.attr('path/d'), cellView.model, true);
+              }
+            } else {
+              that.drawController(cellView.model.attr('path/d'), cellView.model, true);
+            }
+          }
+          that.hideBtn();
+          that.moveTogether(cellView, evt);
+        });
+        paper.on('cell:pointermove', function(cellView) {
+          // 参考线
+          if (that.options.refer_line) {
+            that.referLine(cellView);
+          }
+          // 曲线控制点跟随图形一起移动
+          that.moveController(cellView);
+        });
+        paper.on('cell:pointerup', function(cellView) {
+          $('.refer_line_v').hide();
+          $('.refer_line_h').hide();
+        });
+        paper.on('cell:contextmenu', function (cellView, evt, x, y) {
+          if ($('#toolTip')[0]) {
+            $('#toolTip').css({
+              'left': cellView.getBBox().origin().x + 'px',
+              'top': (cellView.model.getBBox().origin().y - 50) + 'px'
+            });
+          } else {
+            that.loadToolTip(cellView);
+          }
+          that.contextMenu = cellView;
+          $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
+        });
+      },
+      // 组合图形一起移动
+      moveTogether(cellView, evt) {
         let parent = cellView.model.getAncestors()[cellView.model.getAncestors().length - 1];
         if (parent) {
           // 取消子元素的移动
           cellView.pointerup(evt);
           // 将当前被拖动的元素替换为父元素
-          that.centerPaper.sourceView = that.centerPaper.findViewByModel(parent);
+          this.centerPaper.sourceView = this.centerPaper.findViewByModel(parent);
           // 获取父元素的位置
-          let localPoint = that.centerPaper.snapToGrid({ x: evt.clientX, y: evt.clientY });
-          that.centerPaper.findViewByModel(parent).pointerdown(evt, localPoint.x, localPoint.y);
+          let localPoint = this.centerPaper.snapToGrid({ x: evt.clientX, y: evt.clientY });
+          this.centerPaper.findViewByModel(parent).pointerdown(evt, localPoint.x, localPoint.y);
         }
-        // 点击cell右侧属性面板显示对应的数据
+      },
+      getOtherCellsPos(cellView) {
+        let cells = [];
+        if (this.options.layer) {
+          let nowLayer = joint.V(this.centerPaper.viewport).find('.layerNum' + this.currentLayer)[0];
+          if (nowLayer) {
+            for (let i = 0; i < nowLayer.children().length; i++) {
+              cells.push(this.centerGraph.getCell(nowLayer.children()[i].attr('model-id')));
+            }
+          }
+        } else if (this.options.isArea) {
+          let device = joint.V(this.centerPaper.viewport).find('.dg');
+          for (let i = 0; i < device.length; i++) {
+            let layer1 = device[i].find('.deviceLayer1')[0];
+            for (let j = 0; j < layer1.children().length; j++) {
+              cells.push(this.centerGraph.getCell(layer1.children()[j].attr('model-id')));
+            }
+          }
+        } else {
+          cells = this.centerGraph.getCells();
+        }
+        // 排除当前cell和其后代元素
+        let result = cells.filter(function (cell) {
+          if (cellView) {
+            return cell.id !== cellView.model.id && !cell.isEmbeddedIn(cellView.model);
+          } else {
+            return cell;
+          }
+        });
+        let repeatParent = [];
+        for (let i = 0; i < result.length; i++) {
+          repeatParent.push(this.getParent(result[i]).id);
+        }
+        // 获取非当前点击元素的各个parent
+        let parent = Array.from(new Set(repeatParent));
+        let otherPos = [];
+        // 获取非当前点击元素的最大最小x,y
+        for (let i = 0; i < parent.length; i++) {
+          let sPos = this.getBorder(this.centerPaper.findViewByModel(this.centerGraph.getCell(parent[i])), this.centerPaper);
+          otherPos.push({min_x: sPos.min_x, max_x: sPos.max_x, min_y: sPos.min_y, max_y: sPos.max_y, center_x: (sPos.max_x - sPos.min_x) / 2 + sPos.min_x, center_y: (sPos.max_y - sPos.min_y) / 2 + sPos.min_y});
+        }
+        $('.refer_line_h').hide();
+        $('.refer_line_v').hide();
+        return otherPos;
+      },
+      // 参考线位置
+      referLine(cellView) {
+        let pos = this.getBorder(cellView, this.centerPaper);
+        let [minX, maxX, minY, maxY] = [pos.min_x, pos.max_x, pos.min_y, pos.max_y];
+        let otherPos = this.getOtherCellsPos(cellView);
+        for (let i = 0; i < otherPos.length; i++) {
+          // 竖线
+          if (Math.abs(parseInt(otherPos[i].min_x - minX)) < 2 || Math.abs(parseInt(otherPos[i].min_x - maxX)) < 2) { // 左边对齐
+            this.generateLine('v', $('#display_box').height(), otherPos[i].min_x);
+          } else if (Math.abs(parseInt(otherPos[i].max_x - minX)) < 2 || Math.abs(parseInt(otherPos[i].max_x - maxX)) < 2) { // 右边对齐
+            this.generateLine('v', $('#display_box').height(), otherPos[i].max_x);
+          } else if (Math.abs(parseInt(otherPos[i].center_x - (maxX - minX) / 2 - minX)) < 2) { // 中间对齐
+            this.generateLine('v', $('#display_box').height(), otherPos[i].center_x);
+          }
+          // 横线
+          if (Math.abs(parseInt(otherPos[i].min_y - minY)) < 2 || Math.abs(parseInt(otherPos[i].min_y - maxY)) < 2) {
+            this.generateLine('h', $('#display_box').width(), otherPos[i].min_y);
+          } else if (Math.abs(parseInt(otherPos[i].max_y - minY)) < 2 || Math.abs(parseInt(otherPos[i].max_y - maxY)) < 2) {
+            this.generateLine('h', $('#display_box').width(), otherPos[i].max_y);
+          } else if (Math.abs(parseInt(otherPos[i].center_y - (maxY - minY) / 2 - minY)) < 2) {
+            this.generateLine('h', $('#display_box').width(), otherPos[i].center_y);
+          }
+        }
+      },
+      // 改变图形样式
+      changeCellAttr(cellView) {
         // cell类型
         let type = cellView.model.get('type').split('.')[1].toLowerCase();
         $('#font-size').val(cellView.model.attr('text/font-size'));
@@ -1034,14 +1709,6 @@ const jointD = {
         } else {
           $('#outline-styles').val(3);
         }
-
-        /* if(cellView.model.attr('text/font-family') == 'Alegreya Sans'){
-         $('#font-family').val(1);
-         } else if(cellView.model.attr('text/font-family') == 'Averia Libre'){
-         $('#font-family').val(2);
-         } else {
-         $('#font-family').val(3);
-         } */
         // 字体粗细
         if (cellView.model.attr('text/font-weight') === '300') {
           $('#font-sickness').val(1);
@@ -1050,1405 +1717,1450 @@ const jointD = {
         } else {
           $('#font-sickness').val(3);
         }
-        that.view = cellView;
-        that.propertyPane(cellView);
-      }
-    });
-    paper.on('cell:pointermove', function(cellView) {
-      // 获取中心点
-      let mP = that.getCenterPoint(cellView);
-      console.log(mP);
-      // 获取画布所有图形
-      let allT = that.getCellDelSlef(cellView);
-      console.log(allT);
-      // 判断是否中心点重合
-      for (let i = 0; i < allT.length; i++) {
-        console.log(1);
-        let xc = allT[i].attributes.position.x + allT[i].attributes.size.width / 2;
-        let yc = allT[i].attributes.position.y + allT[i].attributes.size.height / 2;
-        if (xc === mP.x && yc === mP.y) {
-          console.log(2);
-          that.centerGraph.addCells(that.setState(mP.x, mP.y, 3, ''));
-        }
-      }
-      // 权限控制，其他层不能对第0层的图形进行操作
-      if (that.options.layer && that.currentLayer !== 0) {
-        if (cellView.model.attributes.layer === 0) {
-          return false;
-        }
-      }
-      if (that.options.refer_line) {
-        let pos = that.creatWrapper(cellView, that.centerPaper);
-        let [minX, maxX, minY, maxY] = [pos.min_x, pos.max_x, pos.min_y, pos.max_y];
-        let cells = that.centerGraph.getCells();
-        // 排除当前cell和其后代元素
-        let result = cells.filter(function (cell) {
-          return cell.id !== cellView.model.id && !cell.isEmbeddedIn(cellView.model);
-        });
-        let repeatParent = [];
-        for (let i = 0; i < result.length; i++) {
-          repeatParent.push(that.getParent(result[i]).id);
-        }
-        // 获取非当前点击元素的各个parent
-        let parent = Array.from(new Set(repeatParent));
-        let otherPos = [];
-        // 获取非当前点击元素的最大最小x,y
-        for (let i = 0; i < parent.length; i++) {
-          let sPos = that.getBorder(that.centerPaper.findViewByModel(that.centerGraph.getCell(parent[i])), that.centerPaper);
-          otherPos.push({min_x: sPos.min_x, max_x: sPos.max_x, min_y: sPos.min_y, max_y: sPos.max_y});
-        }
-        for (let i = 0; i < otherPos.length; i++) {
-          // 左边
-          if (Math.abs(otherPos[i].min_x - minX) < 2 || Math.abs(otherPos[i].min_x - maxX) < 2) {
-            that.generateLine('v', $('#display_box').height(), otherPos[i].min_x);
-          }
-          // 右边
-          if (Math.abs(otherPos[i].max_x - minX) < 2 || Math.abs(otherPos[i].max_x - maxX) < 2) {
-            that.generateLine('v', $('#display_box').height(), otherPos[i].max_x);
-          }
-          // 上边
-          if (Math.abs(otherPos[i].min_y - minY) < 2 || Math.abs(otherPos[i].min_y - maxY) < 2) {
-            that.generateLine('h', $('#display_box').width(), otherPos[i].min_y);
-          }
-          // 下边
-          if (Math.abs(otherPos[i].max_y - minY) < 2 || Math.abs(otherPos[i].max_y - maxY) < 2) {
-            that.generateLine('h', $('#display_box').width(), otherPos[i].max_y);
-          }
-        }
-      } else {
-        that.creatWrapper(cellView, that.centerPaper);
-      }
-    });
-    paper.on('cell:pointerup', function(cellView) {
-      // that.idUp = cellView.id;
-      $('.refer_line_v').hide();
-      $('.refer_line_h').hide();
-      // 获取中心点
-      // let cP = that.getCenterPoint(cellView);
-      // lineArr.push(cP);
-      // console.log(lineArr);
-    });
-    paper.on('cell:contextmenu', function (cellView, evt, x, y) {
-      // 判断是否为线段
-      // let linkP = cellView.model.clone();
-      if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
-        // console.log(linkP);
-        // 关闭移动属性
-        that.centerPaper.setInteractivity(function (cellView) {
-          return false;// true为开启，false
-        });
-      } else {
-        $('#toolTip').css({
-          'left': cellView.getBBox().origin().x + 'px',
-          'top': (cellView.model.getBBox().origin().y - 50) + 'px'
-        });
-        that.hover = cellView;
-        $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
-      }
-    });
-    // paper.on('cell:mouseenter', function (cellView) {
-    //   $('#toolTip').css({
-    //     'left': cellView.getBBox().origin().x + 'px',
-    //     'top': (cellView.getBBox().origin().y - 50) + 'px'
-    //   });
-    //   $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
-    // });
-    // paper.on('cell:mouseleave', function (cellView) {
-    //   that.hover = cellView;
-    // });
-  },
-  generateLine(type, param1, param2) {
-    // 生成参考线
-    if (type === 'v') {
-      if ($('.refer_line_v')[0]) {
-        $('.refer_line_v').css({
-          'display': 'block',
-          'height': param1,
-          'left': param2
-        });
-      } else {
-        $('#display_box').append('<div class="refer_line_v"></div>');
-        $('.refer_line_v').css({
-          'display': 'block',
-          'height': param1,
-          'left': param2
-        });
-      }
-    } else {
-      if ($('.refer_line_h')[0]) {
-        $('.refer_line_h').css({
-          'display': 'block',
-          'width': param1,
-          'top': param2
-        });
-      } else {
-        $('#display_box').append('<div class="refer_line_h"></div>');
-        $('.refer_line_h').css({
-          'display': 'block',
-          'width': param1,
-          'top': param2
-        });
-      }
-    }
-  },
-  singleClick(cellView) {
-    if ($('#iframe').length === 0) {
-      $('body').append(`<iframe src="http://www.runoob.com" width="400" height="200" id="iframe">
-        <p>您的浏览器不支持iframe标签。</p>
-      </iframe><div class="hideBtn"><i class="iconfont">&#xe632;</i></div>`);
-    } else {
-      $('#iframe').show();
-      $('.hideBtn').show();
-    }
-    $('#iframe').css({
-      'left': cellView.model.position().x + cellView.model.size().width + $('#display_box').offset().left,
-      'top': cellView.model.position().y + cellView.model.size().height + $('#display_box').offset().top
-    });
-    $('.hideBtn').css({
-      'left': cellView.model.position().x + cellView.model.size().width + $('#display_box').offset().left + 400,
-      'top': cellView.model.position().y + cellView.model.size().height + $('#display_box').offset().top - 20
-    });
-    $('.hideBtn').on('click', function () {
-      $('#iframe').hide();
-      $(this).hide();
-    });
-  },
-  doubleClick() {
-    // 链接图形双击出现链接编辑弹框
-    console.log('double');
-    if (this.store) {
-      this.store.commit('changeLinkAttr', {
-        'link': true
-      });
-    }
-  },
-  arrEquals(arr1, arr2) {
-    if (arr1.length !== arr2.length) {
-      return false;
-    } else {
-      // let id1 = [], id2 = [];
-      let [id1, id2] = [[], []];
-      for (let i = 0; i < arr1.length; i++) {
-        id1.push(arr1[i].id);
-      }
-      for (let j = 0; j < arr2.length; j++) {
-        id2.push(arr2[j].id);
-      }
-      for (let k = 0; k < id2.length; k++) {
-        if (!id1.includes(id2[k])) {
-          return false;
-        }
-      }
-      for (let m = 0; m < id1.length; m++) {
-        if (!id2.includes(id1[m])) {
-          return false;
-        }
-      }
-    }
-    return true;
-  },
-  /* getCells获取到的cell顺序是根据z,z越小，越早获取到
-   第一次把获取到的第一个cell作为父cell,{parent: cell[0].id, childs: []},
-   多次组合的话判断第一个cell是否有parent，如果没有说明该cell是单个cell，或者终极祖先cell，
-   把他作为父cell,如果有parent的话，把该cell的终极祖先cell作为父cell,并且embed之前还要把父cell
-   的所有子cell全部排除，防止再次embed,并且排除其他不相关cell的子cell，防止embed从属关系错乱，剩下的
-   则是此次要embed的cell */
-  embed() {
-    // var copyCell = cells.slice(0);
-    if (this.cells.length === 0) {
-      alert('未选中任何元素');
-      return;
-    }
-    if (this.options.layer && this.currentLayer !== 0) {
-      // 如果选中的图形有第0层的图形，则报错
-      for (let i = 0; i < this.cells.length; i++) {
-        if (this.cells[i].attributes.layer === 0) {
-          alert('不能操作第0层的图形');
+        this.view = cellView;
+        this.propertyPane(cellView);
+      },
+      // 获取在矩形选中框之内的图形
+      getCellsFromGraph(sx, sy, ex, ey) {
+        $('#display_box').off('mousemove');
+        $('.moving_box').hide();
+        // 排除一开始不是点击在画布的空白地方的情况, sx,sy是undefined
+        if (typeof sx === 'undefined' || typeof sy === 'undefined') {
           return;
         }
-      }
-    }
-    // 取消元素高亮
-    this.unHighLight();
-    if (this.cells.length === 1) {
-      alert('只选中了一个元素，无法组合');
-      return;
-    }
-    let parent = this.getParent(this.cells[0]);
-    /* let ids = [];
-    for (let j = 0; j < this.groups.length; j++) {
-      ids.push(this.groups[j].parent);
-    }
-    if (!ids.includes(parent.id) && parent.getEmbeddedCells({deep: true}).length !== 0) {
-      alert('该图形是组合过的模板图形');
-      return;
-    } */
-    let newCells = [];
-    for (let j = 0; j < this.cells.length; j++) {
-      if (this.cells[j].id === parent.id) {
-        continue;
-      }
-      newCells.push(this.cells[j]);
-    }
-    // 查找groups中的数据，判断其中所有的cell的id是否相同判断是否已经组合过
-    for (let k = this.groups.length - 1; k >= 0; k--) {
-      if (this.groups[k].parent === parent.id) {
-        if (this.arrEquals(this.groups[k].childs, newCells)) {
-          alert('已经组合过');
-          return;
+        // 获得最大最小x,y
+        let maxX = ex > sx ? ex : sx;
+        let maxY = ey > sy ? ey : sy;
+        let minX = ex > sx ? sx : ex;
+        let minY = ey > sy ? sy : ey;
+        this.cells = [];
+        this.embedCells = [];
+        // 将在鼠标范围内的cell push进数组中，必须包含整个cell
+        let allCells = [];
+        if (this.options.layer) {
+          let nowLayer = joint.V(this.centerPaper.viewport).find('.layerNum' + this.currentLayer)[0];
+          if (nowLayer === undefined) {
+            console.log(`没有图形，nowLayer = ${nowLayer}`)
+            return;
+          }
+          for (let i = 0; i < nowLayer.children().length; i++) {
+            allCells.push(this.centerGraph.getCell(nowLayer.children()[i].attr('model-id')));
+          }
+        } else {
+          allCells = this.centerGraph.getCells();
         }
-      }
-    }
-    for (let i = 0; i < this.cells.length; i++) {
-      this.initialAngle[this.cells[i].id] = this.cells[i].attributes.angle;
-    }
-    // 删除parent下的所有子cell
-    let allChilds = parent.getEmbeddedCells({deep: true});
-    if (allChilds) {
-      for (let j = 0; j < allChilds.length; j++) {
-        if (this.cells.includes(allChilds[j])) {
-          delete this.cells[this.cells.indexOf(allChilds[j])];
-        }
-      }
-    }
-    if (this.cells.length > 1) {
-      this.groups.push({parent: parent.id, childs: []});
-      for (let i = 0; i < this.cells.length; i++) {
-        // 如果剩下的元素有祖先元素，删除其本身，直接embed该祖先元素
-        if (this.cells[i]) {
-          if (this.cells[i].getAncestors().length !== 0) {
-            delete this.cells[i];
+        for (let i = 0, len = allCells.length; i < len; i++) {
+          let width = allCells[i].getBBox().width;
+          let height = allCells[i].getBBox().height;
+          let x = allCells[i].getBBox().x;
+          let y = allCells[i].getBBox().y;
+          if ((x >= minX) && (x + width <= maxX) && (y >= minY) && (y + height <= maxY)) {
+            this.embedCells.push(allCells[i]);
+            // 判断这个cell是否为父cell or 子cell,或者只是单个cell
+            let role = this.judgeRole(this.centerPaper.findViewByModel(allCells[i]));
+            if (JSON.stringify(role) === '{}') {
+              if (!this.cells.includes(allCells[i])) {
+                this.cells.push(allCells[i]);
+              }
+            } else {
+              // 不是单个cell的话找到该cell的终极祖先元素，然后把祖先元素本身和祖先元素的所有子元素全部push
+              if (!this.cells.includes(role.parent)) {
+                this.cells.push(role.parent);
+              }
+              let allChilds = role.parent.getEmbeddedCells({deep: true});
+              for (let j = 0; j < allChilds.length; j++) {
+                if (!this.cells.includes(allChilds[j])) {
+                  this.cells.push(allChilds[j]);
+                }
+              }
+            }
           }
         }
-        if (this.cells[i]) {
-          if (this.cells[i].id === parent.id) {
+        if (this.cells.length !== 0) {
+          for (let i = 0; i < this.cells.length; i++) {
+            this.centerPaper.findViewByModel(this.cells[i]).highlight();
+          }
+          this.changeClassName([{new: 'group_figure', old: 'group_disabled'}, {new: 'ungroup_figure', old: 'ungroup_disabled'}]);
+        }
+      },
+      generateBox(sx, sy) { // 生成矩形选中框
+        $('#display_box').off('mousemove').on('mousemove', function (event) {
+          // 控制坐标在画布范围内
+          let minX = $('#display_box').offset().left;
+          // console.log(minX);
+          // console.log(event.pageX);
+          // let minY = $('#display_box').offset().top;
+          // if ($('.moving_box')[0]) {
+          //   // 我改的
+          //   // $('.moving_box').css({
+          //   //   'left': Math.min(event.pageX - minX, sx) + 'px',
+          //   //   'top': Math.min(event.pageY - minY, sy) + 'px',
+          //   //   'width': Math.abs(event.pageX - minX - sx) + 'px',
+          //   //   'height': Math.abs(event.pageY - minY - sy) + 'px',
+          //   //   'display': 'block'
+          //   // });
+          //   $('.moving_box').css({
+          //     'left': sx + 'px',
+          //     'top': sy + 'px',
+          //     // 'width': sx) + 'px',
+          //     // 'height': Math.abs(event.pageY - minY - sy) + 'px',
+          //     'display': 'block'
+          //   });
+          // } else {
+          //   $('#display_box').append('<div class="moving_box"></div>');
+          //   $('.moving_box').css({
+          //     'left': sx + 'px',
+          //     'top': sy + 'px',
+          //     'display': 'block'
+          //   });
+          // }
+        });
+      },
+      generateLine(type, param1, param2) {
+        // 生成参考线
+        if (type === 'v') {
+          if ($('.refer_line_v')[0]) {
+            $('.refer_line_v').css({
+              'display': 'block',
+              'height': param1,
+              'left': param2
+            });
+          } else {
+            $('#display_box').append('<div class="refer_line_v forbidden"></div>');
+            $('.refer_line_v').css({
+              'display': 'block',
+              'height': param1,
+              'left': param2
+            });
+          }
+        } else {
+          if ($('.refer_line_h')[0]) {
+            $('.refer_line_h').css({
+              'display': 'block',
+              'width': param1,
+              'top': param2
+            });
+          } else {
+            $('#display_box').append('<div class="refer_line_h forbidden"></div>');
+            $('.refer_line_h').css({
+              'display': 'block',
+              'width': param1,
+              'top': param2
+            });
+          }
+        }
+      },
+      getThat(th) {
+        thatW = th;
+      },
+      lawyer(area) {
+        let html = thatW.getters.getDictionary.dictionary.areaObj.get(area).equipmentList;
+        for (let item of html) {
+          for (let pro of item.propertyList) {
+            if (pro.inputType === 'BOX' && pro.dataType !== 'LINK' && pro.value !== '') {
+              let value = pro.value;
+              let preV = pro.preValueList;
+              for (let lay of preV) {
+                if(lay.value == value) {
+                  let layN = lay.layerNumber;
+                  let id = '#' + thatW.getters.getDictionary.dictionary.pObj.get(pro.id).serialNumber;
+                  let item1 = $(id).children()
+//              console.log(item);
+                  for (let i = 0; i < item1.length; i++) {
+                    // 找个每个层级的id名称
+                    let idname = '#' + item1[i].id;
+                    // 通过id名称更改class名称 全部显示隐藏
+                    $(idname)[0].className.baseVal = 'hidden' + ' ' + 'deviceLayer' + i;
+                  }
+                  // 取出需要显示的层级
+                  let aa = '#' + item1[layN].id;
+                  // 通过id查找更改class显示
+                  $(aa)[0].className.baseVal = 'deviceLayer' + layN;
+                }
+              }
+            }
+          }
+        }
+      },
+      // 单击图形
+      singleClick(cellView) {
+        if (cellView !== undefined) {
+          let id = cellView.model.attributes;
+          if (id.uuid !== undefined) {
+            let uuid = id.uuid;
+            for (let id of thatW.getters.getDatas.data) {
+              for (let list of id.equipmentList) {
+                if (uuid === list.serialNumber) { // 获取点击图形的uuid 与后台数据中的id进行对比
+                  console.log(list.id)
+                  console.log(list.template.name); // 输入模版ID
+                  switch (list.template.name) { // 取出模版名称进行对比
+                    case '精密空调':
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      thatW.commit('changeModal', {
+                      modalv: true
+                    })
+                      $('.pre').siblings().css('display', 'none');
+                      $('.pre').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'minipre'
+                      })
+                      break;
+                    case 'UPS配电柜':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.ups').siblings().css('display', 'none');
+                      $('.ups').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'miniups'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '市电配电柜':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.dis').siblings().css('display', 'none');
+                      $('.dis').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'minisup'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '温湿度探测器':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.mon').siblings().css('display', 'none');
+                      $('.mon').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'miniser'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '固态设备':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.sol').siblings().css('display', 'none');
+                      $('.sol').css('display', 'block');
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '门禁A':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.ent').siblings().css('display', 'none');
+                      $('.ent').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'minient'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '摄像头':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.cam').siblings().css('display', 'none');
+                      $('.cam').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'minicam'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '机柜':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.cab').siblings().css('display', 'none');
+                      $('.cab').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'minicab'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '漏水探测器':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.lea').siblings().css('display', 'none');
+                      $('.lea').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'minilea'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    case '感烟探测器':
+                      thatW.commit('changeModal', {
+                        'modalv': true
+                      })
+                      $('.det').siblings().css('display', 'none');
+                      $('.det').css('display', 'block');
+                      thatW.commit('changeTemp', {
+                        'tempname': 'minidet'
+                      })
+                      thatW.commit('changeEqIds', {
+                        'eqId': list.id
+                      })
+                      break;
+                    default:
+                      break;
+                  }
+                  console.log(thatW.getters.getEqIds)
+                }
+              }
+            }
+          }
+        }
+      },
+      // 双击链接图形
+      doubleClick(cell) {
+        // 获取当前双击图形的uuid
+        let uuid = this.getParent(cell).attributes.uuid;
+        // console.log(uuid);
+        // 遍历svg数据
+        for (let id of thatW.getters.getDatas.data) {
+          for (let list of id.equipmentList) {
+            // 当找到uuid时
+            if (uuid === list.serialNumber) {
+              let area = id.id;
+              let array = thatW.getters.getArea.areas;
+              //  将该区域加入到后台数据中
+              array.push(area);
+              thatW.commit('changeArea', {
+                'areas': array
+              })
+              // 取出uuid对应的属性列表
+              let arr = thatW.getters.getDictionary.dictionary.eqObj.get(list.id).equipmentIds.propertyList;
+              for (let item of arr) {
+                // 找到属性为link的列表
+                if (item.dataType === 'LINK') {
+                  for(let svg of thatW.getters.getDatas.data){
+                    // 取出对应的value值和区域的id做对比
+                    if (parseInt(svg.id) === parseInt(item.value)) {
+                      // 加载该区域的svg图像
+                      this.setSvgData(svg.svg, 'RESET');
+                      this.lawyer(svg.id);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        // 链接图形双击出现链接编辑弹框
+        // let parent = this.getParent(cell);
+        // if (parent && parent.attributes.hasOwnProperty('equipId')) {
+        //   // 设备链接
+        //   // this.store.commit('changeLinkAttr', {
+        //   //   'show': true,
+        //   //   'equipmentId': parent.attributes.uuid,
+        //   //   'svgId': cell.id
+        //   // });
+        //   this.editorLink = {
+        //     'show': true,
+        //     'equipmentId': parent.attributes.uuid,
+        //     'svgId': cell.id
+        //   };
+        // } else {
+        //   // 区域链接
+        //   // this.store.commit('changeLinkAttr', {
+        //   //   'show': true,
+        //   //   'svgId': cell.id
+        //   // });
+        //   this.editorLink = {
+        //     'show': true,
+        //     'svgId': cell.id
+        //   };
+        //   this.currentEquip = '';
+        // }
+      },
+      /* 组合图形，getCells获取到的cell顺序是根据z,z越小，越早获取到
+       第一次把获取到的第一个cell作为父cell,并且embed之前还要把父cell
+       的所有子cell全部排除，防止再次embed,并且排除其他不相关cell的子cell，防止embed从属关系错乱，剩下的
+       则是此次要embed的cell */
+      embed() {
+        if (this.cells.length === 0) {
+          alert('未选中任何元素');
+          return;
+        }
+        // 取消元素高亮
+        this.unHighLight();
+        // 如果选中的图形有第0层的图形，则报错
+        if (this.options.layer && this.currentLayer !== 0) {
+          for (let i = 0; i < this.cells.length; i++) {
+            if (this.cells[i].attributes.layer === 0) {
+              alert('不能操作第0层的图形');
+              return;
+            }
+          }
+        }
+        if (this.cells.length === 1) {
+          alert('只选中了一个元素，无法组合');
+          return;
+        }
+        let parent = this.cells[0];
+        let embedChilds = this.cells.slice(1);
+        // //  判断是否已经组合过
+        // for (let i = 0; i < embedChilds.length; i++) {
+        //   if (embedChilds[i].attributes.parent === parent.id) {
+        //     alert('已经组合过');
+        //     return;
+        //   }
+        // }
+        // 组合时要把父级元素的子cell全部删除
+        let allChilds = parent.getEmbeddedCells({deep: true}).map(function (cell) {
+          return cell.id;
+        });
+        if (allChilds.length !== 0) {
+          embedChilds = embedChilds.filter(function (cell) {
+            return !allChilds.includes(cell.id);
+          });
+        }
+        // 还要把其他元素的子元素全部删除
+        let reallyCell = embedChilds.filter(function (cell) {
+          return !cell.attributes.hasOwnProperty('parent');
+        });
+        for (let i = 0; i < reallyCell.length; i++) {
+          parent.embed(reallyCell[i]);
+        }
+        this.cells = [];
+      },
+      /* 解除组合图形，根据embeds和parent属性找 */
+      unembed() {
+        this.unHighLight();
+        if (this.options.layer && this.currentLayer !== 0) {
+          // 如果选中的图形有第0层的图形，则报错
+          for (let i = 0; i < this.cells.length; i++) {
+            if (this.cells[i].attributes.layer === 0) {
+              alert('不能操作第0层的图形');
+              return;
+            }
+          }
+        }
+        let embedCellsId = this.embedCells.map(function (cell) {
+          return cell.id;
+        });
+        // 如果选中的图形之间有组合关系，那么删除子cell
+        if (this.embedCells.length > 0) {
+          this.embedCells = this.embedCells.filter(function (cell) {
+            let parent = cell.attributes.hasOwnProperty('parent');
+            return !(parent && embedCellsId.includes(cell.attributes.parent));
+          });
+        }
+        for (let i = 0; i < this.embedCells.length; i++) {
+          let parent = this.embedCells[i].attributes.parent ? this.centerGraph.getCell(this.embedCells[i].attributes.parent) : undefined;
+          if (parent) {
+            // 如果选中的是子cell
+            parent.unembed(this.embedCells[i]);
+          } else {
+            // 如果选中的是parent cell
+            let childs = this.embedCells[i].attributes.embeds;
+            if (childs) {
+              for (let j = 0; j < childs.length; j++) {
+                this.embedCells[i].unembed(this.centerGraph.getCell(childs[j]));
+              }
+            }
+          }
+        }
+        // 要判断是否还能解绑，完全解绑后所有元素都没有祖先元素
+        // let count = 0;
+        // for (let m = 0; m < this.cells.length; m++) {
+        //   if (this.cells[m].getAncestors().length === 0) {
+        //     count++;
+        //   }
+        // }
+        // if (count === this.cells.length) {
+        //   alert('所有元素都已解绑！');
+        //   return;
+        // }
+        this.cells = [];
+        this.embedCells = [];
+      },
+      // 判断该cell的角色，单个cell，既是父cell,也是子cell,只是子cell,只是父cell
+      judgeRole(cellView) {
+        let parent = cellView.model.getAncestors()[cellView.model.getAncestors().length - 1];
+        let child = cellView.model.getEmbeddedCells({deep: true});
+        if (parent) {
+          return {'parent': parent};
+        } else {
+          if (child.length !== 0) {
+            return {'parent': cellView.model};
+          } else {
+            return {};
+          }
+        }
+      },
+      // 删除图形
+      delSelf() {
+        let parent = this.getParent(this.view.model);
+        let allChilds = parent.getEmbeddedCells({deep: true});
+        for (let j = 0; j < allChilds.length; j++) {
+          if (this.options.isArea && allChilds[j].attributes.hasOwnProperty('link') && allChilds[j].attributes.link) {
+            // 设备中的链接图形
+            this.delLinkAttr(allChilds[j]);
+          }
+        }
+        if (this.options.isArea && parent.attributes.hasOwnProperty('equipId')) { // 是设备
+          this.equipList = {id: parent.attributes.equipId, uuid: parent.attributes.uuid, add: false};
+          this.currentEquip = '';
+          if (parent.attributes.hasOwnProperty('link') && parent.attributes.link) {
+            this.delLinkAttr(parent);
+          }
+          let uuid = parent.attributes.uuid;
+          let dg = joint.V(this.centerPaper.viewport).find('#' + uuid)[0];
+          let layers = dg.children();
+          for (let i = 0; i < layers.length; i++) {
+            let cell = this.centerGraph.getCell(layers[i].children()[0].attr('model-id'));
+            let parent = this.getParent(cell);
+            parent.remove();
+            layers[i].remove();
+          }
+          dg.remove();
+        } else {
+          // 是链接图形
+          if (parent.attributes.hasOwnProperty('link') && parent.attributes.link) {
+            this.delLinkAttr(parent);
+          }
+        }
+        parent.remove();
+        this.hideBtn();
+      },
+      // 删除对应数据池中对应的链接属性数据
+      delLinkAttr(cell) {
+        this.editorLink = {
+          'delete': true,
+          'svgId': cell.id
+        };
+      },
+      // 复制图形
+      copySelf() {
+        // 获取所有cell如果组合过，则包含所有父cell和子cell
+        let allCells = this.getAllCells(this.view);
+        let clone = this.centerPaper.findViewByModel(allCells[0]).model.clone({deep: true});
+        for (let i = 0; i < clone.length; i++) {
+          clone[i].translate(20, 20);
+          clone[i].attributes['defaultName'] = '图形' + (this.centerGraph.getCells().length + i + 1);
+        }
+        this.centerGraph.addCells(clone);
+        this.view = this.centerPaper.findViewByModel(clone[0]);
+        this.creatWrapper(this.view, this.centerPaper);
+        if (this.options.isArea) {
+          this.sortDevice(clone[0], clone);
+          if (clone[0].attributes.hasOwnProperty('equipId')) {
+            this.currentEquip = clone[0].attributes.uuid;
+            // this.equipList = {id: clone[0].attributes.equipId, uuid: clone[0].attributes.uuid, add: true};
+          }
+        } else {
+          this.propertyPane(this.view);
+        }
+      },
+      // 旋转图形（功能取消）
+      rotateSelf(e) {
+        let that = this;
+        this.unHighLight();
+        let allCells = this.getAllCells(this.view);
+        // 右下角按钮在中间画布的位置
+        let rx = $('#rotateSelf').offset().left - $('#display_box').offset().left;
+        let ry = $('#rotateSelf').offset().top - $('#display_box').offset().top;
+        // 鼠标在中间画布的位置
+        let px;
+        let py;
+        // 已转角度
+        let angled = [];
+        for (let j = 0; j < allCells.length; j++) {
+          angled.push(allCells[j].attributes.angle ? allCells[j].attributes.angle : 0);
+        }
+        // 旋转角度等于（鼠标位置与中心点的角度angle2 - 按钮位置与中心点的角度angle1 + 已经转过的角度）
+        $(document).off('mousemove').on('mousemove', function(event) {
+          let oPos = that.creatWrapper(that.centerPaper.findViewByModel(allCells[0]), that.centerPaper);
+          let ox = (oPos.max_x - oPos.min_x) / 2 + oPos.min_x;
+          let oy = (oPos.max_y - oPos.min_y) / 2 + oPos.min_y;
+          // 旋转中心在中间画布的位置
+          px = event.pageX - $('#display_box').offset().left;
+          py = event.pageY - $('#display_box').offset().top;
+          let angle1 = Math.atan(((ry - oy) / (rx - ox))) * 180 / Math.PI;
+          let angle2 = Math.atan(((py - oy) / (px - ox))) * 180 / Math.PI;
+          /* 一四象限角度需要经过处理 */
+          if (px > ox && py > oy) {
+            angle2 = angle2 - 180;
+          } else if (px > ox && py < oy) {
+            angle2 = angle2 + 180;
+          }
+          for (let i = 0; i < allCells.length; i++) {
+            /* true表示不是对上一个角度的累加而是一个绝对角度 */
+            allCells[i].rotate(angle2 - angle1 + angled[i], true, {x: ox, y: oy});
+            allCells[i].attr('text/transform', 'rotate(' + (angle1 - angle2 - angled[i]) + ')');
+          }
+        });
+        $(document).on('mouseup', function(event) {
+          $(document).off('mousemove');
+        });
+      },
+      // 缩放图形
+      stretchSelf(e) {
+        this.unHighLight();
+        let that = this;
+        let allCells = this.getAllCells(this.view);
+        // 拉伸按钮位置
+        let px = $(e).offset().left + 3;
+        let py = $(e).offset().top + 3;
+        // 根据元素id来判断元素方位，拉伸方式不同
+        /* 0: 向左上角拉伸，
+         1：向上拉伸，
+         2：向右上角拉伸，
+         3：向左拉伸，
+         4：向右拉伸，
+         5：向左下角拉伸，
+         6：向下拉伸，
+         7：向右下角拉伸 */
+        // 元素高宽
+        let [width, height, disX, disY] = [[], [], [], []];
+        for (let i = 0; i < allCells.length; i++) {
+          width.push(allCells[i].size().width);
+          height.push(allCells[i].size().height);
+          if (i === 0) {
             continue;
           }
-          parent.embed(this.cells[i]);
-          this.groups[this.groups.length - 1].childs.push(this.cells[i]);
+          disX.push(allCells[i].getBBox().origin().x - allCells[0].getBBox().origin().x);
+          disY.push(allCells[i].getBBox().origin().y - allCells[0].getBBox().origin().y);
         }
-      }
-      // localStorage.setItem('groups', JSON.stringify(this.groups));
-    }
-    this.cells = [];
-    console.log(this.groups);
-  },
-  /* 解绑是unembed获取选中的所有cell上的最后一步组合操作 */
-  unembed() {
-    this.unHighLight();
-    if (this.options.layer && this.currentLayer !== 0) {
-      // 如果选中的图形有第0层的图形，则报错
-      for (let i = 0; i < this.cells.length; i++) {
-        if (this.cells[i].attributes.layer === 0) {
-          alert('不能操作第0层的图形');
-          return;
+        /* 拉伸原理： 鼠标位置与当前拉伸按钮位置的差 + 元素的宽高即为拉伸后的宽高 */
+        let id = parseInt($(e).attr('id').substr($(e).attr('id').length - 1));
+        $('#display_box').off('mousemove').on('mousemove', function(event) {
+          // 放大宽高
+          let [scaleX, scaleY] = [];
+          let border = that.getBorder(that.view, that.centerPaper);
+          /* 拉伸按钮id依次为
+           0 1 2
+           3   4
+           5 6 7 */
+          // scaleX
+          // 控制鼠标在画布范围内
+          if (id === 0 || id === 3 || id === 5) {
+            scaleX = px - event.pageX;
+          } else if (id === 2 || id === 4 || id === 7) {
+            scaleX = event.pageX - px;
+          } else if (id === 1 || id === 6) {
+            scaleX = 0;
+          }
+          // scaleY
+          if (id === 0 || id === 1 || id === 2) {
+            scaleY = py - event.pageY;
+          } else if (id === 5 || id === 6 || id === 7) {
+            scaleY = event.pageY - py;
+          } else if (id === 3 || id === 4) {
+            scaleY = 0;
+          }
+          // 设置最小变形后的高宽为20*20
+          let scx = allCells[0].size().width / (border.max_x - border.min_x);
+          let scy = allCells[0].size().height / (border.max_y - border.min_y);
+          let first = that.minWidthAndHeight(width[0] + scaleX * scx, height[0] + scaleY * scy);
+          allCells[0].resize(first.scaleX, first.scaleY, {direction: that.judgeDirection(id)});
+          let [ratioX, ratioY] = [first.scaleX / width[0], first.scaleY / height[0]];
+          for (let j = 1; j < allCells.length; j++) {
+            // 这个图形所占整个图形的比例
+            allCells[j].resize(ratioX * width[j], ratioY * height[j], {direction: that.judgeDirection(id)});
+            allCells[j].position(ratioX * disX[j - 1], ratioY * disY[j - 1], {parentRelative: true});
+          }
+          // 拉伸时只显示当前按钮
+          $('.stretch-icon').hide();
+          $('#stretchSelf' + id).show();
+          that.creatWrapper(that.centerPaper.findViewByModel(allCells[0]), that.centerPaper);
+        });
+        // 鼠标松开解除mousemove事件
+        $('#display_box').on('mouseup', function(event) {
+          $('#display_box').off('mousemove');
+          $('.stretch-icon').show();
+        });
+      },
+      // 根据缩放按钮的坐标判断缩放的方向
+      judgeDirection(index) {
+        if (index === 0) {
+          return 'top-left';
+        } else if (index === 1) {
+          return 'top';
+        } else if (index === 2) {
+          return 'top-right';
+        } else if (index === 3) {
+          return 'left';
+        } else if (index === 4 || index === 6 || index === 7) {
+          return '';
+        } else {
+          return 'bottom-left';
         }
-      }
-    }
-    // 要判断是否还能解绑，完全解绑后所有元素都没有祖先元素
-    let count = 0;
-    for (let m = 0; m < this.cells.length; m++) {
-      if (this.cells[m].getAncestors().length === 0) {
-        count++;
-      }
-    }
-    if (count === this.cells.length) {
-      alert('所有元素都已解绑！');
-      return;
-    }
-    let parent = this.getParent(this.cells[0]);
-    /* let ids = [];
-    for (let j = 0; j < this.groups.length; j++) {
-      ids.push(this.groups[j].parent);
-    }
-    if (!ids.includes(parent.id)) {
-      alert('该图形是模板图形，不能解绑');
-      return;
-    } */
-    // var copyCell = cells.slice(0);
-    let index;
-    let matches;
-    // 获取最后一步操作的记录
-    for (let i = this.groups.length - 1; i >= 0; i--) {
-      if (this.groups[i].parent === parent.id) {
-        index = i;
-        matches = this.groups[i].childs;
-        break;
-      }
-    }
-    if (index !== undefined) {
-      for (let l = 0; l < matches.length; l++) {
-        parent.unembed(this.centerGraph.getCell(matches[l].id));
-      }
-      this.groups.splice(index, 1);
-      // localStorage.setItem('groups', JSON.stringify(this.groups));
-    }
-    this.cells = [];
-  },
-  // 判断该cell的角色，单个cell，既是父cell,也是子cell,只是子cell,只是父cell
-  judgeRole(cellView) {
-    let parent = cellView.model.getAncestors()[cellView.model.getAncestors().length - 1];
-    let child = cellView.model.getEmbeddedCells({deep: true});
-    if (parent) {
-      return {'parent': parent};
-    } else {
-      if (child.length !== 0) {
-        return {'parent': cellView.model};
-      } else {
-        return {};
-      }
-    }
-  },
-  delSelf() {
-    // 除删除cell之外，还要删除与之相关的groups中的数据（根据每个cell的父cell的id），localstorage中的数据，angle的数据
-    console.log('delete');
-    let parent = this.getParent(this.view.model);
-    // let allCells = this.getAllCells(this.view);
-    let ids = [];
-    // this.allCellsId = [];
-    let allChilds = parent.getEmbeddedCells({deep: true});
-    for (let j = 0; j < allChilds.length; j++) {
-      if (allChilds[j].getAncestors().length !== 0) {
-        ids.push(allChilds[j].getAncestors()[0].id);
-      }
-      this.delSvg(allChilds[j].id);
-    }
-    for (let k = 0; k < this.groups.length; k++) {
-      if (ids.includes(this.groups[k].parent)) {
-        this.groups.splice(k--, 1);
-      }
-    }
-    // for (let i = 0; i < allCells.length; i++) {
-    //   allCellsId.push(allCells[i].id);
-    // }
-    // this.allCellsId = allCellsId;
-    // console.log(this.allCellsId);
-    // localStorage.setItem('groups', JSON.stringify(this.groups));
-    if (parent.attributes.hasOwnProperty('equipId')) {
-      this.store.commit('changeEquipments', {
-        'id': parent.attributes.equipId,
-        'uuid': parent.attributes.uuid,
-        'add': false
-      });
-      if (parent.attributes.uuid === this.store.getters.getEquipmentUuid) {
-        this.store.commit('changeEquipmentId', '');
-      }
-    }
-    this.delSvg(parent.id);
-    parent.remove();
-    this.hideBtn();
-  },
-  delSvg(id) {
-    // 删除图层对应数据
-    if (this.options.layer) {
-      $('.cell').each(function () {
-        if ($(this).attr('data-id') === id) {
-          $(this.remove());
+      },
+      // 设置图形最小缩小大小
+      minWidthAndHeight(scaleX, scaleY) {
+        if (scaleX <= 20) {
+          scaleX = 20;
         }
-      });
-      for (let i = 0; i < this.svg.length; i++) {
-        if (this.svg[i].id === id) {
-          this.svg.splice(i, 1);
+        if (scaleY <= 20) {
+          scaleY = 20;
         }
-      }
-    }
-    if (this.centerGraph.getCells().length === 1) {
-      this.changeClassName([{new: 'clear_disabled', old: 'clear_paper'}]);
-    }
-  },
-  copySelf() {
-    console.log('copy');
-    // 获取所有cell如果组合过，则包含所有父cell和子cell
-    let allCells = this.getAllCells(this.view);
-    let clone = this.centerPaper.findViewByModel(allCells[0]).model.clone({deep: true});
-    // clone[0].position(allCells[0].position().x + 50, allCells[0].position().y + 50, {deep: true});
-    for (let i = 0; i < clone.length; i++) {
-      clone[i].attributes['defaultName'] = '图形' + (this.centerGraph.getCells().length + i + 1);
-    }
-    this.centerGraph.addCells(clone);
-    let apIds = [];// 所有被clone的有关cell的id
-    let childsIndex = [];
-    let nGroups = [];// 所有被clone的有关的groups中的数据
-    for (let k = 0; k < allCells.length; k++) {
-      apIds.push(allCells[k].id);
-    }
-    for (let n = 0; n < this.groups.length; n++) {
-      if (apIds.includes(this.groups[n].parent)) {
-        nGroups.push(this.groups[n]);
-      }
-    }
-    // 因为clone和被clone的所有cells在数组中相对应的index相同，所以根据被clone的
-    // cell的位置来写clone出来的位置
-    for (let l = 0; l < nGroups.length; l++) {
-      let parentIndex = apIds.indexOf(nGroups[l].parent);
-      this.groups.push({parent: clone[parentIndex].id, childs: []});
-      childsIndex.push([]);
-      for (let m = 0; m < nGroups[l].childs.length; m++) {
-        childsIndex[l].push(apIds.indexOf(nGroups[l].childs[m].id));
-      }
-    }
+        return {scaleX: scaleX, scaleY: scaleY};
+      },
+      // 获取元素初始化样式,鼠标的事件
+      getLeftElementView() {
+        let ElementView = joint.dia.ElementView.extend({
+          pointerdown: function () {
+            this._click = true;
+            // joint.dia.ElementView.prototype.pointerdown.apply(this, arguments);
+          },
+          pointermove: function(evt, x, y) { // 左侧画板元素能否移动
+            // this._click = false;
+            // joint.dia.ElementView.prototype.pointermove.apply(this, arguments);
+          },
+          pointerup: function (evt, x, y) {
+            if (this._click) {
+              // triggers an event on the paper and the element itself
+              this.notify('cell:click', evt, x, y);
+            } else {
+              joint.dia.ElementView.prototype.pointerup.apply(this, arguments);
+            }
+          }
+        });
+        return ElementView;
+      },
+      // getImage(px, py, pwidth, pheight) {
+      //   let cell = new joint.shapes.basic.Image({
+      //     position: {
+      //       x: px,
+      //       y: py
+      //     },
+      //     size: {
+      //       width: pwidth,
+      //       height: pheight
+      //     },
+      //     attrs: {
+      //       // attr SVG attr      prop- custom data
+      //       image: {
+      //         'xlink:href': 'url(http://localhost:8888/src/assets/img/logo.png)'
+      //       }
+      //     }
+      //   });
+      //   return cell;
+      // },
+      /**
+       * 生成椭圆
+       * px  x 坐标
+       * py  y 坐标
+       * pbackground   背景色
+       * ptext  显示文本
+       * pwidth 宽带
+       * pheight 高度
+       * prx    短轴值
+       * pry    长轴值
+       */
+      /* getEllipse(px, py, pbackground, ptext, pwidth, pheight) {
+       let cell = new joint.shapes.basic.Ellipse({
+       position: {
+       x: px,
+       y: py
+       },
+       size: {
+       width: pwidth,
+       height: pheight
+       },
+       attrs: {
+       // attr SVG attr      prop- custom data
+       ellipse: {
+       fill: pbackground,
+       'stroke': '#8792c3',
+       'stroke-width': 1,
+       'stroke-dasharray': 0
+       },
+       text: {
+       text: ptext,
+       fill: 'black',
+       'font-weight': 'normal'
+       }
+       }
+       });
+       return cell;
+       }, */
+      /**
+       * 生成矩形
+       * px  x 坐标
+       * py  y 坐标
+       * pbackground   背景色
+       * ptext  显示文本
+       * pwidth 宽带
+       * pheight 高度
+       */
+      getRect(px, py, pbackground, ptext, pwidth, pheight, dasharray) {
+        let cell = new joint.shapes.basic.Rect({
+          position: {
+            x: px,
+            y: py
+          },
+          size: {
+            width: pwidth,
+            height: pheight
+          },
+          attrs: {
+            // attr SVG attr      prop- custom data
+            rect: {
+              fill: pbackground,
+              'stroke': '#8792c3',
+              'stroke-width': 1,
+              'stroke-dasharray': dasharray
+            },
+            text: {
+              text: ptext,
+              fill: 'black',
+              'font-weight': 'normal'
+            }
+          }
+        });
+        return cell;
+      },
+      getPath(width, height, px, py, d) {
+        let cell = new joint.shapes.basic.Path({
+          position: { x: px, y: py },
+          size: { width: width, height: height },
+          attrs: {
+            text: { text: '', 'ref-y': 0.5, 'y-alignment': 'middle', 'ref-dy': null },
+            path: {
+              'd': d,
+              'stroke': '#dc143c',
+              'stroke-width': 3,
+              'fill': 'transparent'
+            }
+          }
+        });
+        return cell;
+      },
+      // 结束一个path图形的绘制
+      endPath(startPoint, path) {
+        if (path.attr('d').includes('L') || path.attr('d').includes('Q')) {
+          let ph;
+          if (path.attr('d').includes('L')) {
+            ph = path.attr('d').split('L');
+            if (ph[ph.length - 1].trim() === ph[ph.length - 2].trim()) {
+              path.attr('d', path.attr('d').substring(0, path.attr('d').lastIndexOf('L') - 1))
+            }
+          } else {
+            ph = path.attr('d').split('Q');
+            let last = ph[ph.length - 1].trim().split(' ');
+            if (last[0] === last[2] && last[1] === last[3]) {
+              path.attr('d', path.attr('d').substring(0, path.attr('d').lastIndexOf('Q') - 1))
+            }
+          }
+          let realPath;
+          let d = path.attr('d').match(/\s\d+/g);
+          d = d.map(function (d) {
+            return parseInt(d);
+          });
+          let [px, py] = [d[0], d[1]];
+          // 算出最小的px ,py
+          for (let i = 0; i < d.length; i++) {
+            if (i % 2 === 0) {
+              if (d[i] < px) {
+                px = d[i];
+              }
+            } else {
+              if (d[i] < py) {
+                py = d[i];
+              }
+            }
+          }
+          for (let i = 0; i < d.length; i++) {
+            if (i % 2 === 0) {
+              d[i] -= px;
+              if (path.attr('d').includes('L')) {
+                if (i !== 0) {
+                  d[i] = 'L ' + d[i];
+                }
+              } else {
+                if (i === 2 || (i - 2) % 4 === 0) {
+                  d[i] = 'Q ' + d[i];
+                }
+              }
+            } else {
+              d[i] -= py;
+            }
+          }
+          if (path.attr('d').includes('Z')) {
+            realPath = 'M ' + d.join(' ') + ' Z'
+          } else {
+            realPath = 'M ' + d.join(' ');
+          }
+          let [width, height] = [path.getBBox().width, path.getBBox().height];
+          let num = realPath.match(/[LQ]/g);
+          if (num.length === 1) { // 如果是一条直线，宽和高为0，那么图形就显示不出来，因此要做处理
+            if (!width) {
+              width = 1;
+            }
+            if (!height) {
+              height = 1;
+            }
+          }
+          let cell = this.getPath(width, height, px, py, realPath);
+          cell.attr('path/stroke', '#8792c3');
+          cell.attributes.defaultName = '图形' + (this.centerGraph.getCells().length + 1);
+          this.centerGraph.addCell(cell);
+        }
+        if (this.path.type === 'Q' && path.attr('d').includes('Q')) {
+          this.drawController(path.attr('d'), this.centerGraph.getLastCell());
+        }
+        this.path.count = 0;
+        this.path.d = '';
+        startPoint.remove();
+        path.remove();
+      },
+      // 曲线控制点跟随图形一起移动
+      moveController(cellView) {
+        if (cellView.model.attributes.type === 'basic.Path' && cellView.model.attr('path/d').includes('Q')) {
+          let id = cellView.model.id;
+          let [sx, sy] = [cellView.model.getBBox().origin().x, cellView.model.getBBox().origin().y];
+          let path = cellView.model.attr('path/d').split('Q');
+          let circles = joint.V(this.centerPaper.viewport).find('.control-point');
+          let lines = joint.V(this.centerPaper.viewport).find('.control-line');
+          for (let i = 0; i < circles.length; i++) {
+            if (circles[i].attr('svgId') === id) {
+              // 控制点坐标加上图形坐标
+              let index = parseInt(circles[i].attr('class').substring(circles[i].attr('class').length - 1));
+              let control = path[index].trim().split(' ');
+              circles[i].attr('cx', parseInt(control[0]) + sx).attr('cy', parseInt(control[1]) + sy);
+            }
+          }
+          for (let i = 0; i < lines.length; i++) {
+            if (lines[i].attr('svgId') === id) {
+              let index = parseInt(circles[i].attr('class').substring(circles[i].attr('class').length - 1));
+              let control = path[index].trim().split(' ');
+              let former = path[index - 1].trim().split(' ');
+              if (former.length === 3) {
+                lines[i].attr('x1', sx + parseInt(former[1])).attr('y1', sy + parseInt(former[2]));
+              } else {
+                lines[i].attr('x1', sx + parseInt(former[2])).attr('y1', sy + parseInt(former[3]));
+              }
+              lines[i].attr('x2', parseInt(control[0]) + sx).attr('y2', parseInt(control[1]) + sy);
+            }
+          }
+        }
+      },
+      // 删除曲线控制点
+      deleteController() {
+        if (joint.V(this.centerPaper.viewport).find('.control-point').length !== 0) {
+          let circle = joint.V(this.centerPaper.viewport).find('.control-point');
+          let line = joint.V(this.centerPaper.viewport).find('.control-line');
+          for (let i = 0; i < circle.length; i++) {
+            circle[i].remove();
+            line[i].remove();
+          }
+        }
+      },
+      // 绘制曲线控制点
+      drawController() {
+        console.log('绘制控制点')
+        let control = arguments[0].split('Q');
+        let [circles, lines] = [[], []];
+        for (let i = 1; i < control.length; i++) {
+          let current = control[i].trim().split(' ');
+          let former = control[i - 1].trim().split(' ');
+          let [x, y] = [];
+          if (former.length === 3) {
+            x = former[1];
+            y = former[2];
+          } else {
+            x = former[2];
+            y = former[3];
+          }
+          let addX = arguments.length === 3 ? arguments[1].getBBox().origin().x : 0;
+          let addY = arguments.length === 3 ? arguments[1].getBBox().origin().y : 0;
+          let line = joint.V('line', { svgId: arguments[1].id, class: 'control-line control-line' + i, stroke: '#999', 'stroke-dasharray:': '5,3', 'stroke-width': 1, x1: parseInt(x) + addX, y1: parseInt(y) + addY, x2: parseInt(current[0]) + addX, y2: parseInt(current[1]) + addY });
+          joint.V(this.centerPaper.viewport).append(line);
+          let circle = joint.V('circle', { svgId: arguments[1].id, r: 3, fill: '#4169e1', class: 'control-point control-point' + i, cx: parseInt(current[0]) + addX, cy: parseInt(current[1]) + addY });
+          joint.V(this.centerPaper.viewport).append(circle);
+          circles.push(circle);
+          lines.push(line);
+        }
+        $('.control-point').on('mousedown', {param: [this, arguments[1]]}, this.dragPoints);
+      },
+      // 拖动曲线的控制点，改变曲线线条
+      dragPoints(event) {
+        console.log('拖动控制点');
+        let that = event.data.param[0];
+        let cell = event.data.param[1];
+        let minX = $('#display_box').offset().left;
+        let minY = $('#display_box').offset().top;
+        let index = parseInt($(event.target).attr('class').substr($(event.target).attr('class').length - 1));
+        that.drag.value = true;
+        $('#display_box').off('mousemove').on('mousemove', function (event) {
+          let circle = joint.V(that.centerPaper.viewport).find('.control-point' + index);
+          let line = joint.V(that.centerPaper.viewport).find('.control-line' + index);
+          circle[0].attr('cx', event.pageX - minX).attr('cy', event.pageY - minY);
+          line[0].attr('x2', event.pageX - minX).attr('y2', event.pageY - minY);
+          let path = cell.attr('path/d').split('Q');
+          let control = path[index].trim().split(' ');
+          control[0] = circle[0].attr('cx') - cell.getBBox().origin().x;
+          control[1] = circle[0].attr('cy') - cell.getBBox().origin().y;
+          path[index] = ' ' + control.join(' ') + ' ';
+          cell.attr('path/d', path.join('Q'));
+          let cellView = that.centerPaper.findViewByModel(cell);
+          cell.size({width: cellView.getBBox().width, height: cellView.getBBox().height});
+        });
+        $('#display_box').on('mouseup', function () {
+          $('#display_box').off('mousemove').on('mousemove', function (event) {
+            let minX = $('#display_box').offset().left;
+            let minY = $('#display_box').offset().top;
+            // 获得其他图形的边界
+            let px = event.pageX - minX;
+            let py = event.pageY - minY;
+            if (px || py) {
+              $('#position_x').html(parseInt(px))
+              $('#position_y').html(parseInt(py));
+              $('#position').css('display', 'block')
+            } else {
+              $('#position').css('display', 'none')
+            }
+          });
+          that.drag.value = false;
+        })
+      },
+      /**
+       * 生成多边形
+       * px  x 坐标
+       * py  y 坐标
+       * pbackground   背景色
+       * ptext  显示文本
+       * pwidth 宽带
+       * pheight 高度
+       */
+      getPolygon (px, py, pbackground, ptext, pwidth, pheight, edges) {
+        let points = '';
+        if (edges === 3) {
+          points = '50,0 0,70 100,70';
+        } else if (edges === 5) {
+          points = '35,0 70,25 55,60 15,60 0,25';
+        } else if (edges === 6) {
+          points = '15,0 55,0 70,30 55,60 15,60 0,30';
+        } else {
+          points = '0,35 70,30 60,35 0,30';
+        }
+        let cell = new joint.shapes.basic.Polygon({
+          size: {
+            width: pwidth,
+            height: pheight
+          },
+          position: {
+            x: px,
+            y: py
+          },
+          attrs: {
+            polygon: {
+              points: points,
+              fill: pbackground,
+              'stroke': '#8792c3',
+              'stroke-width': 1,
+              'stroke-dasharray': 0
+            },
+            text: {
+              text: ptext,
+              fill: 'black',
+              'font-weight': 'normal',
+              'ref-dy': null,
+              'ref-y': 0.5
+            }
+          }
+        });
+        return cell;
+      },
+      // 画直线
+      getLine(paper) {
+        let line = joint.V('line', { x1: 20, y1: 30, x2: 100, y2: 30, stroke: '#8792c3', 'stroke-width': 3, class: 'drawLine' });
+        joint.V(paper.viewport).append(line);
+      },
+      // 画曲线
+      getCurve(paper) {
+        let path = joint.V('path', { d: 'M 20 100 Q 60 60 100 100', stroke: '#8792c3', 'stroke-width': 3, class: 'drawCurve', fill: 'transparent' });
+        joint.V(paper.viewport).append(path);
+      },
+      /**
+       *获取圆
+       *sx  开始x坐标
+       *sy  开始y坐标
+       *pwidth 宽带
+       *pheight 高度
+       *plabel  文字
+       */
+      getCircle(sx, sy, pbackground, ptext, pwidth, pheight, dasharray) {
+        let cell = new joint.shapes.basic.Circle({
+          size: { width: pwidth, height: pheight },
+          position: { x: sx, y: sy },
+          attrs: {
+            circle: {stroke: '#8792c3', 'stroke-width': 1, 'stroke-dasharray': dasharray, fill: pbackground},
+            text: {text: ptext, fill: 'black', 'font-size': 18, 'font-weight': 'normal'}
+          }
+        });
+        return cell;
+      },
+      // 清除画布
+      clearPaper() {
+        let cells = this.centerGraph.getCells();
+        cells = cells.filter(function(cell) {
+          return !(cell.attributes.hasOwnProperty('parent') && cell.attributes.hasOwnProperty('embeds'));
+        });
+        cells.map(function(cell) {
+          cell.remove();
+        });
+        if (this.options.layer) {
+          let layers = joint.V(this.centerPaper.viewport).find('.layerNum');
+          for (let i = 0; i < layers.length; i++) {
+            layers[i].remove();
+          }
+          $('.layerTree li').each(function () {
+            $('span[data-layer="0"]').addClass('highlight');
+            if (parseInt($(this).find('span').attr('data-layer')) !== 0) {
+              $(this).remove();
+            }
+          });
+        } else if (this.options.isArea) {
+          // 删除g标签
+          let dg = joint.V(this.centerPaper.viewport).find('.dg');
+          for (let i = 0; i < dg.length; i++) {
+            let layer = dg[i].children();
+            for (let j = 0; j < layer.length; j++) {
+              let cell = this.centerGraph.getCell(layer[j].children()[0].attr('model-id'));
+              let parent = this.getParent(cell);
+              parent.remove();
+              layer[j].remove();
+            }
+            dg[i].remove();
+          }
+        }
+        this.unHighLight();
+        this.hideBtn();
+        this.view = null;
+        this.contextMenu = null;
+        this.currentLayer = 0;
+        this.cells = [];
+        this.svg = [];
+        this.embedCells = [];
+        this.path = {value: false, count: 0, type: 'L'};
+        this.drag = {value: false, index: 0};
+        this.z = 0;
+        this.currentEquip = null;
+        this.editorLink = {};
+        this.equipList = {};
+        this.svgZoom = '';
+      },
+      // 将图形置于底层或顶层
+      frontAndBack(e) {
+        if (this.view) {
+          let role = this.judgeRole(this.view);
+          if ($(e).hasClass('front_figure') || $(e.target).hasClass('front_f')) {
+            this.z = 1;
+            if (JSON.stringify(role) === '{}') {
+              // this.view.model.toFront();
+              console.log(this.view.model.toFront);
+            } else {
+              role.parent.toFront({'deep': true});
+            }
+          } else if ($(e).hasClass('back_figure') || $(e.target).hasClass('front_f')) {
+            console.log(2222)
+            this.z = 0;
+            if (JSON.stringify(role) === '{}') {
+              this.view.model.toBack();
+            } else {
+              role.parent.toBack({'deep': true});
+            }
+          }
+        }
+      },
+      // 生成模板设备类库
+      generateShapes() {
+        // 先获取所有终极父级元素，得到每个设备的宽高,每个设备间距10
+        $('#component').css({
+          'height': this.options.gallery.length * 120
+        });
+        let parentId = [];
+        for (let i = 0; i < this.options.gallery.length; i++) {
+          let svgs = JSON.parse(this.options.gallery[i].svg);
+          for (let j = 0; j < svgs.length; j++) {
+            if (svgs[j].layer === 1) {
+              if (svgs[j].svg.length === 1) {
+                parentId.push(svgs[j].svg[0].id);
+              } else {
+                for (let k = 0; k < svgs[j].svg.length; k++) {
+                  if (svgs[j].svg[k].hasOwnProperty('embeds') && svgs[j].svg[k].hasOwnProperty('embeds').length !== 0 && svgs[j].svg[k].hasOwnProperty('parent') === false) {
+                    // 判断是每个设备的终极父级图形
+                    parentId.push(svgs[j].svg[k].id);
+                  }
+                }
+              }
+            }
+          }
+        }
+        // 如果组合图形宽高比大于100/100，以宽为主按比例缩小，否则以高为主缩小
+        for (let k = 0; k < this.leftGraph.getCells().length; k++) {
+          if (parentId.includes(this.leftGraph.getCells()[k].id)) {
+            // 获取一个设备的所有图形
+            let allCells = this.getAllCells(this.leftPaper.findViewByModel(this.leftGraph.getCells()[k]));
+            // 获取设备的边界
+            let border = this.getBorder(this.leftPaper.findViewByModel(this.leftGraph.getCells()[k]), this.leftPaper);
+            let [maxX, minX, maxY, minY] = [border.max_x, border.min_x, border.max_y, border.min_y];
+            let [disX, disY] = [[], []];
+            for (let i = 1; i < allCells.length; i++) {
+              disX.push(this.leftPaper.findViewByModel(allCells[i]).getBBox().origin().x - this.leftPaper.findViewByModel(allCells[0]).getBBox().origin().x);
+              disY.push(this.leftPaper.findViewByModel(allCells[i]).getBBox().origin().y - this.leftPaper.findViewByModel(allCells[0]).getBBox().origin().y);
+            }
+            let ratio = 0;
+            if ((maxX - minX) / (maxY - minY) >= 1) {
+              // 以宽为主
+              ratio = 100 / (maxX - minX);
+            } else {
+              // 以高为主
+              ratio = 100 / (maxY - minY);
+            }
+            allCells[0].resize(ratio * allCells[0].size().width, ratio * allCells[0].size().height);
+            for (let i = 1; i < allCells.length; i++) {
+              allCells[i].resize(ratio * allCells[i].size().width, ratio * allCells[i].size().height);
+            }
+            allCells[0].position(10 + (allCells[0].getBBox().origin().x - border.min_x) * ratio, (allCells[0].getBBox().origin().y - border.min_y) * ratio + k * 120);
+            for (let i = 1; i < allCells.length; i++) {
+              allCells[i].position(ratio * disX[i - 1] + allCells[0].getBBox().origin().x, ratio * disY[i - 1] + allCells[0].getBBox().origin().y);
+            }
+          }
+        }
+      },
+      // 获取图形在画布的最大最小x,y坐标
+      getBorder(cellView, paper) {
+        let parent = this.getParent(cellView.model);
+        let childs = parent.getEmbeddedCells({deep: true});
+        let BBox = paper.findViewByModel(parent).getBBox();
+        let pointXArr = [BBox.corner().x, BBox.origin().x];
+        let pointYArr = [BBox.corner().y, BBox.origin().y];
+        for (let i = 0; i < childs.length; i++) {
+          let childBBox = paper.findViewByModel(childs[i]).getBBox();
+          pointXArr.splice(pointXArr.length, 0, childBBox.corner().x, childBBox.origin().x);
+          pointYArr.splice(pointYArr.length, 0, childBBox.corner().y, childBBox.origin().y);
+        }
+        let extremeX = this.getExtreme(pointXArr);
+        let extremeY = this.getExtreme(pointYArr);
+        return {max_x: extremeX.max, min_x: extremeX.min, max_y: extremeY.max, min_y: extremeY.min};
+      },
+      // 获取数组中的最大最小值
+      getExtreme(arr) {
+        return {max: Math.max(...arr), min: Math.min(...arr)};
+      },
+      // 获取终极祖先cell
+      getParent(cell) {
+        return cell.getAncestors().length !== 0 ? cell.getAncestors()[cell.getAncestors().length - 1] : cell;
+      },
+      getAllCells(view) { // 根据当前点击图形获取与之组合在一起的图形
+        let parent = view.model.getAncestors()[view.model.getAncestors().length - 1];
+        let allCells = [];
+        if (parent) {
+          // 如果是子元素
+          allCells = parent.getEmbeddedCells({deep: true});
+          allCells.unshift(parent);
+        } else {
+          // 如果不是子元素
+          allCells = view.model.getEmbeddedCells({deep: true});
+          allCells.unshift(view.model);
+        }
+        return allCells;
+      },
 
-    let index = 0;
-    for (let j = this.groups.length - childsIndex.length; j < this.groups.length; j++) {
-      for (let i = 0; i < childsIndex[index].length; i++) {
-        this.groups[j].childs.push(clone[childsIndex[index][i]]);
-      }
-      index++;
-    }
-    // localStorage.setItem('groups', JSON.stringify(this.groups));
-    /* 因为通过clone()方法获得的元素没有angle属性所以要经过处理 */
-    /* 如果被克隆的元素没有angle，可能是曾经克隆出来的元素或者创建的没有经过旋转的元素 */
-    if (this.view.model.changed.angle === undefined) {
-      /* 是曾经克隆出来的元素,其旋转角度存在angle对象中 */
-      if (this.angle[this.view.model.id]) {
-        for (let i = 0; i < clone.length; i++) {
-          this.angle[clone[i].id] = this.angle[this.view.model.id];
+      unHighLight() {  // 取消图形的高亮
+        for (let i = 0; i < this.cells.length; i++) {
+          this.centerPaper.findViewByModel(this.cells[i]).unhighlight();
         }
-      } else {
-        /* 是没有经过旋转的元素 */
-        for (let i = 0; i < clone.length; i++) {
-          this.angle[clone[i].id] = 0;
+        this.changeClassName([{new: 'group_disabled', old: 'group_figure'}, {new: 'ungroup_disabled', old: 'ungroup_figure'}]);
+      },
+      creatWrapper(cellView, centerPaper) { // 图形外加按钮跟随图形一起移动
+        if ($('#functionBtn').length === 0) {
+          this.loadBtn(cellView);
         }
-      }
-    } else {
-      /* 如果被克隆的元素有angle */
-      for (let i = 0; i < clone.length; i++) {
-        this.angle[clone[i].id] = this.view.model.changed.angle;
-      }
-    }
-  },
-  rotateSelf(e) {
-    let that = this;
-    this.unHighLight();
-    let allCells = this.getAllCells(this.view);
-    // 右下角按钮在中间画布的位置
-    let rx = $('#rotateSelf').offset().left - $('#display_box').offset().left;
-    let ry = $('#rotateSelf').offset().top - $('#display_box').offset().top;
-    // 鼠标在中间画布的位置
-    let px;
-    let py;
-    // 已转角度
-    let angled = [];
-    for (let j = 0; j < allCells.length; j++) {
-      // var angled = angle[view.model.id] ? angle[view.model.id] : 0;
-      angled.push(that.angle[allCells[j].id] ? that.angle[allCells[j].id] : 0);
-    }
-    // 旋转角度等于（鼠标位置与中心点的角度angle2 - 按钮位置与中心点的角度angle1 + 已经转过的角度）
-    $(document).off('mousemove').on('mousemove', function(event) {
-      let oPos = that.creatWrapper(that.centerPaper.findViewByModel(allCells[0]), that.centerPaper);
-      let ox = (oPos.max_x - oPos.min_x) / 2 + oPos.min_x;
-      let oy = (oPos.max_y - oPos.min_y) / 2 + oPos.min_y;
-      // console.log(view.getBBox());
-      // 旋转中心在中间画布的位置
-      px = event.pageX - $('#display_box').offset().left;
-      py = event.pageY - $('#display_box').offset().top;
-      let angle1 = Math.atan(((ry - oy) / (rx - ox))) * 180 / Math.PI;
-      let angle2 = Math.atan(((py - oy) / (px - ox))) * 180 / Math.PI;
-      /* 一四象限角度需要经过处理 */
-      if (px > ox && py > oy) {
-        angle2 = angle2 - 180;
-      } else if (px > ox && py < oy) {
-        angle2 = angle2 + 180;
-      }
-      for (let i = 0; i < allCells.length; i++) {
-        /* 保存该元素的旋转角度 */
-        that.angle[allCells[i].id] = angle2 - angle1 + angled[i];
-        /* true表示不是对上一个角度的累加而是一个绝对角度 */
-        // console.log(ox, oy);
-        allCells[i].rotate(angle2 - angle1 + angled[i], true, {x: ox, y: oy});
-        allCells[i].attr('text/transform', 'rotate(' + (angle1 - angle2 - angled[i]) + ')');
-        // this.size[allCells[i].id] = {'width': allCells[i].size().width, 'height': allCells[i].size().height, 'disX': allCells[i].getBBox().origin().x - allCells[0].getBBox().origin().x, 'disY': allCells[i].getBBox().origin().y - allCells[0].getBBox().origin().y};
-      }
-    });
-    $(document).on('mouseup', function(event) {
-      $(document).off('mousemove');
-    });
-  },
-  stretchSelf(e) {
-    // console.log(this.cells);
-    this.unHighLight();
-    let that = this;
-    let allCells = this.getAllCells(this.view);
-    // 拉伸按钮位置
-    let px = $(e).offset().left + 3;
-    let py = $(e).offset().top + 3;
-    // 根据元素id来判断元素方位，拉伸方式不同
-    /* 0: 向左上角拉伸，
-     1：向上拉伸，
-     2：向右上角拉伸，
-     3：向左拉伸，
-     4：向右拉伸，
-     5：向左下角拉伸，
-     6：向下拉伸，
-     7：向右下角拉伸 */
-    // 元素高宽
-    let [width, height, disX, disY] = [[], [], [], []];
-    for (let i = 0; i < allCells.length; i++) {
-      width.push(allCells[i].size().width);
-      height.push(allCells[i].size().height);
-      if (i === 0) {
-        continue;
-      }
-      disX.push(allCells[i].getBBox().origin().x - allCells[0].getBBox().origin().x);
-      disY.push(allCells[i].getBBox().origin().y - allCells[0].getBBox().origin().y);
-    }
-    /* 拉伸原理： 鼠标位置与当前拉伸按钮位置的差 + 元素的宽高即为拉伸后的宽高 */
-    let id = parseInt($(e).attr('id').substr($(e).attr('id').length - 1));
-    $(document).off('mousemove').on('mousemove', function(event) {
-      // 放大宽高
-      let [scaleX, scaleY] = [];
-      /* 拉伸按钮id依次为
-       0 1 2
-       3   4
-       5 6 7 */
-      // scaleX
-      // 控制鼠标在画布范围内
-      let pageXY = that.paperRange(event.pageX, event.pageY);
-      if (id === 0 || id === 3 || id === 5) {
-        scaleX = px - pageXY.px;
-      } else if (id === 2 || id === 4 || id === 7) {
-        scaleX = pageXY.px - px;
-      } else if (id === 1 || id === 6) {
-        scaleX = 0;
-      }
-      // scaleY
-      if (id === 0 || id === 1 || id === 2) {
-        scaleY = py - pageXY.py;
-      } else if (id === 5 || id === 6 || id === 7) {
-        scaleY = pageXY.py - py;
-      } else if (id === 3 || id === 4) {
-        scaleY = 0;
-      }
-      // 设置最小变形后的高宽为20*20
-      let first = that.minWidthAndHeight(width[0] + scaleX, height[0] + scaleY);
-      allCells[0].resize(first.scaleX, first.scaleY, {direction: that.judgeDirection(id)});
-      let [ratioX, ratioY] = [first.scaleX / width[0], first.scaleY / height[0]];
-      for (let j = 1; j < allCells.length; j++) {
-        allCells[j].resize(ratioX * width[j], ratioY * height[j], {direction: that.judgeDirection(id)});
-        allCells[j].position(ratioX * disX[j - 1], ratioY * disY[j - 1], {parentRelative: true});
-      }
-      // 拉伸时只显示当前按钮
-      $('.stretch-icon').hide();
-      $('#stretchSelf' + id).show();
-      that.creatWrapper(that.centerPaper.findViewByModel(allCells[0]), that.centerPaper);
-    });
-    // 鼠标松开解除mousemove事件
-    $(document).on('mouseup', function(event) {
-      $(document).off('mousemove');
-      $('.stretch-icon').show();
-    });
-  },
-  paperRange(x, y) {
-    let [maxX, minX, maxY, minY] = [$('#display_box').offset().left + $('#display_box').width(), $('#display_box').offset().left, $('#display_box').offset().top + $('#display_box').height(), $('#display_box').offset().top];
-    if (x <= minX) {
-      x = minX;
-    } else if (x >= maxX) {
-      x = maxX;
-    }
-    if (y <= minY) {
-      y = minY;
-    } else if (y >= maxY) {
-      y = maxY;
-    }
-    return {px: x, py: y};
-  },
-  judgeDirection(index) {
-    if (index === 0) {
-      return 'top-left';
-    } else if (index === 1) {
-      return 'top';
-    } else if (index === 2) {
-      return 'top-right';
-    } else if (index === 3) {
-      return 'left';
-    } else if (index === 4 || index === 6 || index === 7) {
-      return '';
-    } else {
-      return 'bottom-left';
-    }
-  },
-  minWidthAndHeight(scaleX, scaleY) {
-    if (scaleX <= 20) {
-      scaleX = 20;
-    }
-    if (scaleY <= 20) {
-      scaleY = 20;
-    }
-    return {scaleX: scaleX, scaleY: scaleY};
-  },
-  // 获取元素初始化样式,鼠标的事件
-  getLeftElementView() {
-    let ElementView = joint.dia.ElementView.extend({
-      pointerdown: function () {
-        this._click = true;
-        // joint.dia.ElementView.prototype.pointerdown.apply(this, arguments);
-      },
-      pointermove: function(evt, x, y) { // 左侧画板元素能否移动
-        // this._click = false;
-        // joint.dia.ElementView.prototype.pointermove.apply(this, arguments);
-      },
-      pointerup: function (evt, x, y) {
-        if (this._click) {
-          // triggers an event on the paper and the element itself
-          this.notify('cell:click', evt, x, y);
-        } else {
-          joint.dia.ElementView.prototype.pointerup.apply(this, arguments);
+        if ($('#labelBox').length === 0) {
+          this.loadToolTip(cellView);
         }
-      }
-    });
-    return ElementView;
-  },
-  // getImage(px, py, pwidth, pheight) {
-  //   let cell = new joint.shapes.basic.Image({
-  //     position: {
-  //       x: px,
-  //       y: py
-  //     },
-  //     size: {
-  //       width: pwidth,
-  //       height: pheight
-  //     },
-  //     attrs: {
-  //       // attr SVG attr      prop- custom data
-  //       image: {
-  //         'xlink:href': 'url(http://localhost:8888/src/assets/img/logo.png)'
-  //       }
-  //     }
-  //   });
-  //   return cell;
-  // },
-  /**
-   * 生成椭圆
-   * px  x 坐标
-   * py  y 坐标
-   * pbackground   背景色
-   * ptext  显示文本
-   * pwidth 宽带
-   * pheight 高度
-   * prx    短轴值
-   * pry    长轴值
-   */
-  /* getEllipse(px, py, pbackground, ptext, pwidth, pheight) {
-   let cell = new joint.shapes.basic.Ellipse({
-   position: {
-   x: px,
-   y: py
-   },
-   size: {
-   width: pwidth,
-   height: pheight
-   },
-   attrs: {
-   // attr SVG attr      prop- custom data
-   ellipse: {
-   fill: pbackground,
-   'stroke': '#8792c3',
-   'stroke-width': 1,
-   'stroke-dasharray': 0
-   },
-   text: {
-   text: ptext,
-   fill: 'black',
-   'font-weight': 'normal'
-   }
-   }
-   });
-   return cell;
-   }, */
-  /**
-   * 生成矩形
-   * px  x 坐标
-   * py  y 坐标
-   * pbackground   背景色
-   * ptext  显示文本
-   * pwidth 宽带
-   * pheight 高度
-   */
-  getRect(px, py, pbackground, ptext, pwidth, pheight, dasharray) {
-    let cell = new joint.shapes.basic.Rect({
-      position: {
-        x: px,
-        y: py
-      },
-      size: {
-        width: pwidth,
-        height: pheight
-      },
-      attrs: {
-        // attr SVG attr      prop- custom data
-        rect: {
-          fill: pbackground,
-          'stroke': '#8792c3',
-          'stroke-width': 1,
-          'stroke-dasharray': dasharray
-        },
-        text: {
-          text: ptext,
-          fill: 'black',
-          'font-weight': 'normal'
+        let getBorderXY = this.getBorder(cellView, centerPaper);
+        let maxX = getBorderXY.max_x;
+        let minX = getBorderXY.min_x;
+        let maxY = getBorderXY.max_y;
+        let minY = getBorderXY.min_y;
+        // 三个按钮定位
+        let leftTop = {
+          left: '-25px',
+          top: '-25px'
+        };
+        let leftBottom = {
+          left: '-25px',
+          bottom: '-25px'
+        };
+        let rightTop = {
+          right: '-25px',
+          top: '-25px'
+        };
+        // 八个拉伸按钮定位
+        let location = [
+          {
+            'left': '-3px',
+            'top': '-3px',
+            'cursor': 'nw-resize'
+          },
+          {
+            'left': ((maxX - minX) / 2 - 3) + 'px',
+            'top': '-3px',
+            'cursor': 'n-resize'
+          },
+          {
+            'right': '-3px',
+            'top': '-3px',
+            'cursor': 'ne-resize'
+          },
+          {
+            'left': '-3px',
+            'top': ((maxY - minY) / 2 - 3) + 'px',
+            'cursor': 'w-resize'
+          },
+          {
+            'right': '-3px',
+            'top': ((maxY - minY) / 2 - 3) + 'px',
+            'cursor': 'e-resize'
+          },
+          {
+            'left': '-3px',
+            'bottom': '-3px',
+            'cursor': 'sw-resize'
+          },
+          {
+            'left': ((maxX - minX) / 2 - 3) + 'px',
+            'bottom': '-3px',
+            'cursor': 's-resize'
+          },
+          {
+            'right': '-3px',
+            'bottom': '-3px',
+            'cursor': 'se-resize'
+          }
+        ];
+        for (let i = 0; i < 8; i++) {
+          $('.stretch-icon').eq(i).css(location[i]);
         }
-      }
-    });
-    return cell;
-  },
-  /**
-   * 生成多边形
-   * px  x 坐标
-   * py  y 坐标
-   * pbackground   背景色
-   * ptext  显示文本
-   * pwidth 宽带
-   * pheight 高度
-   */
-  getPolygon (px, py, pbackground, ptext, pwidth, pheight, edges) {
-    let points = '';
-    if (edges === 3) {
-      points = '50,0 0,70 100,70';
-    } else if (edges === 5) {
-      points = '35,0 70,25 55,60 15,60 0,25';
-    } else if (edges === 6) {
-      points = '15,0 55,0 70,30 55,60 15,60 0,30';
-    } else {
-      points = '0,35 70,30 60,35 0,30';
-    }
-    let cell = new joint.shapes.basic.Polygon({
-      size: {
-        width: pwidth,
-        height: pheight
-      },
-      position: {
-        x: px,
-        y: py
-      },
-      attrs: {
-        polygon: {
-          points: points,
-          fill: pbackground,
-          'stroke': '#8792c3',
-          'stroke-width': 1,
-          'stroke-dasharray': 0
-        },
-        text: {
-          text: ptext,
-          fill: 'black',
-          'font-weight': 'normal'
-        }
-      }
-    });
-    return cell;
-  },
-  // 画直线
-  getLine(paper) {
-    let line = joint.V('line', { x1: 20, y1: 30, x2: 100, y2: 30, stroke: '#8792c3' });
-    joint.V(paper.viewport).append(line);
-    console.log(joint.V(paper.viewport).append(line));
-    // this.addLeftPaperEvent(paper);  // 添加paper事件
-  },
-  /**
-   *获取圆
-   *sx  开始x坐标
-   *sy  开始y坐标
-   *pwidth 宽带
-   *pheight 高度
-   *plabel  文字
-   */
-  getCircle(sx, sy, pbackground, ptext, pwidth, pheight, dasharray) {
-    let cell = new joint.shapes.basic.Circle({
-      size: { width: pwidth, height: pheight },
-      position: { x: sx, y: sy },
-      attrs: {
-        circle: {stroke: '#8792c3', 'stroke-width': 1, 'stroke-dasharray': dasharray, fill: pbackground},
-        text: {text: ptext, fill: 'black', 'font-size': 18, 'font-weight': 'normal'}
-      }
-    });
-    return cell;
-  },
-  /* getCustom(sx, sy, pbackground, pwidth, pheight, plabel) {
-   // 创建自定义矩形
-   joint.shapes.basic.Rect = joint.shapes.basic.Generic.extend({
-   markup: '<g class="rotatable"><g class="scalable"><rect/></g><text/></g>',
-   defaults: joint.util.deepSupplement({
-   type: 'basic.Rect',
-   attrs: {
-   'rect': {fill: pbackground, stroke: '#8792c3', 'stroke-width': 1, 'stroke-dasharray': 0, 'follow-scale': true, width: 80, height: 40, 'font-weight': 'normal'},
-   'text': {'font-size': 14, 'ref-x': 0.5, 'ref-y': 0.5, ref: 'rect', 'y-alignment': 'middle', 'x-alignment': 'middle', fill: 'black'}
-   }
-   }, joint.shapes.basic.Generic.prototype.defaults)
-   });
-   let custom = new joint.shapes.basic.Rect({  // 绘制元素
-   position: {x: sx, y: sy},
-   size: {width: pwidth, height: pheight},
-   attrs: {
-   text: {text: plabel}
-   }
-   });
+        $('.left_top').css(leftTop);
 
-   return custom;
-   }, */
-  // 清除
-  clearPaper() {
-    let cells = [];
-    if (this.currentLayer === 0) {
-      cells = this.centerGraph.getCells();
-    } else {
-      for (let i = 0; i < this.centerGraph.getCells().length; i++) {
-        if (parseInt(this.centerGraph.getCells()[i].attributes.layer) !== 0) {
-          cells.push(this.centerGraph.getCells()[i]);
-        }
-      }
-    }
-    for (let i = 0; i < cells.length; i++) {
-      cells[i].remove();
-      this.delSvg(cells[i].id);
-    }
-    this.unHighLight();
-    this.hideBtn();
-    this.groups = [];
-    this.cells = [];
-    // localStorage.setItem('groups', JSON.stringify(this.groups));
-  },
-// 设置z
-  frontAndBack(e) {
-    if (this.view) {
-      let role = this.judgeRole(this.view);
-      if ($(e).hasClass('front_figure')) {
-        if (JSON.stringify(role) === '{}') {
-          this.view.model.toFront();
-        } else {
-          role.parent.toFront({'deep': true});
-        }
-      } else if ($(e).hasClass('back_figure')) {
-        if (JSON.stringify(role) === '{}') {
-          this.view.model.toBack();
-        } else {
-          role.parent.toBack({'deep': true});
-        }
-      }
-    }
-  },
-  // 生成设备库
-  generateShapes() {
-    // 先获取所有终极父级元素，得到每个设备的宽高,每个设备间距10
-    $('#component').css({
-      'height': this.options.gallery.length * 120
-    });
-    let parentId = [];
-    for (let i = 0; i < this.options.gallery.length; i++) {
-      let svgs = JSON.parse(this.options.gallery[i].svg);
-      if (svgs.length === 1) {
-        parentId.push(svgs[0].id);
-        continue;
-      }
-      for (let j = 0; j < svgs.length; j++) {
-        if (svgs[j].hasOwnProperty('embeds') && svgs[j].hasOwnProperty('embeds').length !== 0 && svgs[j].hasOwnProperty('parent') === false) {
-          // 判断是每个设备的终极父级图形
-          parentId.push(svgs[j].id);
-        }
-      }
-    }
-    // 如果组合图形宽高比大于100/100，以宽为主按比例缩小，否则以高为主缩小
-    for (let k = 0; k < this.leftGraph.getCells().length; k++) {
-      if (parentId.includes(this.leftGraph.getCells()[k].id)) {
-        // 获取一个设备的所有图形
-        let allCells = this.getAllCells(this.leftPaper.findViewByModel(this.leftGraph.getCells()[k]));
-        // 获取设备的边界
-        let border = this.getBorder(this.leftPaper.findViewByModel(this.leftGraph.getCells()[k]), this.leftPaper);
-        let [maxX, minX, maxY, minY] = [border.max_x, border.min_x, border.max_y, border.min_y];
-        let [disX, disY] = [[], []];
-        for (let i = 1; i < allCells.length; i++) {
-          disX.push(this.leftPaper.findViewByModel(allCells[i]).getBBox().origin().x - this.leftPaper.findViewByModel(allCells[0]).getBBox().origin().x);
-          disY.push(this.leftPaper.findViewByModel(allCells[i]).getBBox().origin().y - this.leftPaper.findViewByModel(allCells[0]).getBBox().origin().y);
-        }
-        let ratio = 0;
-        if ((maxX - minX) / (maxY - minY) >= 1) {
-          // 以宽为主
-          ratio = 100 / (maxX - minX);
-        } else {
-          // 以高为主
-          ratio = 100 / (maxY - minY);
-        }
-        allCells[0].resize(ratio * allCells[0].size().width, ratio * allCells[0].size().height);
-        for (let i = 1; i < allCells.length; i++) {
-          allCells[i].resize(ratio * allCells[i].size().width, ratio * allCells[i].size().height);
-        }
-        // 缩小后的图形的边界
-        let border1 = this.getBorder(this.leftPaper.findViewByModel(this.leftGraph.getCells()[k]), this.leftPaper);
-        // (allCells[0].position().y - minY) * ratio + 10 + k * 100
-        allCells[0].position(10 + (allCells[0].position().x - border1.min_x) * ratio, (120 - (border1.max_y - border1.min_y)) / 2 + (allCells[0].position().y - border1.min_y) * ratio + k * 120);
-        for (let i = 1; i < allCells.length; i++) {
-          allCells[i].position(ratio * disX[i - 1] + allCells[0].getBBox().origin().x, ratio * disY[i - 1] + allCells[0].getBBox().origin().y);
-        }
-      }
-    }
-  },
-  /* generateShapes() {
-   if (this.cells.length < 2) {
-   alert('不是组合图形');
-   return;
-   }
-   this.unHighLight();
-   // 选中的不是一个组合
-   let parent = this.getParent(this.cells[0]);
-   let allChilds = parent.getEmbeddedCells({deep: true});
-   let ids = [];
-   for (let i = 0; i < allChilds.length; i++) {
-   ids.push(allChilds[i].id);
-   }
-   for (let j = 0; j < this.cells.length; j++) {
-   if (this.cells[j].id === parent.id) {
-   continue;
-   }
-   if (!ids.includes(this.cells[j].id)) {
-   alert('无法生成模板图形');
-   return;
-   }
-   }
-   // 是模板图形不能再次生成模板图形
-   let gIds = [];
-   for (let j = 0; j < this.groups.length; j++) {
-   gIds.push(this.groups[j].parent);
-   }
-   if (!gIds.includes(parent.id)) {
-   alert('该图形是模板图形，不能再次生成模板图形');
-   return;
-   }
-   let clone = parent.clone({deep: true});
-   let allCells = this.getAllCells(this.centerPaper.findViewByModel(parent));
-   let [disX, disY] = [[], []];
-   this.leftGraph.addCells(clone);
-   let oPos = this.getBorder(this.leftPaper.findViewByModel(clone[0]), this.leftPaper);
-   let ox = (oPos.max_x - oPos.min_x) / 2 + oPos.min_x;
-   let oy = (oPos.max_y - oPos.min_y) / 2 + oPos.min_y;
-   for (let i = 0; i < allCells.length; i++) {
-   clone[i].rotate(this.initialAngle[allCells[i].id], true, {x: ox, y: oy});
-   clone[i].attr('text/transform', 'rotate(' + (0 - this.initialAngle[allCells[i].id]) + ')');
-   // this.size[clone[i].id] = {'width': clone[i].size().width, 'height': clone[i].size().height, 'disX': clone[i].getBBox().origin().x - clone[0].getBBox().origin().x, 'disY': clone[i].getBBox().origin().y - clone[0].getBBox().origin().y};
-   if (i === 0) {
-   continue;
-   }
-   disX.push(this.leftPaper.findViewByModel(clone[i]).getBBox().origin().x - this.leftPaper.findViewByModel(clone[0]).getBBox().origin().x);
-   disY.push(this.leftPaper.findViewByModel(clone[i]).getBBox().origin().y - this.leftPaper.findViewByModel(clone[0]).getBBox().origin().y);
-   }
-   // 角度还原重新计算
-   let oPos1 = this.getBorder(this.leftPaper.findViewByModel(clone[0]), this.leftPaper);
-   let ratioX = 100 / (oPos1.max_x - oPos1.min_x);
-   clone[0].resize(ratioX * clone[0].size().width, ratioX * clone[0].size().height);
-   clone[0].position(20 + (clone[0].position().x - oPos1.min_x) * ratioX, $('#component').height() + (clone[0].position().y - oPos1.min_y) * ratioX);
-   for (let i = 1; i < clone.length; i++) {
-   clone[i].resize(ratioX * clone[i].size().width, ratioX * clone[i].size().height);
-   clone[i].position(ratioX * disX[i - 1] + clone[0].getBBox().origin().x, ratioX * disY[i - 1] + clone[0].getBBox().origin().y);
-   }
-   for (let j = 0; j < clone.length; j++) {
-   clone[j].set('z', this.leftGraph.getCells().length + j + 1);
-   }
-   let oPos2 = this.getBorder(this.leftPaper.findViewByModel(clone[0]), this.leftPaper);
-   $('#component').css('height', ($('#component').height() + oPos2.max_y - oPos2.min_y + 20) + 'px');
-   this.cells = [];
-   }, */
-// 获取元素的最大最小x,y
-  getBorder(cellView, paper) {
-    let childs = cellView.model.getEmbeddedCells({deep: true});
-    let BBox = cellView.getBBox();
-    let pointXArr = [BBox.corner().x, BBox.origin().x];
-    let pointYArr = [BBox.corner().y, BBox.origin().y];
-    for (let i = 0; i < childs.length; i++) {
-      let childBBox = paper.findViewByModel(childs[i]).getBBox();
-      pointXArr.splice(pointXArr.length, 0, childBBox.corner().x, childBBox.origin().x);
-      pointYArr.splice(pointYArr.length, 0, childBBox.corner().y, childBBox.origin().y);
-    }
-    let extremeX = this.getExtreme(pointXArr);
-    let extremeY = this.getExtreme(pointYArr);
-    let maxX = extremeX.max;
-    let minX = extremeX.min;
-    let minY = extremeY.min;
-    let maxY = extremeY.max;
-    return {max_x: maxX, min_x: minX, max_y: maxY, min_y: minY};
-  },
-// 获取数组中的最大最小值
-  getExtreme(arr) {
-    return {max: Math.max(...arr), min: Math.min(...arr)};
-  },
-// 获取终极祖先cell
-  getParent(cell) {
-    return cell.getAncestors().length !== 0 ? cell.getAncestors()[cell.getAncestors().length - 1] : cell;
-  },
-// 根据当前view获取与之组合过的cell
-  getAllCells(view) {
-    let parent = view.model.getAncestors()[view.model.getAncestors().length - 1];
-    let allCells = [];
-    if (parent) {
-      // 如果是子元素
-      allCells = parent.getEmbeddedCells({deep: true});
-      allCells.unshift(parent);
-    } else {
-      // 如果不是子元素
-      allCells = view.model.getEmbeddedCells({deep: true});
-      allCells.unshift(view.model);
-    }
-    return allCells;
-  },
+        $('.left_bottom').css(leftBottom);
 
-  unHighLight() {
-    for (let i = 0; i < this.cells.length; i++) {
-      this.centerPaper.findViewByModel(this.cells[i]).unhighlight();
-    }
-    this.changeClassName([{new: 'group_disabled', old: 'group_figure'}, {new: 'ungroup_disabled', old: 'ungroup_figure'}]);
-  },
-  creatWrapper(cellView, centerPaper) {
-    let getBorderXY = this.getBorder(cellView, centerPaper);
-    let maxX = getBorderXY.max_x;
-    let minX = getBorderXY.min_x;
-    let maxY = getBorderXY.max_y;
-    let minY = getBorderXY.min_y;
-    // 三个按钮定位
-    let leftTop = {
-      left: '-25px',
-      top: '-25px'
+        $('.right_top').css(rightTop);
+
+        $('#functionBtn').css({
+          'width': (maxX - minX) + 'px',
+          'height': (maxY - minY) + 'px',
+          'left': minX + 'px',
+          'top': minY + 'px',
+          'display': 'block'
+        });
+        $('#dragBtn').css({
+          'width': (maxX - minX) + 'px',
+          'height': (maxY - minY) + 'px',
+          'left': minX + 'px',
+          'top': minY + 'px',
+          'display': 'block'
+        });
+        $('#labelBox').css({
+          'width': (maxX - minX + 20) + 'px',
+          'left': (minX - 15) + 'px',
+          'top': (maxY + 25) + 'px',
+          'display': 'block'
+        });
+        // if (this.options.scale) { // 为啥区域不让显示？我把判断去掉了
+        $('#labelBox').empty().append('宽：' + parseInt(maxX - minX) + 'px，高：' + parseInt(maxY - minY) + 'px，左上角x：' + parseInt(minX) + 'px，左上角y：' + parseInt(minY) + 'px');
+        // }
+      },
+      hideBtn () {
+        // 隐藏图形外加按钮
+        $('#functionBtn').hide();
+        $('#dragBtn').hide();
+        $('#labelBox').hide();
+        $('#toolTip').hide();
+        this.changeClassName([{new: 'front_disabled', old: 'front_figure'}, {new: 'back_disabled', old: 'back_figure'}]);
+      },
+      changeClassName(arr) { // 改变元素类名
+        if (arr instanceof Array === true && arr.length !== 0) {
+          for (let i = 0; i < arr.length; i++) {
+            $('.' + arr[i].old).removeClass(arr[i].old).addClass(arr[i].new);
+          }
+        } else {
+          console.log('参数不正确');
+        }
+      },
+      snUuid(snName) { // 生成uuid
+        let s = [];
+        // 32位uuid所使用的字符
+        let hexDigits = '0123456789abcdef';
+        // 用于截取8位uuid的混淆字符 这里使用26位
+        let chars = ['a', 'b', 'c', 'd', 'e', 'f',
+          'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+          't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5',
+          '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+          'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+          'W', 'X', 'Y', 'Z'
+        ];
+
+        // 生成32位uuid
+        for (let i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = '4';
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+        s[8] = s[13] = s[18] = s[23] = '-';
+        // 全局替换-并使用26位字符数组截取生成8位uuid (16进制)
+        let uuid = s.join('').replace(/-/g, '');
+        let shortBuffer = [];
+
+        for (let i = 0; i < 8; ++i) {
+          let str = uuid.substr(i * 4, i * 4 + 4);
+          let x = parseInt(str, 16);
+          shortBuffer.push(chars[x % 0x3E]);
+        }
+
+        // 按照SN规则 name+timestamp+sn 构造finalSn
+        let sn = shortBuffer.join('');
+        let timestamp = new Date().getTime().toString();
+        const finalSn = snName + timestamp + sn;
+
+        return finalSn;
+      },
+      cloneobj(obj) { // 深度复制
+        return JSON.parse(JSON.stringify(obj));
+      },
+      changeDrawType() {
+        $('#display_box').removeClass('crosshair');
+        this.path = {'value': false, 'count': 0, 'type': 'L'};
+        this.drag = {'value': false, 'index': 0};
+      },
+      restoreSize() {
+        // 还原
+        this.centerPaper.scale(1, 1);
+        $('#display_box').css({'width': '702px', 'height': '435px'});
+      },
+      getPaperZoom(scale) {
+        this.paperZoom = scale;
+      }
     };
-    let leftBottom = {
-      left: '-25px',
-      bottom: '-25px'
-    };
-    let rightTop = {
-      right: '-25px',
-      top: '-25px'
-    };
-    // 八个拉伸按钮定位
-    let location = [
-      {
-        'left': '-3px',
-        'top': '-3px',
-        'cursor': 'nw-resize'
-      },
-      {
-        'left': ((maxX - minX) / 2 - 3) + 'px',
-        'top': '-3px',
-        'cursor': 'n-resize'
-      },
-      {
-        'right': '-3px',
-        'top': '-3px',
-        'cursor': 'ne-resize'
-      },
-      {
-        'left': '-3px',
-        'top': ((maxY - minY) / 2 - 3) + 'px',
-        'cursor': 'w-resize'
-      },
-      {
-        'right': '-3px',
-        'top': ((maxY - minY) / 2 - 3) + 'px',
-        'cursor': 'e-resize'
-      },
-      {
-        'left': '-3px',
-        'bottom': '-3px',
-        'cursor': 'sw-resize'
-      },
-      {
-        'left': ((maxX - minX) / 2 - 3) + 'px',
-        'bottom': '-3px',
-        'cursor': 's-resize'
-      },
-      {
-        'right': '-3px',
-        'bottom': '-3px',
-        'cursor': 'se-resize'
-      }
-    ];
-    for (let i = 0; i < 8; i++) {
-      $('.stretch-icon').eq(i).css(location[i]);
-    }
-    $('.left_top').css(leftTop);
-
-    $('.left_bottom').css(leftBottom);
-
-    $('.right_top').css(rightTop);
-
-    $('#functionBtn').css({
-      'width': (maxX - minX) + 'px',
-      'height': (maxY - minY) + 'px',
-      'left': minX + 'px',
-      'top': minY + 'px',
-      'display': 'block'
-    });
-    $('#dragBtn').css({
-      'width': (maxX - minX) + 'px',
-      'height': (maxY - minY) + 'px',
-      'left': minX + 'px',
-      'top': minY + 'px',
-      'display': 'block'
-    });
-    $('#labelBox').css({
-      'width': (maxX - minX + 20) + 'px',
-      'left': (minX - 15) + 'px',
-      'top': (maxY + 25) + 'px',
-      'display': 'block'
-    });
-    // $('#toolTip').css({
-    //   'width': (maxX - minX - 10) + 'px',
-    //   'left': minX + 'px',
-    //   'top': (minY - 50) + 'px'
-    // });
-    // console.log(this.view);
-    let angle = this.initialAngle[cellView.model.id] ? this.angle[cellView.model.id] - this.initialAngle[cellView.model.id] : this.angle[cellView.model.id];
-    $('#labelBox').empty().append('宽：' + parseInt(maxX - minX) + '，高：' + parseInt(maxY - minY) + '，x：' + parseInt(minX) + '，y：' + parseInt(minY) + '，angle：' + parseInt(angle));
-    // $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
-    return {max_x: maxX, min_x: minX, min_y: minY, max_y: maxY};
-  },
-  hideBtn () {
-    // 隐藏图形外加按钮
-    $('#functionBtn').hide();
-    $('#dragBtn').hide();
-    $('#labelBox').hide();
-    $('#toolTip').hide();
-    this.changeClassName([{new: 'front_disabled', old: 'front_figure'}, {new: 'back_disabled', old: 'back_figure'}]);
-  },
-  changeClassName(arr) {
-    // 改变元素类名
-    if (arr instanceof Array === true && arr.length !== 0) {
-      for (let i = 0; i < arr.length; i++) {
-        $('.' + arr[i].old).removeClass(arr[i].old).addClass(arr[i].new);
-      }
-    } else {
-      console.log('参数不正确');
-    }
-  },
-  snUuid(snName) {
-    let s = [];
-    // 32位uuid所使用的字符
-    let hexDigits = '0123456789abcdef';
-    // 用于截取8位uuid的混淆字符 这里使用26位
-    let chars = ['a', 'b', 'c', 'd', 'e', 'f',
-      'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-      't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5',
-      '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-      'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-      'W', 'X', 'Y', 'Z'
-    ];
-
-    // 生成32位uuid
-    for (let i = 0; i < 36; i++) {
-      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-    }
-    s[14] = '4';
-    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
-    s[8] = s[13] = s[18] = s[23] = '-';
-    // 全局替换-并使用26位字符数组截取生成8位uuid (16进制)
-    let uuid = s.join('').replace(/-/g, '');
-    let shortBuffer = [];
-
-    for (let i = 0; i < 8; ++i) {
-      let str = uuid.substr(i * 4, i * 4 + 4);
-      let x = parseInt(str, 16);
-      shortBuffer.push(chars[x % 0x3E]);
-    }
-
-    // 按照SN规则 name+timestamp+sn 构造finalSn
-    let sn = shortBuffer.join('');
-    let timestamp = new Date().getTime().toString();
-    const finalSn = snName + timestamp + sn;
-
-    return finalSn;
-  },
-  /**
-   *定义连线
-   *sx 开始x坐标
-   *sy 开始y坐标
-   *ex 结束x坐标
-   *ey 结束y坐标
-   *strokecolor 线条颜色
-   *scolor 头部分填充颜色
-   *sstyle 头部分样式
-   *ecolor 尾部分填充颜色
-   *estyle 尾部分样式
-   *pstrokewidth  连线的粗
-   *sstroke    头部边框颜色
-   *estroke   尾部分的边框颜色
-   */
-  getLink(sx, sy, ex, ey, scolor, sstyle, ecolor, estyle, strokecolor, pstrokewidth, sstroke, estroke, plabel) {
-    let link = new joint.dia.Link({
-      source: { x: sx, y: sy },
-      target: { x: ex, y: ey },
-      attrs: {
-        '.connection': {stroke: strokecolor, 'stroke-width': pstrokewidth, 'stroke-dasharray': 0},
-        '.marker-source': {fill: scolor, stroke: sstroke, d: sstyle},
-        '.marker-target': {fill: ecolor, stroke: estroke, d: estyle}
-      },
-      // 10, 25, 110, 25, #31d0c6, M 10 0 L 0 5 L 10 10 z, #fe854f, M 10 0 L 0 5 L 10 10 z, #222138, 1, none, #7c68fc, ''
-      // '.connection': { stroke: '#222138' },
-      // '.marker-source': { fill: '#31d0c6', stroke: 'none', d: 'M 10 0 L 0 5 L 10 10 z' },
-      // '.marker-target': { fill: '#fe854f', stroke: '#7c68fc', d: 'M 10 0 L 0 5 L 10 10 z' }
-      labels: [
-        {position: 0.5, attrs: {text: {text: plabel}}}
-      ]
-    });
-    return link;
-  },
-  // 获取线段初始化样式
-  getLeftLinkView() {
-    let LinkView = joint.dia.LinkView.extend({
-      addVertex: function(evt, x, y) {},
-      removeVertex: function(endType) {},
-      pointerdown: function(evt, x, y) {
-        this._click = true;
-        joint.dia.ElementView.prototype.pointerdown.apply(this, arguments);
-      },
-      pointerup: function(evt, x, y) {
-        if (this._click) {
-          // triggers an event on the paper and the element itself
-          this.notify('cell:click', evt, x, y);
-        } else {
-          joint.dia.ElementView.prototype.pointerup.apply(this, arguments);
-        }
-      }
-    });
-    return LinkView;
-  },
-  // 构筑点
-  setState(x, y, s, label) {
-    let cell = new joint.shapes.fsa.State({
-      position: { x: x, y: y },
-      size: { width: 5 || s, height: 5 || s }, // 点的大小
-      attrs: {
-        text: {
-          text: label
-        },
-        circle: {
-          'stroke-width': 1, // 点的线条宽度
-          'fill': '#af9bff', // 点的填充色
-          'stroke': '#7c68fc' // 点的线条颜色
-        }
-      }
-    });
-     // graph.addCell(cell);
-    return cell;
-  },
-  // 加载线段端点按钮
-  loadLinkBtn(cellView) {
-    let that = this;
-    $('#display_box').append(`
-          <div id="functionBtn">
-            <div id="delPoint" class="left_top"><i class="iconfont" style="font-size: 18px;">&#xe6a7;</i></div>
-            <div id="straightLine" class="left_bottom"><i class="iconfont">&#xe61d;</i></div>
-            <div id="curve" class="right_top"><i class="iconfont">&#xe772;</i></div>
-          </div>
-        `);
-    // 删除
-    $('.tool_wrap').on('click', '#delPoint', function () {
-      console.log('Point');
-      that.delLinkPoint(cellView);
-      $('#functionBtn').hide();
-      $('#delPoint').hide();
-      $('#straightLine').hide();
-      $('#curve').hide();
-    });
-    // 直线
-    $('.tool_wrap').on('click', '#straightLine', function () {
-      this.setLinkPoint(cellView);
-    });
-    // 曲线
-    $('.tool_wrap').on('click', '#curve', function () {
-      this.setLinkPoint(cellView);
-    });
-    // 改变外加按钮的位置，使之跟随当前元素移动
-    this.creatWrapper(cellView, this.centerPaper);
-  },
-  // 创建新的点和线
-  setLinkPoint(cellView) {
-    let that = this;
-    // 判断是否为线段
-    let linkP = cellView.model.clone();
-    if (cellView.model.attributes.type === 'fsa.State' || cellView.model.attributes.type === 'fsa.Arrow') {
-      console.log(linkP);
-      // 修改克隆点的位置
-      linkP.attributes.position = {
-        x: cellView.model.attributes.position.x + 30,
-        y: cellView.model.attributes.position.y + 30
-      }
-      that.centerGraph.addCells(linkP);
-      that.centerGraph.addCells(that.setLink(cellView.model, linkP, '', '', false));
-      console.log(that.setLink(cellView.model, linkP, '', ''));
-    }
-  },
-  // 删除线段端点
-  delLinkPoint(cellView) {
-    this.centerGraph.removeCells(cellView.model);
-  },
-  // 构筑线
-  setLink(source, target, label, vertices, TF) {
-    console.log(source, target);
-    let cell = new joint.shapes.fsa.Arrow({
-      source: { id: source.id },
-      target: { id: target.id },
-      labels: [{ position: 0.5, attrs: { text: { text: label || '', 'font-weight': '' } } }],
-      smooth: false || TF, // 控制线段能否有弧度的弯曲
-      vertices: vertices || [],
-      attrs: {
-        '.connection': {
-          stroke: '#7c68fc', // 线段颜色
-          'stroke-width': 10, // 线段宽度
-          // 'stroke-dasharray': '5 2' // 虚线
-          'stroke-dasharray': '' // 实线
-        },
-        // '.marker-source': { stroke: '#7c68fc', fill: '#7c68fc', d: 'M24.316,5.318,9.833,13.682,9.833,5.5,5.5,5.5,5.5,25.5,9.833,25.5,9.833,17.318,24.316,25.682z' },
-        // '.marker-target': { stroke: '#feb663', fill: '#feb663', d: 'M14.615,4.928c0.487-0.986,1.284-0.986,1.771,0l2.249,4.554c0.486,0.986,1.775,1.923,2.864,2.081l5.024,0.73c1.089,0.158,1.335,0.916,0.547,1.684l-3.636,3.544c-0.788,0.769-1.28,2.283-1.095,3.368l0.859,5.004c0.186,1.085-0.459,1.553-1.433,1.041l-4.495-2.363c-0.974-0.512-2.567-0.512-3.541,0l-4.495,2.363c-0.974,0.512-1.618,0.044-1.432-1.041l0.858-5.004c0.186-1.085-0.307-2.6-1.094-3.368L3.93,13.977c-0.788-0.768-0.542-1.525,0.547-1.684l5.026-0.73c1.088-0.158,2.377-1.095,2.864-2.081L14.615,4.928z' }
-        '.marker-source': '', // 控制线段左侧图案
-        '.marker-target': '' // 控制线段右侧图案
-      }
-    });
-    // graph.addCell(cell);
-    return cell;
-  },
-  // 获取中心点
-  getCenterPoint(cellView) {
-    // console.log(cellView);
-    // 获取定位点
-    let oPoint = cellView.model.attributes.position;
-    // 获取长宽
-    let sPoint = cellView.model.attributes.size;
-    // 计算中心点
-    let cPoint = {
-      x: oPoint.x + sPoint.width / 2,
-      y: oPoint.y + sPoint.height / 2
-    };
-    // 将数据加入数组
-    // lineArr.push(cPoint);
-    return cPoint;
-  },
-  // 获取画布当中除自己以外的图形
-  getCellDelSlef(cellView) {
-    // 创建默认数组
-    let arr = [];
-    // console.log(cellView);
-    let allT = this.centerGraph.getCells();
-    // console.log(allT);
-    // 获取本身的cid
-    let slefId = cellView.model.cid;
-    // 删除选中的图形数据
-    for (let i = 0; i < allT.length; i++) {
-      // 判断cid是否相同
-      let arrId = allT[i].cid;
-      if (arrId !== slefId) {
-        arr.push(allT[i]);
-      }
-    }
-    return arr;
+    return obj;
   }
 };
-export default jointD;
-/* function connect() {
- var socket = new SockJS('http://192.168.1.149:8080/gs-guide-websocket');
- stompClient = Stomp.over(socket);
- stompClient.connect({}, function (frame) {
- $("#connect").prop("disabled", true);
- console.log('Connected: ' + frame);
- stompClient.subscribe('/topic/greetings', function (greeting) {
- // showGreeting(JSON.parse(greeting.body).content);
- console.log(JSON.parse(greeting.body).content);
- if(view){
-
- }
- });
- });
- } */
+export {jointD};

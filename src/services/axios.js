@@ -40,7 +40,7 @@ axios.interceptors.response.use(function (response) {
  */
 export default function(url, {
   method = 'post',
-  timeout = 10000,
+  timeout = 100000,
   data = {},
   headers = {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8;'},
   dataType = 'json'

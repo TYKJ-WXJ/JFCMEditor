@@ -63,6 +63,11 @@ const server = {
     return axios('http://192.168.1.3:8010/areas', {
       method: 'get'
     });
+  },
+  getMockAreas() { // 通过模拟接口获得李迪凡部分区域数据
+    return axios('https://easy-mock.com/mock/5af2b738c949372c3a474195/JF/areas', {
+      method: 'get'
+    });
   }
 };
 
