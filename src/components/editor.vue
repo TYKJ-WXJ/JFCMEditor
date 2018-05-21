@@ -54,6 +54,10 @@
       },
       initDome() {
         server.getMockAreas().then((res) => {
+          // 将李迪凡的区域数据存储下来
+          this.$store.commit('changeDatas', {
+            data: res.data.data
+          });
           let areaJson = JSON.parse(res.data.data[0].svg);
           console.log(areaJson);
           this.jointD.setSvgData(areaJson, 'RESET'); // 导入svg图像

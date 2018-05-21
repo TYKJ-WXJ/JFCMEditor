@@ -11,6 +11,9 @@ const mutations = {
   },
   changeJsonD(state, payload) {
     state.JsonData = payload;// 这里不能.webs,否则无法显示
+  },
+  changeDatas(state, payload) {
+    state.datas = payload;
   }
 };
 

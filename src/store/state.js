@@ -13,6 +13,9 @@ const state = {
   },
   JsonData: {
     JsonD: {}
+  },
+  datas: { // svg所有区域数据
+    data: {}
   }
 };
 

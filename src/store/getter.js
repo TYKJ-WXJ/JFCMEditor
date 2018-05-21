@@ -11,6 +11,9 @@ const getters = {
   },
   getJsonD(state) {
     return state.JsonData;
+  },
+  getDatas(state) {
+    return state.datas;
   }
 };
 

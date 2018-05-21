@@ -20,6 +20,12 @@ const actions = {
       type: 'changeJsonD',
       JsonD: payload
     })
+  },
+  changeDatas(store, payload) {
+    store.commit({
+      type: 'changeDatas',
+      datas: payload
+    })
   }
 };
 

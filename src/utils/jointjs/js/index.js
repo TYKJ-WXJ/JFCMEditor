@@ -1854,6 +1854,7 @@ const jointD = {
         thatW = th;
       },
       lawyer(area) {
+        console.log(thatW);
         let html = thatW.getters.getDictionary.dictionary.areaObj.get(area).equipmentList;
         for (let item of html) {
           for (let pro of item.propertyList) {
@@ -1891,7 +1892,7 @@ const jointD = {
             for (let id of thatW.getters.getDatas.data) {
               for (let list of id.equipmentList) {
                 if (uuid === list.serialNumber) { // 获取点击图形的uuid 与后台数据中的id进行对比
-                  console.log(list.id)
+                  console.log(list.id);
                   console.log(list.template.name); // 输入模版ID
                   switch (list.template.name) { // 取出模版名称进行对比
                     case '精密空调':
