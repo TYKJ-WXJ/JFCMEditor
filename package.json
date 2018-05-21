@@ -18,6 +18,7 @@
     "d3": "^4.13.0",
     "draggabilly": "^2.1.1",
     "echarts": "^4.0.4",
+    "hover.css": "^2.3.1",
     "iview": "^2.11.0",
     "jointjs": "^2.0.1",
     "jquery": "^3.2.1",
