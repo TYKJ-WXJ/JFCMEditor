@@ -37,7 +37,7 @@ const jointD = {
         'label': true, // 图形名称和基本属性
         'move_figure': true, // 是否可移动图形
         'gallery': [], // 所有设备数据
-        'refer_line': true, // 参考线
+        'refer_line': false, // 参考线
         'isArea': false, // 是否是区域管理页面
         'scale': false
       },
@@ -168,7 +168,7 @@ const jointD = {
         }
         // 画线时候的鼠标位置
         let dom = `<div id="position"style="position:absolute;left:0;bottom:92px;display:none">x: <span id="position_x"></span><br/>y: <span id="position_y"></span></div>`
-        $('.tool_canvas').append(dom)
+        $('.tool_canvas').append(dom);
         // 样式面板和缩略图
         if (this.options.thumbnail || this.options.style_operation || this.options.layer) {
           $('.tool_wrap').append('<div class="tool_map_right"><i class="up_tool">收起</i><i class="drag" title="点我拖动"></i></div>');
@@ -330,7 +330,6 @@ const jointD = {
         for (let i = 0; i < layers.length; i++) {
           layers[i].addClass('hidden');
         }
-        // 显示当前图层
         // 显示当前图层
         let nowLayer = joint.V(this.centerPaper.viewport).find('.layerNum' + this.currentLayer)[0];
         let layerNum0 = joint.V(this.centerPaper.viewport).find('.layerNum0')[0];
@@ -1500,11 +1499,11 @@ const jointD = {
               let px = event.pageX - minX;
               let py = event.pageY - minY;
               if (px || py) {
-                $('#position_x').html(parseInt(px))
+                $('#position_x').html(parseInt(px));
                 $('#position_y').html(parseInt(py));
-                $('#position').css('display', 'block')
+                $('#position').css('display', 'block');
               } else {
-                $('#position').css('display', 'none')
+                $('#position').css('display', 'block'); // 坐标点显示，block关闭，none显示
               }
               for (let i = 0; i < otherPos.length; i++) {
                 // 竖线
@@ -1539,7 +1538,7 @@ const jointD = {
           }
           that.deleteController();
           if ($('#functionBtn').length === 0 && that.options.move_figure) {
-            that.loadBtn(cellView);
+            // that.loadBtn(cellView);
           } else {
             that.creatWrapper(cellView, that.centerPaper);
           }
@@ -1571,10 +1570,10 @@ const jointD = {
                 }
               }
               if (joint.V(paper.viewport).find('.control-point').length === 0) {
-                that.drawController(cellView.model.attr('path/d'), cellView.model, true);
+                // that.drawController(cellView.model.attr('path/d'), cellView.model, true);
               }
             } else {
-              that.drawController(cellView.model.attr('path/d'), cellView.model, true);
+              // that.drawController(cellView.model.attr('path/d'), cellView.model, true);
             }
           }
           that.hideBtn();
@@ -1604,6 +1603,16 @@ const jointD = {
           that.contextMenu = cellView;
           $('#toolTip').show().empty().append('<p title="' + cellView.model.attributes.defaultName + '">' + cellView.model.attributes.defaultName + '</p><input type="text" class="hidden" placeholder="' + cellView.model.attributes.defaultName + '">');
         });
+        paper.on('cell:mouseover', function (cellView, evt, x, y) {
+          // console.log('移入元素');
+          // 显示设备名称
+          that.eqNameHover(cellView);
+        });
+        paper.on('cell:mouseout', function (cellView, evt, x, y) {
+          // console.log('移入元素');
+          // 清楚hover效果
+          that.delHover(cellView);
+        })
       },
       // 组合图形一起移动
       moveTogether(cellView, evt) {
@@ -1854,7 +1863,6 @@ const jointD = {
         thatW = th;
       },
       lawyer(area) {
-        console.log(thatW);
         let html = thatW.getters.getDictionary.dictionary.areaObj.get(area).equipmentList;
         for (let item of html) {
           for (let pro of item.propertyList) {
@@ -1883,6 +1891,52 @@ const jointD = {
           }
         }
       },
+      // 移入图形，显示设备名称
+      eqNameHover(cellView) {
+        // console.log(cellView);
+        // console.log(thatW);
+        if (cellView.model.attributes.uuid !== undefined) {
+          let uuid = cellView.model.attributes.uuid;
+          // 通过uuid从map当中找到设备ID
+          let subscript = thatW.getters.getIndexDatas.indexData.snObj.get(uuid); // 获取map当中的下标
+          // console.log(subscript);
+          // 拿着下标去李迪凡数据当中获取设备数据
+          let eqData = thatW.getters.getDatas.data[subscript.area].equipmentList[subscript.equipment];
+          // console.log(eqData);
+          // 获取设备名称
+          let eqName = eqData.name;
+          // 加入div
+          let title = '<div id="eqTitle" style="color: red;z-index: 10000;position: absolute;">' + eqName + '</div>';
+          $('#display_box').append(title); // 加入的标签必须与svg的标签平级
+          // 改变位置
+          $('#eqTitle').css({
+            width: (cellView.model.attributes.size.width) + 'px',
+            height: (20) + 'px',
+            left: (cellView.model.attributes.position.x + (cellView.model.attributes.size.width)) + 'px',
+            top: (cellView.model.attributes.position.y) + 'px',
+            display: 'block'
+          });
+          // 给设备加入填充的hover效果
+          $('#' + uuid + '').children('g.deviceLayer1').children().find('text').find('tspan').css({
+            // stroke: '#00ff00'
+            fill: '#00E4FF'
+          });
+          // 添加鼠标样式 之后需要加入判断逻辑，有link的加上这个样式
+          $('#' + uuid + '').find('*').css({
+            cursor: 'url(../../src/assets/mouse/Hand.cur), auto'
+          });
+          // $('#' + uuid + '').children('g.deviceLayer1').children().find('text').find('tspan').addClass('masked');
+          // $('#' + uuid + '').children('g.deviceLayer1').children().find('text').find('tspan').attr('transform', 'rotate(30 20,40)');
+          // console.log($('#' + uuid + '').children('g.deviceLayer1').children().find('text').find('tspan'));
+        }
+      },
+      delHover(cellView) {
+        $('#eqTitle').remove();
+        $('tspan').css({
+          // stroke: '#ffffff'
+          fill: '#ffffff'
+        });
+      },
       // 单击图形
       singleClick(cellView) {
         if (cellView !== undefined) {
@@ -1892,8 +1946,9 @@ const jointD = {
             for (let id of thatW.getters.getDatas.data) {
               for (let list of id.equipmentList) {
                 if (uuid === list.serialNumber) { // 获取点击图形的uuid 与后台数据中的id进行对比
-                  console.log(list.id);
+                  console.log(list.id)
                   console.log(list.template.name); // 输入模版ID
+                  console.log(thatW);
                   switch (list.template.name) { // 取出模版名称进行对比
                     case '精密空调':
                       thatW.commit('changeEqIds', {
@@ -2025,7 +2080,7 @@ const jointD = {
                     default:
                       break;
                   }
-                  console.log(thatW.getters.getEqIds)
+                  // console.log(thatW.getters.getEqIds)
                 }
               }
             }
@@ -2441,63 +2496,6 @@ const jointD = {
         });
         return ElementView;
       },
-      // getImage(px, py, pwidth, pheight) {
-      //   let cell = new joint.shapes.basic.Image({
-      //     position: {
-      //       x: px,
-      //       y: py
-      //     },
-      //     size: {
-      //       width: pwidth,
-      //       height: pheight
-      //     },
-      //     attrs: {
-      //       // attr SVG attr      prop- custom data
-      //       image: {
-      //         'xlink:href': 'url(http://localhost:8888/src/assets/img/logo.png)'
-      //       }
-      //     }
-      //   });
-      //   return cell;
-      // },
-      /**
-       * 生成椭圆
-       * px  x 坐标
-       * py  y 坐标
-       * pbackground   背景色
-       * ptext  显示文本
-       * pwidth 宽带
-       * pheight 高度
-       * prx    短轴值
-       * pry    长轴值
-       */
-      /* getEllipse(px, py, pbackground, ptext, pwidth, pheight) {
-       let cell = new joint.shapes.basic.Ellipse({
-       position: {
-       x: px,
-       y: py
-       },
-       size: {
-       width: pwidth,
-       height: pheight
-       },
-       attrs: {
-       // attr SVG attr      prop- custom data
-       ellipse: {
-       fill: pbackground,
-       'stroke': '#8792c3',
-       'stroke-width': 1,
-       'stroke-dasharray': 0
-       },
-       text: {
-       text: ptext,
-       fill: 'black',
-       'font-weight': 'normal'
-       }
-       }
-       });
-       return cell;
-       }, */
       /**
        * 生成矩形
        * px  x 坐标
